@@ -15,7 +15,7 @@ const resolveApp = relativePath => path.resolve(rootDirectory, relativePath);
 const paths = {
   tsConfig: resolveApp('tsconfig.json'),
 };
-const APP_NAME = 'phitree';
+const APP_NAME = 'configTester';
 const OUTPUT_STATIC_PATH = 'static';
 
 module.exports = (env, arg) => {
