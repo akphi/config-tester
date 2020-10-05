@@ -1,36 +1,25 @@
 {
-	"compilerOptions": {
-		"target": "esnext",
-		"lib": [
-			"dom",
-			"dom.iterable",
-			"esnext",
-			"webworker",
-			"scripthost"
-		],
-		"skipLibCheck": true,
-		"esModuleInterop": true,
-		"experimentalDecorators": true,
-		"allowSyntheticDefaultImports": true,
-		"strict": true,
-		"forceConsistentCasingInFileNames": true,
-		"module": "esnext",
-		"moduleResolution": "node",
-		"resolveJsonModule": true,
-		"isolatedModules": true,
-		"noEmit": true,
-		"jsx": "preserve",
-		"baseUrl": ".",
-		"paths": {
-      "Const": ["./src/const"],
-      "Components/*": ["./src/components/*"],
-		}
-	},
-	"include": [
-		"./src/**/*.tsx",
-		"./src/**/*.ts"
-	],
-	"files": [
-		"./src/index.tsx"
-	]
+  "compilerOptions": {
+    "target": "esnext",
+    "lib": ["dom", "dom.iterable", "esnext", "webworker", "scripthost"],
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "preserve",
+    "baseUrl": ".",
+    // "useDefineForClassFields": true
+  },
+  // "include": [
+  //   // "./app/**/*.ts",
+  //   "./app/**/*.tsx"
+  // ],
+  "files": ["app/index.tsx"]
 }

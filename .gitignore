@@ -1,3 +1,21 @@
-node_modules
-target
-dist
+# system
+.DS_Store
+
+# IDE
+.idea
+.vscode
+**/*.iml
+**/jsconfig.json
+.settings
+.project
+.classpath
+
+# JS
+**/npm
+**/temp
+**/target
+**/node_modules
+
+# Developer area
+**/dev/config/**/*
+!**/dev/config/README.md

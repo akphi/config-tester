@@ -1,179 +1,122 @@
-const webpack = require('webpack');
-const sass = require('sass');
 const path = require('path');
 const fs = require('fs');
-const resolve = require('resolve');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const HtmlWebPackPlugin = require('html-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const PnpWebpackPlugin = require('pnp-webpack-plugin');
-const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
-const WorkerPlugin = require('worker-plugin');
+// const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+
+const getJavascriptLoaderConfig = ({ isEnvDevelopment }) => ({
+  loader: require.resolve('babel-loader'),
+  options: {
+    // cacheDirectory: true,
+    presets: [
+      '@babel/preset-env',
+      '@babel/preset-react',
+      './dev/test-preset',
+      ['@babel/preset-typescript', {
+        onlyRemoveTypeImports: true,
+        allowDeclareFields: true
+      }],
+    ],
+    plugins: [
+      ['@babel/plugin-proposal-optional-chaining'],
+      ['@babel/plugin-proposal-nullish-coalescing-operator'],
+    ].filter(Boolean)
+  }
+});
 
 const rootDirectory = fs.realpathSync(process.cwd());
 const resolveApp = relativePath => path.resolve(rootDirectory, relativePath);
 const paths = {
+  eslintConfig: resolveApp('.eslintrc.js'),
   tsConfig: resolveApp('tsconfig.json'),
 };
-const APP_NAME = 'configTester';
-const OUTPUT_STATIC_PATH = 'static';
 
 module.exports = (env, arg) => {
   const isEnvDevelopment = arg.mode === 'development';
   const isEnvProduction = arg.mode === 'production';
+  const enableAsyncTypeCheck = Boolean(arg.enableAsyncTypeCheck);
   return {
     mode: arg.mode,
     // Stop compilation early in production
     bail: isEnvProduction,
-    entry: { main: './src/index.tsx' },
-    output: {
-      path: path.join(__dirname, `./target/classes/web/${APP_NAME}`),
-      publicPath: '/',
-      filename: `${OUTPUT_STATIC_PATH}/${isEnvProduction ? '[name].js' : '[name].[hash:8].js'}`,
-      // This is for `worker-plugin` works in HMR
-      globalObject: '(typeof self !== "undefined" ? self : this)',
-    },
+    entry: { main: './app/index.tsx' },
     devtool: isEnvDevelopment
+      // The best and also recommended for dev seems to be `cheap-module-eval-source-map`,
+      // but the line is incorrectly reported, so we use `cheap-module-source-map` as CRA
+      // See https://github.com/vuejs-templates/webpack/issues/520#issuecomment-356773702
+      // See https://github.com/facebook/create-react-app/issues/343
       ? 'cheap-module-source-map'
       : 'source-map',
     watchOptions: {
       poll: 1000,
+      // Exclude test from dev watch
       ignored: [/node_modules/],
     },
     devServer: {
-      compress: true,
       open: true,
-      port: 3030,
-      historyApiFallback: {
-        disableDotRule: true,
-      },
+      port: 3000,
+      clientLogLevel: 'warn',
       stats: {
         all: false,
-        warnings: true,
-        errors: true,
-      }
+      },
     },
     resolve: {
-      alias: {
-        // 'react-dom': isEnvDevelopment ? '@hot-loader/react-dom' : 'react-dom',
-        Const: path.resolve(__dirname, 'src/const'),
-        Components: path.resolve(__dirname, 'src/components/'),
-      },
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
-      plugins: [PnpWebpackPlugin]
-    },
-    resolveLoader: {
-      plugins: [PnpWebpackPlugin.moduleLoader(module)]
     },
     module: {
       rules: [
         {
-          test: /\.(js|ts)x?$/,
+          test: /\.(?:js|ts)x?$/,
           exclude: /node_modules/,
-          use: [
-            {
-              loader: require.resolve('babel-loader'),
-              options: {
-                cacheDirectory: true,
-                presets: [
-                  '@babel/preset-env',
-                  '@babel/preset-react',
-                  '@babel/preset-typescript',
-                ],
-                plugins: [
-                  // Show JSX component stack trace (must be disabled for PROD)
-                  isEnvDevelopment && '@babel/plugin-transform-react-jsx-source',
-                  ['@babel/plugin-proposal-decorators', { legacy: true }],
-                  ['@babel/plugin-proposal-class-properties', { loost: true }],
-                  ['@babel/plugin-proposal-optional-chaining'],
-                  ['@babel/plugin-proposal-nullish-coalescing-operator'],
-                  ['@babel/plugin-transform-named-capturing-groups-regex'],
-                  // isEnvDevelopment && 'react-hot-loader/babel'
-                ].filter(Boolean)
-              }
-            },
-          ]
-        },
-        {
-          test: /\.s?css$/,
-          use: [
-            {
-              loader: MiniCssExtractPlugin.loader,
-              options: { hmr: isEnvDevelopment },
-            },
-            {
-              loader: require.resolve('css-loader'),
-              options: { sourceMap: true },
-            },
-            {
-              loader: require.resolve('postcss-loader'),
-              options: {
-                ident: 'postcss',
-                plugins: () => [
-                  require('autoprefixer'),
-                ].concat(
-                  isEnvDevelopment ? [] : [require('cssnano')],
-                ),
-                sourceMap: true,
-              }
-            },
-            {
-              loader: require.resolve('resolve-url-loader'),
-              options: { sourceMap: true },
-            },
-            {
-              loader: require.resolve('sass-loader'),
-              options: {
-                implementation: sass,
-                sourceMap: true,
-                sassOptions: { includePaths: ['node_modules'] },
-              }
-            }
-          ],
-        },
-        {
-          test: /\.(woff2?|ttf|otf|eot|svg|png|gif)/,
-          loader: require.resolve('file-loader'),
-          options: { name: `${OUTPUT_STATIC_PATH}/${isEnvDevelopment ? '[name].[ext]' : '[name].[contenthash:8].[ext]'}`}
+          use: [getJavascriptLoaderConfig({ isEnvDevelopment })],
         }
-      ],
-    },
-    optimization: {
-      splitChunks: {
-        cacheGroups: {
-          vender: {
-            test: /node_modules/,
-            chunks: 'initial',
-            name: 'vendor',
-            priority: 10,
-            enforce: true
-          }
-        }
-      }
+      ]
     },
     plugins: [
-      new WorkerPlugin(),
-      new MonacoWebpackPlugin(),
-      new HtmlWebpackPlugin({
-        template: './src/index.html',
+      new HtmlWebPackPlugin({
+        template: './app/index.html',
       }),
-      new MiniCssExtractPlugin({
-        filename: `${OUTPUT_STATIC_PATH}/${isEnvDevelopment ? '[name].css' : '[name].[contenthash:8].css'}`,
-        chunkFilename: `${OUTPUT_STATIC_PATH}/${isEnvDevelopment ? '[id].css' : '[id].[contenthash:8].css'}`,
+      // Webpack plugin that runs TypeScript type checker on a separate process.
+      // NOTE: This makes the initial build process slower but allow faster incremental builds
+      // See https://www.npmjs.com/package/fork-ts-checker-webpack-plugin#motivation
+      // See https://github.com/arcanis/pnp-webpack-plugin#fork-ts-checker-webpack-plugin-integration
+      new ForkTsCheckerWebpackPlugin({
+        typescript: {
+          configFile: paths.tsConfig,
+          mode: 'write-references', // recommended mode to improve initial compilation time when using `babel-loader`
+          diagnosticsOptions: {
+            syntactic: true,
+            semantic: true,
+            declaration: true,
+            global: true,
+          },
+        },
+        // Allow blocking webpack's emit to wait for type checker/linter and to add errors to the webpack's compilation
+        // if we turn `async:true` webpack will compile on one thread and type check on another thread so any type
+        // error will not cause the build to fail, also error/warning from this plugin will not be captured by webpack
+        // so we will have to write our own formatter for the log.
+        async: enableAsyncTypeCheck && isEnvDevelopment,
+        // We will handle the output here using fork-ts-checker compiler hooks since the lint/error/warning output is not grouped by file
+        // See https://github.com/TypeStrong/fork-ts-checker-webpack-plugin/issues/119
+        logger: {
+          infrastructure: 'silent',
+          issues: 'silent',
+          devServer: false,
+        },
+        eslint: {
+          enabled: true,
+          files: [
+            // 'app/**/*.ts',
+            'app/**/*.tsx',
+          ],
+          // ESLint initialization options
+          // See https://eslint.org/docs/developer-guide/nodejs-api#cliengine
+          options: {
+            configFile: (isEnvProduction) ? paths.advancedEslintConfig : paths.eslintConfig,
+          }
+        },
+        formatter: isEnvProduction ? 'codeframe' : undefined
       }),
-      new ForkTsCheckerWebpackPlugin(PnpWebpackPlugin.forkTsCheckerOptions({
-        typescript: resolve.sync('typescript', {
-          basedir: resolveApp('node_modules'),
-        }),
-        async: false,
-        eslint: true,
-        useTypescriptIncrementalApi: true,
-        checkSyntacticErrors: true,
-        tsConfig: paths.tsConfig,
-        reportFiles: [
-          'src/**/*.(ts|tsx|js|jsx)'
-        ]
-      }))
-    ]
-  }
+    ].filter(Boolean)
+  };
 };
