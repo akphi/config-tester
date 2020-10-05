@@ -15,6 +15,7 @@
 **/temp
 **/target
 **/node_modules
+dist/**
 
 # Developer area
 **/dev/config/**/*
