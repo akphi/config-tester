@@ -12,14 +12,14 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "useDefineForClassFields": true,
     "noEmit": true,
     "jsx": "preserve",
-    "baseUrl": ".",
-    "useDefineForClassFields": true
+    "baseUrl": "."
   },
-  // "include": [
-  //   // "./app/**/*.ts",
-  //   "./app/**/*.tsx"
-  // ],
+  "include": [
+    "./app/**/*.ts",
+    "./app/**/*.tsx"
+  ],
   "files": ["app/index.tsx"]
 }

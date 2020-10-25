@@ -7,7 +7,7 @@ module.exports = function () {
       ['@babel/plugin-proposal-decorators', { legacy: true }],
       // class properties are compiled to use an assignment expression instead of `Object.defineProperty`
       // See https://babeljs.io/docs/en/babel-plugin-proposal-class-properties#loose
-      ['@babel/plugin-proposal-class-properties', { loose: false }],
+      ['@babel/plugin-proposal-class-properties', { loose: true }],
     ],
   };
 };

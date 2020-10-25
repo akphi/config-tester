@@ -14,13 +14,11 @@ const getJavascriptLoaderConfig = ({ isEnvDevelopment }) => ({
       './dev/test-preset',
       ['@babel/preset-typescript', {
         onlyRemoveTypeImports: true,
-        allowDeclareFields: true
+        allowDeclareFields: true,
+        isTSX: true,
+        allExtensions: true
       }],
-    ],
-    plugins: [
-      ['@babel/plugin-proposal-optional-chaining'],
-      ['@babel/plugin-proposal-nullish-coalescing-operator'],
-    ].filter(Boolean)
+    ]
   }
 });
 
@@ -37,20 +35,14 @@ module.exports = (env, arg) => {
   const enableAsyncTypeCheck = Boolean(arg.enableAsyncTypeCheck);
   return {
     mode: arg.mode,
-    // Stop compilation early in production
     bail: isEnvProduction,
     entry: { main: './app/index.tsx' },
     devtool: isEnvDevelopment
-      // The best and also recommended for dev seems to be `cheap-module-eval-source-map`,
-      // but the line is incorrectly reported, so we use `cheap-module-source-map` as CRA
-      // See https://github.com/vuejs-templates/webpack/issues/520#issuecomment-356773702
-      // See https://github.com/facebook/create-react-app/issues/343
       ? 'cheap-module-source-map'
       : 'source-map',
     watchOptions: {
       poll: 1000,
-      // Exclude test from dev watch
-      ignored: [/node_modules/],
+      ignored: /node_modules/,
     },
     devServer: {
       open: true,
@@ -76,10 +68,6 @@ module.exports = (env, arg) => {
       new HtmlWebPackPlugin({
         template: './app/index.html',
       }),
-      // Webpack plugin that runs TypeScript type checker on a separate process.
-      // NOTE: This makes the initial build process slower but allow faster incremental builds
-      // See https://www.npmjs.com/package/fork-ts-checker-webpack-plugin#motivation
-      // See https://github.com/arcanis/pnp-webpack-plugin#fork-ts-checker-webpack-plugin-integration
       new ForkTsCheckerWebpackPlugin({
         typescript: {
           configFile: paths.tsConfig,
@@ -90,23 +78,20 @@ module.exports = (env, arg) => {
             declaration: true,
             global: true,
           },
+          profile: true
         },
-        // Allow blocking webpack's emit to wait for type checker/linter and to add errors to the webpack's compilation
-        // if we turn `async:true` webpack will compile on one thread and type check on another thread so any type
-        // error will not cause the build to fail, also error/warning from this plugin will not be captured by webpack
-        // so we will have to write our own formatter for the log.
         async: enableAsyncTypeCheck && isEnvDevelopment,
         // We will handle the output here using fork-ts-checker compiler hooks since the lint/error/warning output is not grouped by file
         // See https://github.com/TypeStrong/fork-ts-checker-webpack-plugin/issues/119
         logger: {
-          infrastructure: 'silent',
-          issues: 'silent',
-          devServer: false,
+          // infrastructure: 'silent',
+          // issues: 'silent',
+          // devServer: false,
         },
         eslint: {
           enabled: true,
           files: [
-            // 'app/**/*.ts',
+            'app/**/*.ts',
             'app/**/*.tsx',
           ],
           // ESLint initialization options

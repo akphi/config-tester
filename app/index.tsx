@@ -1,7 +1,7 @@
-
-import { makeObservable, observable } from 'mobx';
+import { observer } from 'mobx-react-lite';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Person } from './Person';
 
 const root = ((): Element => {
   let rootEl = document.getElementsByTagName('root').length ? document.getElementsByTagName('root')[0] : undefined;
@@ -12,30 +12,18 @@ const root = ((): Element => {
   return rootEl;
 })();
 
-class Animal {
-  name!: unknown;
-}
+const person = new Person();
 
-class Person extends Animal {
-  declare name: string;
-  age!: number;
-
-  constructor() {
-    super();
-    makeObservable(this, {
-      age: observable
-    });
-  }
-}
-
-const App: React.FC = () => {
-  const person = new Person();
+const App: React.FC = observer(() => {
+  // const person = createPerson();
+  console.log('age: ', person.age, person.hashCode);
   return (
     <div>
-      Age: {person.age ?? 19}
+      Age: {person.age !== undefined ? person.age : 19}
+      <button onClick={(): void => person.incrementAge()}>+</button>
     </div>
   );
-};
+});
 
 ReactDOM.render((
   <App />
