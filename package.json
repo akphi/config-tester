@@ -2,8 +2,9 @@
   "name": "config-tester",
   "scripts": {
     "start": "node ./dev/scripts/start.js",
-    "tsc": "tsc --project tsconfig.json",
-    "test": "jest",
+    "tsc": "tsc --project tsconfig.test.json",
+    "test": "yarn tsc && jest",
+    "test:watch": "tsc --project tsconfig.test.json --watch && jest --watch",
     "update": "yarn upgrade-interactive --latest"
   },
   "dependencies": {
