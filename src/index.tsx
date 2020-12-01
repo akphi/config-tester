@@ -1,25 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './variables.scss';
-import './index.scss';
-import { App } from 'Components/App';
-import { configure as configureMobx } from "mobx"
+import { App } from './App';
 
-configureMobx({
-  enforceActions: "observed"
-})
+const root = ((): Element => {
+  let rootEl = document.getElementsByTagName('root').length ? document.getElementsByTagName('root')[0] : undefined;
+  if (!rootEl) {
+    rootEl = document.createElement('root');
+    document.body.appendChild(rootEl);
+  }
+  return rootEl;
+})();
 
-let root = document.getElementsByTagName('root')[0];
-if (!root) {
-  root = document.createElement('root');
-  document.body.appendChild(root);
-}
-
-ReactDOM.render((
-    <div>
-      <App/>
-    </div>
-  ),
-  root
-);
-
+ReactDOM.render(<App />, root);
