@@ -17,7 +17,12 @@
 const sass = require('sass');
 const path = require('path');
 const fs = require('fs');
-const BaseConfig = require('./config.json');
+const chalk = require('chalk');
+const strip = require('strip-ansi');
+const table = require('text-table');
+const wrap = require('wrap-ansi');
+const semver = require('semver');
+const BaseConfig = require('../../config.json');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
@@ -25,6 +30,110 @@ const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+
+const CONTENT_LINE_LENGTH = 72;
+
+class ForkTsCheckerWebpackFormatterPlugin {
+  apply(compiler) {
+    const tsCheckerHooks = ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler);
+    let typeCheckingStartTime;
+    tsCheckerHooks.start.tap('fork-ts-checker-start', () => {
+      // this hook is called when type checking is started, so we can reset the time here
+      typeCheckingStartTime = Date.now();
+    });
+    tsCheckerHooks.error.tap('fork-ts-checker-error', error => console.error(error));
+    tsCheckerHooks.waiting.tap('fork-ts-checker-waiting', () => {
+      // since a chunk of time is spent on waiting for webpack to compile, on the very first type checking
+      // the elapsed time then will be off, and since this hook is called only on the first type checking
+      // we set the time here so we can compute the elapsed time right after compilation to when type
+      // checking report is complete
+      typeCheckingStartTime = Date.now();
+      console.info(`${chalk.gray('i [ts]')} : Asynchronously checking type...`);
+    });
+    tsCheckerHooks.issues.tap('fork-ts-checker-issues', (issues, compilation) => {
+      const errors = compilation.errors.filter(error => error.message).map(error => ({ message: error.message, severity: 'error', file: 'Compilation Issues:' }));
+      const warnings = compilation.warnings.filter(warning => warning.message).map(warning => ({ message: warning.message, severity: 'warning', file: 'Compilation Issues:' }));
+      issues = errors.concat(warnings).concat(issues);
+      const issuesByFile = new Map();
+      issues.forEach(issue => {
+        const file = issue.file;
+        if (!issuesByFile.has(file)) {
+          issuesByFile.set(file, []);
+        }
+        issuesByFile.get(file).push({
+          file: issue.file,
+          message: issue.message,
+          code: issue.code ?? 'unknown',
+          // NOTE: ignore end location for now
+          line: issue.location?.start.line ?? 0,
+          column: issue.location?.start.column ?? 0,
+          level: issue.severity,
+        });
+      });
+      // Sort issues by location within a file
+      Array.from(issuesByFile.keys()).forEach(file => issuesByFile.set(file, issuesByFile.get(file).sort((a, b) => a.column - b.column).sort((a, b) => a.line - b.line)));
+      // Scan and tokenize error/warning message and wrap long message
+      const rows = [];
+      const fileLineMap = new Map();
+      issuesByFile.forEach((items, filePath) => {
+        let lineNumber = 0;
+        const { dim } = chalk;
+        const colors = { error: 'red', warning: 'yellow' };
+        items.forEach(item => {
+          const message = wrap(item.message, CONTENT_LINE_LENGTH, { hard: true });
+          const lines = message.split('\n');
+          rows.push(['', dim(`${item.line}:${item.column}`), chalk[colors[item.level]](item.level), chalk.blue(lines[0]), item.code]);
+          lineNumber++;
+          for (const line of lines.slice(1)) {
+            rows.push(['', '', '', chalk.blue(line)]);
+            lineNumber++;
+          }
+        });
+        fileLineMap.set(filePath, lineNumber);
+      });
+      // Try to align messages between file by forming a table
+      let tableFromAllLines = [];
+      let skipFormatting = false; // if table forming failed, fall back to normal formattting (using tabs)
+      try {
+        tableFromAllLines = table(rows, {
+          align: ['', 'l', 'l', 'l', 'l'],
+          stringLength: str => strip(str).length
+        }).split('\n');
+      } catch (error) {
+        console.warn(`Can't format message`, error.message); // handle error as sometimes `table()` throws on long compilation messages
+        skipFormatting = true;
+      }
+      // Print result
+      let lineCounter = 0;
+      issuesByFile.forEach((items, filePath) => {
+        let result = [];
+        if (skipFormatting) {
+          result.push('', chalk.underline(filePath));
+          result = result.concat(rows.slice(lineCounter, lineCounter + fileLineMap.get(filePath)).map(row => row.join('\t')));
+          lineCounter += fileLineMap.get(filePath);
+        } else {
+          result.push('', chalk.underline(filePath));
+          result = result.concat(tableFromAllLines.slice(lineCounter, lineCounter + fileLineMap.get(filePath)));
+          lineCounter += fileLineMap.get(filePath);
+        }
+        console.info(result.join('\n'));
+      });
+      // Summary
+      const time = Math.round(Date.now() - typeCheckingStartTime);
+      const warningCount = issues.filter(issue => issue.severity === 'warning').length;
+      const errorCount = issues.filter(issue => issue.severity === 'error').length;
+      if (!(errorCount + warningCount)) {
+        console.info(`${chalk.gray('i [ts]')} : Type checking passed succesfully! [${time}ms]`);
+      } else if (!errorCount) {
+        console.info(`\n${chalk.yellowBright('!')}${chalk.gray(' [ts]')} : ${chalk.yellowBright(`Type checking passed with warning(s)! [${time}ms]`)}`);
+      } else {
+        console.info(`\n${chalk.redBright('x')}${chalk.gray(' [ts]')} : ${chalk.redBright(`Type checking failed! [${time}ms]`)}`);
+      }
+      // NOTE: since we have already reported all the issues here, we want to pass no more errors down to webpack
+      return [];
+    });
+  }
+}
 
 const getJavascriptLoaderConfig = ({ isProcessingJSXFiles, isEnvDevelopment }) => ({
   loader: require.resolve('babel-loader'),
@@ -34,7 +143,7 @@ const getJavascriptLoaderConfig = ({ isProcessingJSXFiles, isEnvDevelopment }) =
     // See https://babeljs.io/docs/en/plugins/#plugin-options
     presets: [
       ['@babel/preset-env', { debug: false }], // use `debug` option to see the lists of plugins being selected
-      ['@babel/preset-react', { development: isProcessingJSXFiles && isEnvDevelopment }], // `development` flag allows accurate source code location
+      ['@babel/preset-react', { development: isEnvDevelopment }], // `development` flag allows accurate source code location
       './dev/babel/preset-studio',
       ['@babel/preset-typescript', {
         // Allow using `declare` in class
@@ -43,10 +152,6 @@ const getJavascriptLoaderConfig = ({ isProcessingJSXFiles, isEnvDevelopment }) =
         // See https://babeljs.io/docs/en/babel-preset-typescript#allowdeclarefields
         onlyRemoveTypeImports: true,
         allowDeclareFields: true,
-        // We have to enable `isTSX` where appropriate, if not JSX syntax will be mistaken for TS type annotation
-        // See https://babeljs.io/docs/en/babel-preset-typescript#istsx
-        isTSX: isProcessingJSXFiles,
-        allExtensions: isProcessingJSXFiles
       }],
     ],
     plugins: [
@@ -123,28 +228,6 @@ module.exports = (env, arg) => {
         timings: true,
       },
     },
-    // devServer: {
-    //   compress: true, // enable gzip compression for everything served to reduce traffic size
-    //   dev: {
-    //     publicPath: '/',
-    //   },
-    //   open: true,
-    //   port: 3000,
-    //   host: "localhost",
-    //   openPage: BaseConfig.baseRoute,
-    //   // redirect 404s to /index.html
-    //   historyApiFallback: {
-    //     // URL contains dot such as for version (majorV.minV.patchV: 1.0.0) need this rule
-    //     // See https://github.com/bripkens/connect-history-api-fallback#disabledotrule
-    //     disableDotRule: true
-    //   },
-    //   client: {
-    //     // suppress HMR and WDS messages about updated chunks
-    //     // NOTE: there is a bug that the line '[HMR] Waiting for update signal from WDS...' is not suppressed
-    //     // See https://github.com/webpack/webpack-dev-server/issues/2166
-    //     logging: 'warn',
-    //   },
-    // },
     infrastructureLogging: {
       // Only warnings and errors
       // See https://webpack.js.org/configuration/other-options/#infrastructurelogginglevel
@@ -163,17 +246,6 @@ module.exports = (env, arg) => {
     },
     resolve: {
       extensions: ['.ts', '.tsx', '.js'],
-      alias: {
-        ServerConfig: path.resolve(__dirname, '../resources/ideLightConfig.json'),
-        BaseConfig: path.resolve(__dirname, 'config.json'),
-        Const: path.resolve(__dirname, 'src/const'),
-        Utilities: path.resolve(__dirname, 'src/utils'),
-        Models: path.resolve(__dirname, 'src/models'),
-        Stores: path.resolve(__dirname, 'src/stores'),
-        Components: path.resolve(__dirname, 'src/components'),
-        API: path.resolve(__dirname, 'src/api'),
-        Style: path.resolve(__dirname, 'style'),
-      },
     },
     module: {
       rules: [
@@ -296,6 +368,7 @@ module.exports = (env, arg) => {
         filename: `${OUTPUT_STATIC_PATH}/${isEnvDevelopment ? '[name].css' : '[name].[contenthash:8].css'}`,
         chunkFilename: `${OUTPUT_STATIC_PATH}/${isEnvDevelopment ? '[id].css' : '[id].[contenthash:8].css'}`,
       }),
+      isEnvDevelopment && new ForkTsCheckerWebpackFormatterPlugin(),
       // Webpack plugin that runs TypeScript type checker on a separate process.
       // NOTE: This makes the initial build process slower but allow faster incremental builds
       // See https://www.npmjs.com/package/fork-ts-checker-webpack-plugin#motivation

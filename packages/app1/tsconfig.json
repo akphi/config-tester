@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext", "webworker", "scripthost"],
+    "noEmit": true,
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "BaseConfig": ["./config.json"]
+    }
+  },
+  "include": ["style/**/*.ts", "src/**/*.ts", "src/**/*.tsx"]
+}

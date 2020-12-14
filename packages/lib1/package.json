@@ -1,0 +1,10 @@
+{
+  "name": "lib1",
+  "version": "0.0.0",
+  "main": "build/index.js",
+  "typings": "build/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "tsc -b ."
+  }
+}

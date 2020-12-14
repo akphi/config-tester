@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    // Always include these settings
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    // These settings are totally up to you
+    "target": "esnext",
+    "module": "esnext",
+    // mine
+    "strict": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "importsNotUsedAsValues": "error",
+    "forceConsistentCasingInFileNames": true,
+    // `esModuleInterop` and `allowSyntheticDefaultImports` are needed to support compilation and type-checking on
+    // modules that do not have default exports
+    // See https://stackoverflow.com/questions/56238356/understanding-esmoduleinterop-in-tsconfig-file
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    // This option is needed for `mobx` decorator in contructor to work properly with uninitialized class attributes
+    // See https://github.com/mobxjs/mobx/issues/2486
+    "useDefineForClassFields": true
+  }
+}

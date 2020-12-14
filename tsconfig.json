@@ -1,29 +1,19 @@
 {
-  "compilerOptions": {
-    "target": "esnext",
-    "lib": ["dom", "dom.iterable", "esnext", "webworker", "scripthost"],
-    "strict": true,
-    "skipLibCheck": true,
-    "importsNotUsedAsValues": "error",
-    "forceConsistentCasingInFileNames": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "preserve",
-    // `esModuleInterop` and `allowSyntheticDefaultImports` are needed to support compilation and type-checking on
-    // modules that do not have default exports
-    // See https://stackoverflow.com/questions/56238356/understanding-esmoduleinterop-in-tsconfig-file
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    // This option is needed for `mobx` decorator in contructor to work properly with uninitialized class attributes
-    // See https://github.com/mobxjs/mobx/issues/2486
-    "useDefineForClassFields": true,
-    "baseUrl": ".",
-    "paths": {
-      "BaseConfig": ["./config.json"]
-    }
-  },
-  "include": ["style/**/*.ts", "src/**/*.ts", "src/**/*.tsx"]
+  // this will prevent an incorrect invocation of tsc without -b from trying to build the
+  // entire packages folder source files as one compilation (which will fail,
+  // but drop a bunch of .js files in random places as an annoying side effect).
+  "files": [],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "__tests__",
+    "**/*.test*",
+    "**/*.spec*"
+  ],
+  "references": [
+    { "path": "./packages/lib1" },
+    { "path": "./packages/component1" },
+    { "path": "./packages/app1" }
+  ]
 }
