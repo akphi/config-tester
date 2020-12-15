@@ -1,6 +1,8 @@
-import * as p1 from 'lib1';
+import { helloworld } from "@config-tester/lib1";
 
 export function fn4() {
-  p1.fn();
+  helloworld();
+  // p1.fn();
+  // fn();
   console.log('asd');
 }

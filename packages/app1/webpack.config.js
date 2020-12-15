@@ -1,19 +1,3 @@
-/**
- * Copyright 2020 Goldman Sachs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 const sass = require('sass');
 const path = require('path');
 const fs = require('fs');
@@ -21,8 +5,7 @@ const chalk = require('chalk');
 const strip = require('strip-ansi');
 const table = require('text-table');
 const wrap = require('wrap-ansi');
-const semver = require('semver');
-const BaseConfig = require('../../config.json');
+const BaseConfig = require('./config.json');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
@@ -37,12 +20,12 @@ class ForkTsCheckerWebpackFormatterPlugin {
   apply(compiler) {
     const tsCheckerHooks = ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler);
     let typeCheckingStartTime;
-    tsCheckerHooks.start.tap('fork-ts-checker-start', () => {
+    tsCheckerHooks.start.tap('ForkTsCheckerWebpackFormatterPlugin', () => {
       // this hook is called when type checking is started, so we can reset the time here
       typeCheckingStartTime = Date.now();
     });
-    tsCheckerHooks.error.tap('fork-ts-checker-error', error => console.error(error));
-    tsCheckerHooks.waiting.tap('fork-ts-checker-waiting', () => {
+    tsCheckerHooks.error.tap('ForkTsCheckerWebpackFormatterPlugin', error => console.error(error));
+    tsCheckerHooks.waiting.tap('ForkTsCheckerWebpackFormatterPlugin', () => {
       // since a chunk of time is spent on waiting for webpack to compile, on the very first type checking
       // the elapsed time then will be off, and since this hook is called only on the first type checking
       // we set the time here so we can compute the elapsed time right after compilation to when type
@@ -50,7 +33,7 @@ class ForkTsCheckerWebpackFormatterPlugin {
       typeCheckingStartTime = Date.now();
       console.info(`${chalk.gray('i [ts]')} : Asynchronously checking type...`);
     });
-    tsCheckerHooks.issues.tap('fork-ts-checker-issues', (issues, compilation) => {
+    tsCheckerHooks.issues.tap('ForkTsCheckerWebpackFormatterPlugin', (issues, compilation) => {
       const errors = compilation.errors.filter(error => error.message).map(error => ({ message: error.message, severity: 'error', file: 'Compilation Issues:' }));
       const warnings = compilation.warnings.filter(warning => warning.message).map(warning => ({ message: warning.message, severity: 'warning', file: 'Compilation Issues:' }));
       issues = errors.concat(warnings).concat(issues);
@@ -135,6 +118,18 @@ class ForkTsCheckerWebpackFormatterPlugin {
   }
 }
 
+const rootDirectory = fs.realpathSync(process.cwd());
+const resolveApp = relativePath => path.resolve(rootDirectory, relativePath);
+const paths = {
+  dev: resolveApp('../../dev'),
+  assets: resolveApp('assets'),
+  eslintConfig: resolveApp('.eslintrc.js'),
+  tsConfig: resolveApp('tsconfig.json'),
+  advancedEslintConfig: resolveApp('.eslintrc-advanced.js'),
+};
+// NOTE: due to routes like `/v1.0.0` (with '.'), to refer to static resources, we move all static content to `/static`
+const OUTPUT_STATIC_PATH = 'static';
+
 const getJavascriptLoaderConfig = ({ isProcessingJSXFiles, isEnvDevelopment }) => ({
   loader: require.resolve('babel-loader'),
   options: {
@@ -144,7 +139,7 @@ const getJavascriptLoaderConfig = ({ isProcessingJSXFiles, isEnvDevelopment }) =
     presets: [
       ['@babel/preset-env', { debug: false }], // use `debug` option to see the lists of plugins being selected
       ['@babel/preset-react', { development: isEnvDevelopment }], // `development` flag allows accurate source code location
-      './dev/babel/preset-studio',
+      `${paths.dev}/babel/preset-studio`,
       ['@babel/preset-typescript', {
         // Allow using `declare` in class
         // NOTE: we have to explicit have this before other class modifier plugins like `@babel/plugin-proposal-class-properties`
@@ -163,17 +158,6 @@ const getJavascriptLoaderConfig = ({ isProcessingJSXFiles, isEnvDevelopment }) =
     ].filter(Boolean)
   }
 });
-
-const rootDirectory = fs.realpathSync(process.cwd());
-const resolveApp = relativePath => path.resolve(rootDirectory, relativePath);
-const paths = {
-  assets: resolveApp('assets'),
-  eslintConfig: resolveApp('.eslintrc.js'),
-  tsConfig: resolveApp('tsconfig.json'),
-  advancedEslintConfig: resolveApp('.eslintrc-advanced.js'),
-};
-// NOTE: due to routes like `/v1.0.0` (with '.'), to refer to static resources, we move all static content to `/static`
-const OUTPUT_STATIC_PATH = 'static';
 
 module.exports = (env, arg) => {
   const isEnvDevelopment = arg.mode === 'development';
@@ -396,14 +380,14 @@ module.exports = (env, arg) => {
           issues: 'silent',
           devServer: false,
         },
-        eslint: {
-          enabled: true,
-          files: 'src/**/*.{ts,tsx}',
-          options: {
-            // See https://eslint.org/docs/developer-guide/nodejs-api#cliengine
-            configFile: (isEnvProduction || enableAdvancedMode) ? paths.advancedEslintConfig : paths.eslintConfig,
-          }
-        },
+        // eslint: {
+        //   enabled: true,
+        //   files: 'src/**/*.{ts,tsx}',
+        //   options: {
+        //     // See https://eslint.org/docs/developer-guide/nodejs-api#cliengine
+        //     configFile: (isEnvProduction || enableAdvancedMode) ? paths.advancedEslintConfig : paths.eslintConfig,
+        //   }
+        // },
         formatter: isEnvProduction ? 'codeframe' : undefined
       }),
     ].filter(Boolean),

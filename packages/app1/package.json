@@ -1,19 +1,18 @@
 {
-  "name": "app1",
+  "name": "@config-tester/app1",
   "version": "0.0.0",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepublishOnly": "tsc -b .",
     "build": "webpack --mode production",
-    "start": "node ./dev/scripts/start.js",
-    "start:advanced": "node ./dev/scripts/start.js --advanced",
-    "start:minimal": "webpack serve --mode development --hot",
+    "start": "webpack serve --mode development --hot",
+    "start:advanced": "webpack serve --mode development --hot --advanced",
     "serve:static": "npx http-server ../../../target/classes/ -p 3000 -a localhost -g --cors -o /ide",
     "lint": "eslint --config ./.eslintrc-advanced.js .",
     "lint:fix": "eslint --config ./.eslintrc-advanced.js --fix .",
     "update": "yarn upgrade-interactive --latest"
   },
   "dependencies": {
-    "component1": "^0.0.0"
+    "@config-tester/component1": "^0.0.0"
   }
 }

@@ -1,28 +1,39 @@
 {
+  // See https://www.typescriptlang.org/docs/handbook/compiler-options.html
   "compilerOptions": {
-    // Always include these settings
+    // Project reference related settings
     "composite": true,
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    // These settings are totally up to you
+    // Module settings
     "target": "esnext",
     "module": "esnext",
-    // mine
-    "strict": true,
-    "skipLibCheck": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "importsNotUsedAsValues": "error",
-    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true, // skip type checking of all declaration files (*.d.ts)
+    "moduleResolution": "node", // See https://www.typescriptlang.org/docs/handbook/module-resolution.html
+    "resolveJsonModule": true, // include JSON files module and auto-interpret types
+    "isolatedModules": true, // perform additional checks to ensure that separate compilation (such as with transpileModule or @babel/plugin-transform-typescript) would be safe.
+    "importsNotUsedAsValues": "error", // enforce differentiating between type-imports and standard imports
     // `esModuleInterop` and `allowSyntheticDefaultImports` are needed to support compilation and type-checking on
     // modules that do not have default exports
     // See https://stackoverflow.com/questions/56238356/understanding-esmoduleinterop-in-tsconfig-file
-    "esModuleInterop": true,
+    "esModuleInterop": true, // enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports
     "allowSyntheticDefaultImports": true,
     // This option is needed for `mobx` decorator in contructor to work properly with uninitialized class attributes
     // See https://github.com/mobxjs/mobx/issues/2486
-    "useDefineForClassFields": true
+    "useDefineForClassFields": true,
+    // Other settings
+    "strict": true,
+    "forceConsistentCasingInFileNames": true
+    // Paths
+    // "baseUrl": ".",
+    // "paths": {
+    //   "@config-tester/lib1": ["lib1/src"],
+    //   "@config-tester/lib1/*": ["lib1/src/*"],
+    //   "@config-tester/component1": ["component1/src"],
+    //   "@config-tester/component1/*": ["component1/src/*"],
+    //   "@config-tester/app1": ["app1/src"],
+    //   "@config-tester/app1/*": ["app1/src/*"]
+    // },
   }
 }

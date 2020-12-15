@@ -1,3 +1,3 @@
-export function fn() {
+export function helloworld() {
   return "Hello world";
 }
