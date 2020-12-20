@@ -3,7 +3,8 @@
   "compilerOptions": {
     "outDir": "build",
     "tsBuildInfoFile": "build/tsconfig.tsbuildinfo",
-    "rootDir": "src"
+    "rootDir": "src",
+    "jsx": "react-jsxdev"
   },
   "include": ["src"],
   "references": [{ "path": "../lib1" }]

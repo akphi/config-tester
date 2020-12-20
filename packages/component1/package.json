@@ -1,15 +1,8 @@
 {
   "name": "@config-tester/component1",
   "version": "0.0.0",
-  "main": "build/index",
-  "types": "build/index",
-  "files": [
-    "build"
-  ],
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "prepublishOnly": "tsc -b ."
-  },
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "dependencies": {
     "@config-tester/lib1": "^0.0.0"
   }

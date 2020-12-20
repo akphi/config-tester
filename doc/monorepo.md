@@ -1,143 +1,86 @@
-# VSCode
+# Monorepo
 
-- NOTE: if we setup properly using project reference, we don't seem to need `paths` to be able to have auto-imports work properly in VSCode. However, we must go to auto-imports setting and change it to `on` instead of `auto` as this might hide away imports from our monorepo modules. An example of this is when you have a module `@something/a` that depends on`@something/b`. `@something/b` exports a function called `helloworld()`. While working in `@something/a`, we type `hellow` at this point, `helloworld` should have been suggested but it doesn't. However, when we manually import `helloworld` by specifying `import { helloworld } from '@something/b'` it works just fine, which means our setup is correct. At this point, forcing `auto-imports` to be `on` in VSCode settings solves the issue
+This is not a "dissertation" on the concept of monorepo (mono-repo) nor a discussion thread on why we should or should not use monorepo. This is a technical record of how we transform our monolithic codebase into a monorepo project. In the following sections, we will discuss our approach and implementation with regards to tooling and the development workflow in a monorepo project.
 
-## DEV
+## Approach
 
-- `webpack-dev-server` has to watch for changes on other modules
-- `OPTIONAL` `sass` has to watch for changes and recompile sass files and have the `root` repo pickup this change
-- `OPTIONAL` `fork-ts-checker-webpack-plugin`
-- `OPTIONAL` `react-refresh` --> this means we are forced to use `babel` instead of `tsc` for modules with
-- NOTE: for IDE, we need proper `tsconfig` anyway
+The life-cycle of a codebase roughly comprises the following phases:
 
-## PROD
+- `setup` installing dependencies and linking modules to establish the module dependency graph.
+- `develop` watch and auto-rebuild module (potentially serve the app) on code changes, other tasks might include testing and linting.
+- `build` build and bundle module to prepare artifacts for packaging and `publish`
+- `publish` version and publish the module(s) to module registry (e.g. NPM), other tasks might include deploying.
 
-- if we target browser -> we use `babel` since it supports runtime and `browserlist` - we might just need `tsc` for all other modules
-- NOTE: might not need `fork-ts-checker-webpack-plugin`
-- `OPTIONAL` `rollup` or `webpack` if we need to bundle
+Among these, the `setup` phase and the `publish` phase are rarely run; besides, thanks to tooling support, they are fairly trivial to do in a monorepo project. Our impressions with the `publish` phase is that it's more about the convention (involving changelogs, commit messages, version tags, semver, etc.) rather than the implementation that is cumbersome.
 
-# Lerna, Yarn workspaces
+The `build` phase is often very similar to the `develop` phase, if not a bit more simplified, as it is run as one operation; whereas `develop` often involves watching for changing and trigger re-building on changes, which requires caching and thus, a more sophisticated tooling stack. This is where we realize the biggest challenge when setting up our monorepo project: it's hard to keep the same `watch` behavior while developing on a monorepo project.
 
-- Monorepo 101
-  https://medium.com/@NiGhTTraX/how-to-set-up-a-typescript-monorepo-with-lerna-c6acda7d4559
-  https://www.youtube.com/watch?v=pTi0MQbD7No&ab_channel=JSConf
-- Philosophy:
-  - `app` vs `lib` - https://www.reddit.com/r/typescript/comments/dl8efz/monorepos_with_typescript/f4qc1my/
+For example, let's consider the following common scenario, we have 3 modules:
 
-# Typescript
+- `lib-A`: shared library and utilities
+- `component-B`: a `react` component that uses utility methods from `lib-A`, this module will have a CSS stylesheet.
+- `app-C`: an webapp that has an entry point as a HTML document that loads a `react` app that uses `component-B`. Modules like these are often considered the leaves and should not be depended on by any other modules.
 
-- set `outDir = build`
-- add a cleanup script - `"clean": "rm -rf dist *.tsbuildinfo"`
-- `MAYBE` we need to set `paths` in `tsconfig` to resolve the `src` (check this again because it seems like `Jest` does not need it)
-  https://medium.com/@NiGhTTraX/how-to-set-up-a-typescript-monorepo-with-lerna-c6acda7d4559
+When the codebase was still monolithic, everything is squashed into just `app-C`, we can make change anywhere (be it in the stylesheets, HTML documents, or Javascript modules) and the devtool will be able to trigger rebuild and reload the webapp being served in the browser. This has been our standard development workflow so far. However, when the codebase is a monorepo, setting up the watcher is much trickier. If we set them up to watch for changes across all the modules, this not only runs the risk of lacking devtool support, but also defeats the scalability aspect of monorepo.
 
-- Use project reference? `composite: true` for referenced project and `tsc --build/-b` for top-level project
-  https://www.reddit.com/r/typescript/comments/dl8efz/monorepos_with_typescript/
-  https://betterstack.dev/blog/lerna-typescript-monorepo/#heading-install-lerna (very detailed guide)
-  https://stackoverflow.com/questions/51631786/how-to-use-project-references-in-typescript-3-0
+As we are so used to thinking of the codebase as one entity, at first, we wasted a huge amount of time trying to bend the devtool to our will by parallelizing our terminal processes in order to watch-and-rebuild all modules at the same time. We learned it the hard way that the most natural solution is simply to respect the module boundary and hierarchy. In other words, every time when there are changes in a child module, we must re-build that module first and somehow find a way to signal the dependent modules to re-build. If the devtools do not support this mechanism, we would, instead, have to manually rebuild and re-run the webapp server. _Come to think about it, to a Java developer, this is the default development workflow, which goes to show how devtools could really influence our way of thinking (for better or worse)._
 
-- `babel` vs `tsc` - basically: use `babel` for transpiling into JS and `tsc` for type-checking
-  https://www.typescriptlang.org/docs/handbook/babel-with-typescript.html
-  https://github.com/microsoft/TypeScript-Babel-Starter
+## Implementation
 
-- Follow the thinking of this
-  https://github.com/RyanCavanaugh/learn-a
-  https://github.com/microsoft/TypeScript-Babel-Starter
+Our monolithic codebase has a fairly standard setup, nothing far from a project created using [create-react-app](https://create-react-app.dev/): we use [React](https://reactjs.org/) with [Typescript](https://www.typescriptlang.org/) for type-checking, [Webpack](https://webpack.js.org/) for bundling, [Babel](https://babeljs.io/) for transpiling, [ESLint](https://eslint.org/) for linting, [Sass](https://sass-lang.com/) for styling, and [Jest](https://jestjs.io/) for testing.
 
-- Typescript project reference, divide the project into multiple modules with hierarychy of build
-  https://www.typescriptlang.org/docs/handbook/project-references.html
+At the point of writing, the most prominent package managers like [NPM](https://docs.npmjs.com/cli/v6/commands/npm) and [Yarn](https://yarnpkg.com/package/yarn) have support for monorepo project via the `workspaces` feature. Nevertheless, we have opted in to using [Yarn workspaces](https://classic.yarnpkg.com/en/docs/workspaces/) because firstly, the NPM counterpart is still [work-in-progress](https://docs.npmjs.com/cli/v7/using-npm/workspaces) and secondly, we have already used `Yarn` as our default package manager thanks to its richer feature set.
 
-# Babel
+With this, we could start shaping our codebase in monorepo structure. The following section details the tooling support and setup
 
-- we may only need `babel` for endpoint module - "I use plain old tsc if I'm writing something that won't touch the browser. If I'm using webpack anywhere, I use babel instead." - https://www.reddit.com/r/typescript/comments/afpjxj/tsc_vs_using_babel7_with_ts_plugin/ - https://www.reddit.com/r/typescript/comments/dyvpp2/typescript_compiler_or_babel/
-- babel??? - https://medium.com/@serhiihavrylenko/monorepo-setup-with-lerna-typescript-babel-7-and-other-part-1-ac60eeccba5f
+### Lerna
 
-- We probably should have `babel.config.js` on top level and use `rootMode: 'upward'` for `babel-loader` in `webpack`
-- Tidy up babel config using `env` and `overrides` or `process.env.NODE_ENV` - `*.js` files only need `preset-env`, `*.ts` files don't need `react` preset, `*.tsx` files need all - https://stackoverflow.com/questions/52129579/how-to-properly-override-babel7-plugins-for-separate-webpack-server-client-conf - https://babeljs.io/docs/en/options#overrides
-- `TODO` Turn on React JSX `automatic` - Check the implication this has with typescript
-  https://www.typescriptlang.org/docs/handbook/jsx.html
+[Lerna](https://lerna.js.org/) is **not essential** for working with a monorepo project; however, it helps optimize the workflow around managing monorepo project, especially with the `setup` and `publish` phase.
 
-# Webpack
+> One of the most important feature of `lerna` is the ability to run task in topologically-sorted order (similar to [Maven](https://maven.apache.org/)). One particularly popular lerna command is [`bootstrap`](https://github.com/lerna/lerna/tree/main/commands/bootstrap), which is [made redundant](https://github.com/lerna/lerna/issues/1308#issuecomment-370848535) by `Yarn workspaces`, but the [`run`](https://github.com/lerna/lerna/tree/main/commands/run) command is still very useful for running script in topological order.
 
-- Checkout webpack `mainFields` - https://www.reddit.com/r/typescript/comments/dl8efz/monorepos_with_typescript/f4qc1my/ - https://webpack.js.org/configuration/resolve/#resolvemainfields
-- If all else fails, consider looking at running `webpack-dev-server` in parallel - https://stackoverflow.com/questions/46444931/how-to-use-webpack-dev-server-with-multiple-webpack-configs or having a single `webpack.config.js` in the root folder (probably not) - https://stackoverflow.com/questions/46767844/how-to-properly-use-lerna-and-webpack-when-dealing-with-a-monorepo
-- Also if all fails, try to go through the `prepare` script route - https://stackoverflow.com/questions/46698155/watch-for-changes-in-an-npm-link-package-being-built-with-webpack
-- huh? - https://stackoverflow.com/questions/61553119/use-webpack-hmr-with-a-hoisted-lerna-react-project
+### Webpack
 
-# CSS/SASS
+For modules with non-JS code, such as `HTML` or `Sass` - similar to `component-B` and `app-C` - the devtool operations require multiple steps. For `build` phase can be broken down into a series of steps, e.g. `build:typescript && build:sass && build:html && ...`. However, for `develop` phase, it implies we either have to:
 
-- ??? emotion inject global style?
-  https://emotion.sh/docs/globals
+- run `watch` processes in parallel: `<run-script-in-parallel> watch:typescript watch:sass ...`
+- or, use tools like `webpack` or `gulp` to collate those tasks into one `atomic` operation.
 
-- Check this out we might need to run this in parallel with `tsc`
-  https://medium.com/@dandobusiness/adding-sass-scss-to-your-react-typescript-project-162de415b19a
+The latter is the option we choose to go with for both `build` and `develop`. We pick `webpack` because it is mature, highly customizable, and because it has a [rich and mature set of plugins](https://webpack.js.org/plugins/) for code processing as well as an out-of-the-box `watcher` with [Hot Module Replacement](https://webpack.js.org/concepts/hot-module-replacement/) support and [`dev-server`](https://webpack.js.org/configuration/dev-server/) which are extremely powerful for development.
 
-```bash
-# http://sassbreak.com/watch-your-sass/
-sass --watch
-```
+> [`parcel`](https://parceljs.org/) and [`rollup`](https://rollupjs.org/guide/en/) are [decent and simpler alternatives](https://blog.logrocket.com/benchmarking-bundlers-2020-rollup-parcel-webpack/) to `webpack` but due to the lack of support for certain plugins, and the fact that our monolithic codebase already used `webpack` we decide to evaluate these tools later.
 
-- Consider `cpx` like `codesandbox-client`: copy files but with watch - https://www.npmjs.com/package/cpx
+In terms of development workflow, for leaf modules like webapp `app-C`, when we rebuild modules that `app-C` depends on, `webpack-dev-server` should be able to pick up this change and either reload the app or `hot-replace` its module without refreshing the web page.
 
-# package.json
+### Typescript and Babel
 
-- Use `peerDependencies` - study from other repos: react, jest, babel
-  https://github.com/stereobooster/typescript-monorepo
+There are 2 ways to process Typescript code:
 
-# Script
+- Using Typescript compiler [`tsc`](https://www.typescriptlang.org/docs/handbook/compiler-options.html). `tsc` does type-checking and thus is able to create type declaration `*.d.ts` files. However, for project with codes other than Typescript, we cannot rely on `tsc` alone for `build` phase. Therefore, `tsc` is good only for library module like `lib-A`.
+- Using `babel` plugin [`@babel/preset-typescript`](https://babeljs.io/docs/en/babel-preset-typescript). Note that `babel` [does not do type-checking](https://babeljs.io/docs/en/#type-annotations-flow-and-typescript). To a certain extent this is the desired behavior for `develop` phase since we can rebuild the project faster. Also, `babel` supports many plugins and [output runtime target](https://www.google.com/search?q=typescript+support+target+runtime&rlz=1C5CHFA_enUS781US781&oq=typescript+support+target+runtime&aqs=chrome..69i57j33i160.8648j0j1&sourceid=chrome&ie=UTF-8) which `tsc` doesn't.
 
-- lerna --parallel
-- package: npm-run-all
-- package: concurrently
+As such, the [recommended](https://www.typescriptlang.org/docs/handbook/babel-with-typescript.html) [strategy](https://github.com/microsoft/TypeScript-Babel-Starter) is to use `tsc` only for library module, and for modules targeting the web or modules having non-JS code, we use `babel` for transpiling Typescript code to Javascript and use `tsc` only to type-check and build type declaration file.
 
-# Jest
+Typescript has a niche feature that can be used to facilitate monorepo structure called [Project Reference](https://www.typescriptlang.org/docs/handbook/project-references.html). It manages the dependency graph between modules just like what `lerna` does but with caching specialized for the Typescript compiler [tsc](https://www.typescriptlang.org/docs/handbook/compiler-options.html).
 
-- Guide to run Jest in monorepo - https://github.com/facebook/jest/issues/3112
-- Write doc for testing strategy, highlight the following points:
-  - Unit test is for truly unit stuffs, utilities, etc.
-  - Integration test is Studio alone, isolated from backends, we should mock network calls
-  - Cypress/E2E test is for interacting with the whole stack and be able to play/see the result -> good for demoing in a sense
-  - `TODO` Mock server request instead of engine method, maybe this is the better way to write test?
-    https://kentcdodds.com/blog/stop-mocking-fetch?ck_subscriber_id=564011516
-    https://github.com/mswjs/msw
+> A downside of using `project reference` is [tediousness](https://github.com/microsoft/TypeScript/issues/25376), we need to specify all projects (modules) on top level `tsconfig` and all referenced projects in the module `tsconfig`, hence duplicating declaration of dependencies in `package.json`. See [example](https://github.com/RyanCavanaugh/learn-a).
 
-# ESLint / Stylelint
+In the `build` phase, `tsc` will be used to create type declaration `*.d.ts`. Since `tsc` [does not support target runtime](https://github.com/microsoft/TypeScript/issues/19183) (i.e. browser polyfill), we would use `tsc` to build only library modules - similar to `lib-A`. For `develop` phase, we can run `tsc -b -w` at root as a separate terminal process for type-checking.
 
-...
+`babel` will be used `webpack` for both `develop` and `build` for modules similar to `component-B` and `app-C`.
 
-# Studio
+### IDE
 
-- Add `copyrightchecker` script like `Jest`
-- Handle creation of `version.json`, skip maven?
-- `MAYBE` Setup testing `fixtures` (React) or `examples` (Material-UI) - https://stackoverflow.com/questions/12071344/what-are-fixtures-in-programming
-- Check with Mao to enable `Renovate` bot for Studio - https://github.com/apps/renovate
+We use [Visual Studio Code (vscode)](https://code.visualstudio.com/). `vscode` seems to naturally support monorepo, the only thing we need to do is to ensure running `yarn install` so modules are linked properly, `Go to definition (Ctrl + Click)` should work nicely without any other config.
 
-# Afterall
+> The most important setup for VSCode to work is for Typescript. If we use project reference, we don't seem to need `paths` to be able to have auto-imports work properly in VSCode. However, we must go to auto-imports setting and change it to `on` instead of `auto` as this might hide away imports from our monorepo modules.<br/><br/>An example of this is when you have a module `@something/a` that depends on`@something/b`. `@something/b` exports a function called `helloworld()`. While working in `@something/a`, we type `hellow` at this point, `helloworld` should have been suggested but it doesn't. However, when we manually import `helloworld` by specifying `import { helloworld } from '@something/b'` it works just fine, which means our setup is correct. At this point, forcing `auto-imports` to be `on` in VSCode settings solves the issue
 
-- Consider using `prettier` - use // prettier-ignore if needs be - now we can probably remove the auto-format after-save in `.vscode/settings` - consider `eslint-plugin-prettier`
-- setup `husky` pre-commit hook with `prettier` like `babel`
-- Consider tidying up the `paths` of `tsconfig.json` using - `tsconfig-paths` and `tsconfig-paths-webpack-plugin` - https://medium.com/@NiGhTTraX/making-typescript-monorepos-play-nice-with-other-tools-a8d197fdc680
-- Stylelint? - https://github.com/serhii-havrylenko/monorepo-babel-ts-lerna-starter OR https://medium.com/@serhiihavrylenko/monorepo-setup-with-lerna-typescript-babel-7-and-other-part-1-ac60eeccba5f
-- Yarn 2 with `PNP`, or NPM 7
-- Code-splitting and lazy-loading - https://github.com/dan-kez/lerna-webpack-example
-- Consider using `rollup` for bundling libs, we will use `webpack` for apps and development
+## References
 
-# Example
+[Developing in a Large Monorepo - Jai Santhosh - JSConf Korea](https://www.youtube.com/watch?v=pTi0MQbD7No)
 
-- Checkout `codesandbox-client/common/package.json`
+[Github: Guide to use Jest with Lerna](https://github.com/facebook/jest/issues/3112)
 
-```json
-"scripts": {
-    "build": "yarn build:lib",
-    "build:dev": "yarn build",
-    "build:lib": "yarn clean && yarn tsc && yarn babel src --out-dir lib && yarn cpx \"src/**/*.{css,svg,png,jpg,woff,woff2,d.ts}\" lib",
-    "build:storybook": "build-storybook -c .storybook -o public",
-    "clean": "rimraf lib && yarn rimraf node_modules/@types/react-native",
-    "lint": "eslint --ext .js,.ts,.tsx src",
-    "prepublish": "yarn build",
-    "start": "(yarn tsc --watch & yarn babel src --out-dir lib --watch & yarn cpx \"src/**/*.{css,svg,png,jpg,woff,woff2}\" lib --watch)",
-    "start:storybook": "start-storybook",
-    "test": "cross-env NODE_ENV=test jest --maxWorkers 2",
-    "typecheck": "tsc --noEmit"
-  },
-```
+[Github: TypeScript Project References Demo](https://github.com/RyanCavanaugh/project-references-demo)
+
+[Github: Lerna + Project References](https://github.com/RyanCavanaugh/learn-a)
