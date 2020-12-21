@@ -4,6 +4,7 @@
     "outDir": "build",
     "tsBuildInfoFile": "build/tsconfig.tsbuildinfo",
     "rootDir": "src",
+    "emitDeclarationOnly": true,
     "jsx": "react-jsxdev"
   },
   "include": ["src"],

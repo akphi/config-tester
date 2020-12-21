@@ -76,7 +76,7 @@ class ForkTsCheckerWebpackFormatterPlugin {
       });
       // Try to align messages between file by forming a table
       let tableFromAllLines = [];
-      let skipFormatting = false; // if table forming failed, fall back to normal formattting (using tabs)
+      let skipFormatting = false; // if table forming failed, fall back to normal formatting (using tabs)
       try {
         tableFromAllLines = table(rows, {
           align: ['', 'l', 'l', 'l', 'l'],
@@ -106,7 +106,7 @@ class ForkTsCheckerWebpackFormatterPlugin {
       const warningCount = issues.filter(issue => issue.severity === 'warning').length;
       const errorCount = issues.filter(issue => issue.severity === 'error').length;
       if (!(errorCount + warningCount)) {
-        console.info(`${chalk.gray('i [ts]')} : Type checking passed succesfully! [${time}ms]`);
+        console.info(`${chalk.gray('i [ts]')} : Type checking passed successfully! [${time}ms]`);
       } else if (!errorCount) {
         console.info(`\n${chalk.yellowBright('!')}${chalk.gray(' [ts]')} : ${chalk.yellowBright(`Type checking passed with warning(s)! [${time}ms]`)}`);
       } else {
@@ -139,7 +139,16 @@ const getJavascriptLoaderConfig = ({ isProcessingJSXFiles, isEnvDevelopment }) =
     presets: [
       ['@babel/preset-env', { debug: false }], // use `debug` option to see the lists of plugins being selected
       ['@babel/preset-react', { development: isEnvDevelopment }], // `development` flag allows accurate source code location
-      `${paths.dev}/babel/preset-studio`,
+      function () {
+        return {
+          plugins: [
+            // Support static, private fields. With option `loose=true`, class properties are compiled to use an
+            // assignment expression instead of `Object.defineProperty`
+            // See https://babeljs.io/docs/en/babel-plugin-proposal-class-properties#loose
+            ['@babel/plugin-proposal-class-properties', { loose: true }],
+          ]
+        };
+      },
       ['@babel/preset-typescript', {
         // Allow using `declare` in class
         // NOTE: we have to explicit have this before other class modifier plugins like `@babel/plugin-proposal-class-properties`
@@ -294,7 +303,7 @@ module.exports = (env, arg) => {
     //     // Keep runtime chunk minimal by enabling runtime chunk
     //     // See https://webpack.js.org/guides/build-performance/#minimal-entry-chunk
     //     runtimeChunk: true,
-    //     // Avoid extra optimization step, turning off spli-chunk optimization
+    //     // Avoid extra optimization step, turning off split-chunk optimization
     //     // See https://webpack.js.org/guides/build-performance/#avoid-extra-optimization-steps
     //     removeAvailableModules: false,
     //     removeEmptyChunks: false,
@@ -319,7 +328,7 @@ module.exports = (env, arg) => {
         exclude: /node_modules/,
         include: /src.+\.(?:t|j)sx?$/,
         failOnError: true,
-        allowAsyncCycles: false, // allow import cycles that include an asyncronous import, e.g. import(/* webpackMode: "weak" */ './file.js')
+        allowAsyncCycles: false, // allow import cycles that include an asynchronous import, e.g. import(/* webpackMode: "weak" */ './file.js')
         cwd: process.cwd(), // set the current working directory for displaying module paths
       }),
       new MonacoWebpackPlugin({
@@ -368,7 +377,7 @@ module.exports = (env, arg) => {
             global: true,
           },
         },
-        // Allow blocking webpack's emit to wait for type checker/linter and to add errors to the webpack's compilation
+        // Allow blocking Webpack `emit` to wait for type checker/linter and to add errors to the Webpack compilation
         // if we turn `async:true` webpack will compile on one thread and type check on another thread so any type
         // error will not cause the build to fail, also error/warning from this plugin will not be captured by webpack
         // so we will have to write our own formatter for the log.

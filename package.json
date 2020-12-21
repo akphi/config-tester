@@ -9,9 +9,13 @@
   ],
   "scripts": {
     "build:tsc": "tsc -b .",
-    "build:tsc:watch": "tsc -b --watch .",
+    "check-copyright-headers": "node ./scripts/checkCopyrightHeaders.js",
     "clean:build": "rimraf './packages/*/build'",
-    "dev": "yarn workspace @config-tester/app1 start",
+    "dev": "yarn workspace @akphi/app1 start",
+    "dev:tsc": "tsc -b --watch .",
+    "setup": "node ./scripts/bootstrap.js",
+    "start": "yarn dev",
+    "test": "echo \"TODO: run test\"",
     "update": "yarn upgrade-interactive --latest"
   },
   "dependencies": {

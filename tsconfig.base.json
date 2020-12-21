@@ -1,6 +1,7 @@
 {
   // See https://www.typescriptlang.org/docs/handbook/compiler-options.html
   "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext", "webworker", "scripthost"],
     // Project reference related settings
     "composite": true,
     "declaration": true,
@@ -28,12 +29,12 @@
     // Paths
     // "baseUrl": ".",
     // "paths": {
-    //   "@config-tester/lib1": ["lib1/src"],
-    //   "@config-tester/lib1/*": ["lib1/src/*"],
-    //   "@config-tester/component1": ["component1/src"],
-    //   "@config-tester/component1/*": ["component1/src/*"],
-    //   "@config-tester/app1": ["app1/src"],
-    //   "@config-tester/app1/*": ["app1/src/*"]
+    //   "@akphi/lib1": ["lib1/src"],
+    //   "@akphi/lib1/*": ["lib1/src/*"],
+    //   "@akphi/component1": ["component1/src"],
+    //   "@akphi/component1/*": ["component1/src/*"],
+    //   "@akphi/app1": ["app1/src"],
+    //   "@akphi/app1/*": ["app1/src/*"]
     // },
   }
 }

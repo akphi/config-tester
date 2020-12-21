@@ -1,4 +1,4 @@
-import { helloworld } from "@config-tester/lib1";
+import { helloworld } from "@akphi/lib1";
 import './component1.css';
 
 export function Component1() {

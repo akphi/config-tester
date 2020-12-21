@@ -1,9 +1,17 @@
 # Developer Workflow (TODO)
 
-1. Setup
-2. Develop
+1. Setup: Install (bootstrap), Create config files, etc.
+2. Develop:
+
+- Refer to developer scripts section in `codesandbox` README.md
+
 3. Build
-4. Publish
+
+- Test
+- Lint
+- Code formatter (can be run as part of pre commit hook)
+
+4. Publish: Versioning / Publish
 
    https://medium.com/@jsilvax/a-workflow-guide-for-lerna-with-yarn-workspaces-60f97481149d
    https://github.com/lerna/lerna/blob/main/commands/version

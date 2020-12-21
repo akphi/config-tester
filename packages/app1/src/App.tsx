@@ -1,5 +1,5 @@
-import { Component1, Component2 } from '@config-tester/component1';
-import React, { useState } from 'react';
+import { Component1, Component2 } from '@akphi/component1';
+import { useState } from 'react';
 import './index.scss';
 
 export const App: React.FC = () => {

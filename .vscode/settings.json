@@ -11,7 +11,7 @@
   },
   "search.exclude": {
     "**/node_modules": true,
-    "**/package-lock.json": true,
+    "**/yarn.lock": true,
     "packages/*/build": true
   },
   "[css]": {

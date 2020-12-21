@@ -4,10 +4,8 @@
     "outDir": "build",
     "tsBuildInfoFile": "build/tsconfig.tsbuildinfo",
     "rootDir": "src",
-    // other options
-    "lib": ["dom", "dom.iterable", "esnext", "webworker", "scripthost"],
     "noEmit": true,
-    "jsx": "preserve"
+    "jsx": "react-jsxdev"
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "references": [{ "path": "../component1" }]
