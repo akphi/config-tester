@@ -3,6 +3,14 @@
   "version": "0.0.0",
   "main": "build/index.js",
   "types": "build/index.d.ts",
+  "scripts": {
+    "build": "yarn clean && yarn build:tsc && yarn build:webpack",
+    "build:tsc": "tsc --project ./tsconfig.build.json",
+    "build:webpack": "webpack --mode production",
+    "clean": "rimraf './build'",
+    "dev": "webpack serve --mode development --hot",
+    "dev:type-check": "tsc --build --watch"
+  },
   "dependencies": {
     "@akphi/lib1": "^0.0.0"
   }

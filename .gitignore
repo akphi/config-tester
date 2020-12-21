@@ -1,23 +1,34 @@
 # OS
-.idea
 .DS_STORE
-.eslintcache
 *.swp
 *~
 
-# build
+# IDE
+.eslintcache
+.idea
+**/*.iml
+**/jsconfig.json
+.settings
+.project
+.classpath
+
+# Build products
+**/npm
 *.tsbuildinfo
 lerna-debug.log
 npm-debug.log
 npm-debug.log*
 yarn-error.log*
 junit.xml
+packages/*/build/
+packages/*/coverage/
 
-/node_modules/
+# Dependencies
+**/node_modules
 
-# enforce using Yarn instead of NPM for installation
+# Enforce using Yarn instead of NPM for installation
 package-lock.json
 
-/packages/*/build/
-/packages/*/coverage/
-/packages/*/node_modules/
+# Development
+temp
+packages/*/dev/

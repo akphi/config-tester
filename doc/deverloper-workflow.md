@@ -1,5 +1,6 @@
 # Developer Workflow (TODO)
 
+0. Prerequisite: Node, Yarn, vscode, vscode plugins
 1. Setup: Install (bootstrap), Create config files, etc.
 2. Develop:
 

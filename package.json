@@ -8,15 +8,16 @@
     "packages/*"
   ],
   "scripts": {
-    "build:tsc": "tsc -b .",
-    "check-copyright-headers": "node ./scripts/checkCopyrightHeaders.js",
-    "clean:build": "rimraf './packages/*/build'",
+    "build": "yarn clean && lerna run build --stream",
+    "build:ts": "tsc --build",
+    "check:copyright": "node ./scripts/checkCopyrightHeaders.js",
+    "check:update": "yarn upgrade-interactive --latest",
+    "clean": "rimraf './packages/*/build'",
     "dev": "yarn workspace @akphi/app1 start",
-    "dev:tsc": "tsc -b --watch .",
+    "dev:ts": "tsc --build --watch",
     "setup": "node ./scripts/bootstrap.js",
     "start": "yarn dev",
-    "test": "echo \"TODO: run test\"",
-    "update": "yarn upgrade-interactive --latest"
+    "test": "jest"
   },
   "dependencies": {
     "@material-ui/core": "4.11.2",
@@ -41,7 +42,6 @@
     "@typescript-eslint/eslint-plugin": "4.10.0",
     "@typescript-eslint/parser": "4.10.0",
     "autoprefixer": "10.1.0",
-    "babel-eslint": "10.1.0",
     "babel-loader": "8.2.2",
     "chalk": "4.1.0",
     "circular-dependency-plugin": "5.2.2",
@@ -49,6 +49,7 @@
     "css-loader": "5.0.1",
     "cssnano": "4.1.10",
     "eslint": "7.15.0",
+    "eslint-config-prettier": "7.1.0",
     "eslint-plugin-import": "2.22.1",
     "eslint-plugin-react": "7.21.5",
     "eslint-plugin-react-hooks": "4.2.0",
