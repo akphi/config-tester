@@ -1,2 +1,1 @@
-// See 
-console.log('(TODO) call yarn install')
+console.log('(TODO) call yarn install');

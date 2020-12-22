@@ -26,15 +26,5 @@
     // Other settings
     "strict": true,
     "forceConsistentCasingInFileNames": true
-    // Paths
-    // "baseUrl": ".",
-    // "paths": {
-    //   "@akphi/lib1": ["lib1/src"],
-    //   "@akphi/lib1/*": ["lib1/src/*"],
-    //   "@akphi/component1": ["component1/src"],
-    //   "@akphi/component1/*": ["component1/src/*"],
-    //   "@akphi/app1": ["app1/src"],
-    //   "@akphi/app1/*": ["app1/src/*"]
-    // },
   }
 }

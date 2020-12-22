@@ -11,7 +11,8 @@
     "dev:type-check": "tsc --build --watch",
     "lint": "eslint --config ./.eslintrc-advanced.js .",
     "lint:fix": "eslint --config ./.eslintrc-advanced.js --fix .",
-    "serve": "npx http-server ./build/web -p 3000 -a localhost -g --cors -o /ide"
+    "serve": "npx http-server ./build/web -p 3000 -a localhost -g --cors -o /ide",
+    "setup": "node ../../scripts/createAppConfig.js"
   },
   "dependencies": {
     "@akphi/component1": "^0.0.0"

@@ -1,22 +1,40 @@
 const path = require('path');
 const fs = require('fs');
+
 const packages = fs.readdirSync(path.resolve(__dirname, 'packages'));
 
 /**
  * We need to detect environment for ESLint CLI because there are rules
- * which are computationally expensive
+ * which are computationally expensive to perform during development: i.e.
+ * when watching for changes and re-compile, we just want to run a light
+ * set of lint rules. On the other hand, we want to run the full set during
+ * production build; since IDE like `vscode` runs linting on a separate
+ * process, we want to run the full set there too.
+ *
+ * Therefore, we need to detect the CLI development environment. We can use
+ * `process.env.NODE_ENV` to differentiate between CLI development and production
+ * build fairly proficiently; as for IDE ESLint plugin process, right now we
+ * are depending on the fact that `process.env.NODE_ENV = undefined`
  */
-const isEnvDevelopment = process.env.NODE_ENV === 'development';
+const isEnvCLIDevelopment = process.env.NODE_ENV === 'development';
 
 const OFF = 0;
 const WARN = 1;
 const ERROR = 2;
 
+/**
+ * Maintaining a large set of rules like might not be the best idea,
+ * We would rather adopt some standard config like `eslint-config-airbnb`
+ * or so but here we try to be consistent with `prettier` standard, especially
+ * in terms of spacing. And since we want to eventually publish this rule set
+ * as a preset, we want to maintain a set of rules that is in sync with `prettier`
+ * to account for the case that the project uses this rule set does not use `prettier`
+ */
 const ES_RULES = {
   'array-bracket-spacing': [ERROR, 'never'],
   'arrow-body-style': [WARN, 'as-needed'],
   'array-callback-return': ERROR,
-  'arrow-parens': [WARN, 'as-needed'],
+  'arrow-parens': WARN,
   'arrow-spacing': WARN,
   'block-spacing': [WARN, 'always'],
   'brace-style': [WARN, '1tbs', { allowSingleLine: true }],
@@ -40,7 +58,6 @@ const ES_RULES = {
   'no-console': WARN,
   'no-const-assign': ERROR,
   'no-debugger': WARN,
-  'no-duplicate-imports': ERROR,
   'no-fallthrough': ERROR,
   'no-global-assign': ERROR,
   'no-invalid-regexp': ERROR,
@@ -100,6 +117,7 @@ const IMPORT_RULES = {
   'import/namespace': OFF,
   'import/default': OFF,
   'import/export': OFF,
+  'import/newline-after-import': [WARN, { count: 1 }],
   'import/no-default-export': WARN,
 };
 
@@ -121,6 +139,7 @@ const TYPESCRIPT_RULES = {
   ],
   '@typescript-eslint/camelcase': OFF,
   '@typescript-eslint/class-name-casing': OFF,
+  '@typescript-eslint/consistent-type-imports': WARN,
   '@typescript-eslint/explicit-function-return-type': [
     WARN,
     { allowTypedFunctionExpressions: true },
@@ -132,24 +151,30 @@ const TYPESCRIPT_RULES = {
     WARN,
     { args: 'none', ignoreRestSiblings: true },
   ],
+  '@typescript-eslint/no-extra-semi': WARN,
+  '@typescript-eslint/no-implicit-any-catch': WARN,
   // NOTE: since functions are hoisted in ES6, it is then advisable to enable this rule so that we can have functions that depend on each other and not causing
   // circular module dependency. It is also said to be safe to use
   // See https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/no-use-before-define.md#options
-  '@typescript-eslint/no-extra-semi': WARN,
   '@typescript-eslint/no-use-before-define': [ERROR, { functions: false }],
   '@typescript-eslint/no-useless-constructor': WARN,
   '@typescript-eslint/type-annotation-spacing': WARN,
-  // indentation rule is not recommended to turn on by default as it
-  '@typescript-eslint/indent': [
-    WARN,
-    2,
-    {
-      SwitchCase: 1,
-      FunctionDeclaration: { parameters: 'first' },
-      FunctionExpression: { parameters: 'first' },
-      ignoredNodes: ['JSXAttribute', 'JSXSpreadAttribute'],
-    },
-  ],
+  // NOTE: we turn off indentation rule as it clashes with `prettier`
+  // and also, it could be computationally expensive
+  // See https://github.com/eslint/eslint/issues/10930
+  // See https://github.com/typescript-eslint/typescript-eslint/issues/372
+  // See https://github.com/typescript-eslint/typescript-eslint/issues/1161
+  //
+  // However, if we need to enable this rule for some reason, the following option is the best
+  // [OFF,2,
+  //   {
+  //     SwitchCase: 1,
+  //     FunctionDeclaration: { parameters: 'first' },
+  //     FunctionExpression: { parameters: 'first' },
+  //     ignoredNodes: ['JSXAttribute', 'JSXSpreadAttribute'],
+  //   },
+  // ]
+  '@typescript-eslint/indent': OFF,
 };
 
 const REACT_RULES = {
@@ -166,9 +191,9 @@ const REACT_RULES = {
   'react/no-deprecated': ERROR,
   'react/no-direct-mutation-state': ERROR,
   'react/no-unescaped-entities': ERROR,
-  // we use Typescript so PropTypes can go
+  // we use Typescript interface instead of `prop-types`
   'react/prop-types': OFF,
-  // here are a few rules we follow to make VS Code auto format work better with eslint
+  // here are a few rules we follow to make `vscode` auto format work better with eslint
   'react/jsx-tag-spacing': [WARN, { beforeSelfClosing: 'always' }],
   'react/jsx-curly-spacing': [WARN, { when: 'never', allowMultiline: true }],
 };
@@ -181,7 +206,7 @@ const EXPENSIVE__IMPORT_RULES = {
     ERROR,
     {
       packageDir: [__dirname].concat(
-        packages.map(packageName =>
+        packages.map((packageName) =>
           path.resolve(__dirname, `packages/${packageName}`),
         ),
       ),
@@ -214,7 +239,7 @@ const EXPENSIVE__TYPESCRIPT_RULES = {
  * There are a few major sources of performance hit for ESLint:
  * 1. Typescript type-ware check
  * 2. Import plugin
- * 3. Indentation rule (we don't include this one here since it does not show to be too expensive for now)
+ * 3. Indentation rule
  * 4. Wide file scope (e.g. accidentally include `node_modules`)
  * See https://github.com/typescript-eslint/typescript-eslint/blob/master/docs/getting-started/linting/FAQ.md#my-linting-feels-really-slow
  */
@@ -244,7 +269,7 @@ module.exports = {
   // See https://github.com/typescript-eslint/typescript-eslint/issues/251
   // See https://github.com/microsoft/vscode-eslint/issues/605
   parserOptions: {
-    project: 'packages/*/tsconfig.json',
+    project: ['packages/*/tsconfig.json'],
     // make ESLint work in IDE for files like `.eslintrc.js` when `parserOptions.project` is specified
     // See https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/parser#parseroptionsproject
     createDefaultProgram: true,
@@ -284,6 +309,6 @@ module.exports = {
     ...TYPESCRIPT_RULES,
     ...IMPORT_RULES,
     ...REACT_RULES,
-    ...(isEnvDevelopment ? EXPENSIVE__RULES : {}),
+    ...(!isEnvCLIDevelopment ? EXPENSIVE__RULES : {}),
   },
 };

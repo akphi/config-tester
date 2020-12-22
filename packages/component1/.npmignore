@@ -1,5 +1,5 @@
 **/__mocks__/**
 **/__tests__/**
-src
 tsconfig.json
-build/tsconfig.tsbuildinfo
+build
+!build/lib

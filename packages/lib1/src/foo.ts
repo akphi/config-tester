@@ -1,4 +1,8 @@
+import type { A } from './something';
+import { Am } from './something';
+
 export function helloworld() {
-  const a = 1; // asdasdasdasdasdasdasdasdasd asdasdasdasdasdasdasdasdasdasdasdasd  asdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasd
+  const b: A = { car: '1' };
+  const a = Am; // asdasdasdasdasdasdasdasdasd asdasdasdasdasdasdasdasdasdasdasdasd  asdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasd
   return 'Hello world';
 }

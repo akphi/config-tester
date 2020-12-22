@@ -1,8 +1,8 @@
 {
   "name": "@akphi/lib1",
   "version": "0.0.0",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
+  "main": "build/lib/index.js",
+  "types": "build/lib/index.d.ts",
   "scripts": {
     "build": "yarn clean && tsc",
     "clean": "rimraf './build'",

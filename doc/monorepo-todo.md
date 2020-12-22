@@ -1,12 +1,16 @@
-# Monorepo TODO
-
-- try out our `ESLint` setup
-- setup `Jest` and try `Jest` watch?
-- setup `Babel` config
-- Try `Prettier` - make it work with husky?
-- Try to publish something to `NPM` maybe
-
 # TODO
+
+- add comment for `prietter.rc` explaining about philosophy, limitation and printWidth
+
+- complete `Babel` config (see next section)
+
+- Try with `ts-fork-checker....`: set Typescript: `false` during production, as already covered by `tsc`, check Studio config
+
+- Create a `dev:fast`: `no linting, no type-check for webpack` and `dev:advanced` mode, using `cross-env SOMEFLAG=advanced ... -> detect this in webpack and eslint and make the config ADVANCED`
+
+- Try to publish something to `NPM` and consume it back somewhere else, inside GS, try a dummy utility function????
+
+# Babel
 
 - create `babel.config.js`, use it with webpack (setup proper file extension override)
 - We probably should have `babel.config.js` on top level and use `rootMode: 'upward'` for `babel-loader` in `webpack`

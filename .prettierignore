@@ -1,3 +1,3 @@
-package.json
+# Artifacts
+build
 packages/*/build
-packages/*/package.json

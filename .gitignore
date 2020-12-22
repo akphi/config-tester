@@ -20,8 +20,9 @@ npm-debug.log
 npm-debug.log*
 yarn-error.log*
 junit.xml
-packages/*/build/
-packages/*/coverage/
+/build/
+/packages/*/build/
+/packages/*/coverage/
 
 # Dependencies
 **/node_modules
@@ -30,5 +31,5 @@ packages/*/coverage/
 package-lock.json
 
 # Development
-temp
-packages/*/dev/
+/temp
+/packages/*/dev/
