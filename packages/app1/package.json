@@ -1,6 +1,7 @@
 {
   "name": "@akphi/app1",
   "version": "0.0.0",
+  "private": true,
   "scripts": {
     "build": "yarn clean && yarn build:tsc && yarn build:webpack",
     "build:tsc": "tsc --project ./tsconfig.build.json",

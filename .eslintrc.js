@@ -287,6 +287,7 @@ module.exports = {
         'no-process-env': OFF,
         'no-process-exit': OFF,
         '@typescript-eslint/explicit-function-return-type': OFF,
+        '@typescript-eslint/no-implicit-any-catch': OFF,
         ...Object.keys(EXPENSIVE__RULES).reduce((acc, val) => {
           acc[val] = OFF;
           return acc;

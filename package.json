@@ -9,7 +9,7 @@
     "build:ts": "tsc --build",
     "check:copyright": "node ./scripts/checkCopyrightHeaders.js",
     "check:update": "yarn upgrade-interactive --latest",
-    "clean": "rimraf 'build' './packages/*/build'",
+    "clean": "rimraf \"build\" \"./packages/*/build\"",
     "dev": "yarn workspace @akphi/app1 start",
     "dev:ts": "tsc --build --watch",
     "lint": "yarn lint:js && yarn lint:style",

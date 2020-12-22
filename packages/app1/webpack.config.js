@@ -18,13 +18,17 @@ const CONTENT_LINE_LENGTH = 72;
 
 class ForkTsCheckerWebpackFormatterPlugin {
   apply(compiler) {
-    const tsCheckerHooks = ForkTsCheckerWebpackPlugin.getCompilerHooks(compiler);
+    const tsCheckerHooks = ForkTsCheckerWebpackPlugin.getCompilerHooks(
+      compiler,
+    );
     let typeCheckingStartTime;
     tsCheckerHooks.start.tap('ForkTsCheckerWebpackFormatterPlugin', () => {
       // this hook is called when type checking is started, so we can reset the time here
       typeCheckingStartTime = Date.now();
     });
-    tsCheckerHooks.error.tap('ForkTsCheckerWebpackFormatterPlugin', error => console.error(error));
+    tsCheckerHooks.error.tap('ForkTsCheckerWebpackFormatterPlugin', (error) =>
+      console.error(error),
+    );
     tsCheckerHooks.waiting.tap('ForkTsCheckerWebpackFormatterPlugin', () => {
       // since a chunk of time is spent on waiting for webpack to compile, on the very first type checking
       // the elapsed time then will be off, and since this hook is called only on the first type checking
@@ -33,93 +37,150 @@ class ForkTsCheckerWebpackFormatterPlugin {
       typeCheckingStartTime = Date.now();
       console.info(`${chalk.gray('i [ts]')} : Asynchronously checking type...`);
     });
-    tsCheckerHooks.issues.tap('ForkTsCheckerWebpackFormatterPlugin', (issues, compilation) => {
-      const errors = compilation.errors.filter(error => error.message).map(error => ({ message: error.message, severity: 'error', file: 'Compilation Issues:' }));
-      const warnings = compilation.warnings.filter(warning => warning.message).map(warning => ({ message: warning.message, severity: 'warning', file: 'Compilation Issues:' }));
-      issues = errors.concat(warnings).concat(issues);
-      const issuesByFile = new Map();
-      issues.forEach(issue => {
-        const file = issue.file;
-        if (!issuesByFile.has(file)) {
-          issuesByFile.set(file, []);
-        }
-        issuesByFile.get(file).push({
-          file: issue.file,
-          message: issue.message,
-          code: issue.code ?? 'unknown',
-          // NOTE: ignore end location for now
-          line: issue.location?.start.line ?? 0,
-          column: issue.location?.start.column ?? 0,
-          level: issue.severity,
-        });
-      });
-      // Sort issues by location within a file
-      Array.from(issuesByFile.keys()).forEach(file => issuesByFile.set(file, issuesByFile.get(file).sort((a, b) => a.column - b.column).sort((a, b) => a.line - b.line)));
-      // Scan and tokenize error/warning message and wrap long message
-      const rows = [];
-      const fileLineMap = new Map();
-      issuesByFile.forEach((items, filePath) => {
-        let lineNumber = 0;
-        const { dim } = chalk;
-        const colors = { error: 'red', warning: 'yellow' };
-        items.forEach(item => {
-          const message = wrap(item.message, CONTENT_LINE_LENGTH, { hard: true });
-          const lines = message.split('\n');
-          rows.push(['', dim(`${item.line}:${item.column}`), chalk[colors[item.level]](item.level), chalk.blue(lines[0]), item.code]);
-          lineNumber++;
-          for (const line of lines.slice(1)) {
-            rows.push(['', '', '', chalk.blue(line)]);
-            lineNumber++;
+    tsCheckerHooks.issues.tap(
+      'ForkTsCheckerWebpackFormatterPlugin',
+      (issues, compilation) => {
+        const errors = compilation.errors
+          .filter((error) => error.message)
+          .map((error) => ({
+            message: error.message,
+            severity: 'error',
+            file: 'Compilation Issues:',
+          }));
+        const warnings = compilation.warnings
+          .filter((warning) => warning.message)
+          .map((warning) => ({
+            message: warning.message,
+            severity: 'warning',
+            file: 'Compilation Issues:',
+          }));
+        issues = errors.concat(warnings).concat(issues);
+        const issuesByFile = new Map();
+        issues.forEach((issue) => {
+          const file = issue.file;
+          if (!issuesByFile.has(file)) {
+            issuesByFile.set(file, []);
           }
+          issuesByFile.get(file).push({
+            file: issue.file,
+            message: issue.message,
+            code: issue.code ?? 'unknown',
+            // NOTE: ignore end location for now
+            line: issue.location?.start.line ?? 0,
+            column: issue.location?.start.column ?? 0,
+            level: issue.severity,
+          });
         });
-        fileLineMap.set(filePath, lineNumber);
-      });
-      // Try to align messages between file by forming a table
-      let tableFromAllLines = [];
-      let skipFormatting = false; // if table forming failed, fall back to normal formatting (using tabs)
-      try {
-        tableFromAllLines = table(rows, {
-          align: ['', 'l', 'l', 'l', 'l'],
-          stringLength: str => strip(str).length
-        }).split('\n');
-      } catch (error) {
-        console.warn(`Can't format message`, error.message); // handle error as sometimes `table()` throws on long compilation messages
-        skipFormatting = true;
-      }
-      // Print result
-      let lineCounter = 0;
-      issuesByFile.forEach((items, filePath) => {
-        let result = [];
-        if (skipFormatting) {
-          result.push('', chalk.underline(filePath));
-          result = result.concat(rows.slice(lineCounter, lineCounter + fileLineMap.get(filePath)).map(row => row.join('\t')));
-          lineCounter += fileLineMap.get(filePath);
-        } else {
-          result.push('', chalk.underline(filePath));
-          result = result.concat(tableFromAllLines.slice(lineCounter, lineCounter + fileLineMap.get(filePath)));
-          lineCounter += fileLineMap.get(filePath);
+        // Sort issues by location within a file
+        Array.from(issuesByFile.keys()).forEach((file) =>
+          issuesByFile.set(
+            file,
+            issuesByFile
+              .get(file)
+              .sort((a, b) => a.column - b.column)
+              .sort((a, b) => a.line - b.line),
+          ),
+        );
+        // Scan and tokenize error/warning message and wrap long message
+        const rows = [];
+        const fileLineMap = new Map();
+        issuesByFile.forEach((items, filePath) => {
+          let lineNumber = 0;
+          const { dim } = chalk;
+          const colors = { error: 'red', warning: 'yellow' };
+          items.forEach((item) => {
+            const message = wrap(item.message, CONTENT_LINE_LENGTH, {
+              hard: true,
+            });
+            const lines = message.split('\n');
+            rows.push([
+              '',
+              dim(`${item.line}:${item.column}`),
+              chalk[colors[item.level]](item.level),
+              chalk.blue(lines[0]),
+              item.code,
+            ]);
+            lineNumber++;
+            for (const line of lines.slice(1)) {
+              rows.push(['', '', '', chalk.blue(line)]);
+              lineNumber++;
+            }
+          });
+          fileLineMap.set(filePath, lineNumber);
+        });
+        // Try to align messages between file by forming a table
+        let tableFromAllLines = [];
+        let skipFormatting = false; // if table forming failed, fall back to normal formatting (using tabs)
+        try {
+          tableFromAllLines = table(rows, {
+            align: ['', 'l', 'l', 'l', 'l'],
+            stringLength: (str) => strip(str).length,
+          }).split('\n');
+        } catch (error) {
+          console.warn(`Can't format message`, error.message); // handle error as sometimes `table()` throws on long compilation messages
+          skipFormatting = true;
         }
-        console.info(result.join('\n'));
-      });
-      // Summary
-      const time = Math.round(Date.now() - typeCheckingStartTime);
-      const warningCount = issues.filter(issue => issue.severity === 'warning').length;
-      const errorCount = issues.filter(issue => issue.severity === 'error').length;
-      if (!(errorCount + warningCount)) {
-        console.info(`${chalk.gray('i [ts]')} : Type checking passed successfully! [${time}ms]`);
-      } else if (!errorCount) {
-        console.info(`\n${chalk.yellowBright('!')}${chalk.gray(' [ts]')} : ${chalk.yellowBright(`Type checking passed with warning(s)! [${time}ms]`)}`);
-      } else {
-        console.info(`\n${chalk.redBright('x')}${chalk.gray(' [ts]')} : ${chalk.redBright(`Type checking failed! [${time}ms]`)}`);
-      }
-      // NOTE: since we have already reported all the issues here, we want to pass no more errors down to webpack
-      return [];
-    });
+        // Print result
+        let lineCounter = 0;
+        issuesByFile.forEach((items, filePath) => {
+          let result = [];
+          if (skipFormatting) {
+            result.push('', chalk.underline(filePath));
+            result = result.concat(
+              rows
+                .slice(lineCounter, lineCounter + fileLineMap.get(filePath))
+                .map((row) => row.join('\t')),
+            );
+            lineCounter += fileLineMap.get(filePath);
+          } else {
+            result.push('', chalk.underline(filePath));
+            result = result.concat(
+              tableFromAllLines.slice(
+                lineCounter,
+                lineCounter + fileLineMap.get(filePath),
+              ),
+            );
+            lineCounter += fileLineMap.get(filePath);
+          }
+          console.info(result.join('\n'));
+        });
+        // Summary
+        const time = Math.round(Date.now() - typeCheckingStartTime);
+        const warningCount = issues.filter(
+          (issue) => issue.severity === 'warning',
+        ).length;
+        const errorCount = issues.filter((issue) => issue.severity === 'error')
+          .length;
+        if (!(errorCount + warningCount)) {
+          console.info(
+            `${chalk.gray(
+              'i [ts]',
+            )} : Type checking passed successfully! [${time}ms]`,
+          );
+        } else if (!errorCount) {
+          console.info(
+            `\n${chalk.yellowBright('!')}${chalk.gray(
+              ' [ts]',
+            )} : ${chalk.yellowBright(
+              `Type checking passed with warning(s)! [${time}ms]`,
+            )}`,
+          );
+        } else {
+          console.info(
+            `\n${chalk.redBright('x')}${chalk.gray(
+              ' [ts]',
+            )} : ${chalk.redBright(`Type checking failed! [${time}ms]`)}`,
+          );
+        }
+        // NOTE: since we have already reported all the issues here, we want to pass no more errors down to webpack
+        return [];
+      },
+    );
   }
 }
 
 const rootDirectory = fs.realpathSync(process.cwd());
-const resolveApp = relativePath => path.resolve(rootDirectory, relativePath);
+const resolveApp = (relativePath) => path.resolve(rootDirectory, relativePath);
 const paths = {
   dev: resolveApp('../../dev'),
   assets: resolveApp('assets'),
@@ -130,7 +191,10 @@ const paths = {
 // NOTE: due to routes like `/v1.0.0` (with '.'), to refer to static resources, we move all static content to `/static`
 const OUTPUT_STATIC_PATH = 'static';
 
-const getJavascriptLoaderConfig = ({ isProcessingJSXFiles, isEnvDevelopment }) => ({
+const getJavascriptLoaderConfig = ({
+  isProcessingJSXFiles,
+  isEnvDevelopment,
+}) => ({
   loader: require.resolve('babel-loader'),
   options: {
     cacheDirectory: true,
@@ -146,17 +210,20 @@ const getJavascriptLoaderConfig = ({ isProcessingJSXFiles, isEnvDevelopment }) =
             // assignment expression instead of `Object.defineProperty`
             // See https://babeljs.io/docs/en/babel-plugin-proposal-class-properties#loose
             ['@babel/plugin-proposal-class-properties', { loose: true }],
-          ]
+          ],
         };
       },
-      ['@babel/preset-typescript', {
-        // Allow using `declare` in class
-        // NOTE: we have to explicit have this before other class modifier plugins like `@babel/plugin-proposal-class-properties`
-        // `allowDeclareFields` will be true by default in babel 8
-        // See https://babeljs.io/docs/en/babel-preset-typescript#allowdeclarefields
-        onlyRemoveTypeImports: true,
-        allowDeclareFields: true,
-      }],
+      [
+        '@babel/preset-typescript',
+        {
+          // Allow using `declare` in class
+          // NOTE: we have to explicit have this before other class modifier plugins like `@babel/plugin-proposal-class-properties`
+          // `allowDeclareFields` will be true by default in babel 8
+          // See https://babeljs.io/docs/en/babel-preset-typescript#allowdeclarefields
+          onlyRemoveTypeImports: true,
+          allowDeclareFields: true,
+        },
+      ],
     ],
     plugins: [
       // This plugin provides `react-refresh` capability, but it MUST be DISABLED for PROD
@@ -164,8 +231,8 @@ const getJavascriptLoaderConfig = ({ isProcessingJSXFiles, isEnvDevelopment }) =
       // as it will throw error while processing with web-workers at runtime
       // See https://github.com/pmmmwh/react-refresh-webpack-plugin/issues/24#issuecomment-672816401
       isProcessingJSXFiles && isEnvDevelopment && 'react-refresh/babel',
-    ].filter(Boolean)
-  }
+    ].filter(Boolean),
+  },
 });
 
 module.exports = (env, arg) => {
@@ -181,15 +248,22 @@ module.exports = (env, arg) => {
     bail: isEnvProduction, // fail-fast in production build
     entry: { main: './src/index.tsx' },
     output: {
-      path: path.join(__dirname, `../../../target/classes/${BaseConfig.contentRoute}`),
-      assetModuleFilename: `${OUTPUT_STATIC_PATH}/${isEnvDevelopment ? '[name].[ext]' : '[name].[contenthash:8].[ext]'}`,
+      path: path.join(
+        __dirname,
+        `../../../target/classes/${BaseConfig.contentRoute}`,
+      ),
+      assetModuleFilename: `${OUTPUT_STATIC_PATH}/${
+        isEnvDevelopment ? '[name].[ext]' : '[name].[contenthash:8].[ext]'
+      }`,
       publicPath: isEnvDevelopment ? '/' : `/${BaseConfig.contentRoute}/`,
-      filename: `${OUTPUT_STATIC_PATH}/${isEnvDevelopment ? '[name].js' : '[name].[contenthash:8].js'}`,
+      filename: `${OUTPUT_STATIC_PATH}/${
+        isEnvDevelopment ? '[name].js' : '[name].[contenthash:8].js'
+      }`,
     },
     devtool: isEnvDevelopment
-      // NOTE: `eval-cheap-module-source-map` is recommend for dev, but it doesn't report error location accurately
-      // See https://github.com/vuejs-templates/webpack/issues/520#issuecomment-356773702
-      ? 'cheap-module-source-map'
+      ? // NOTE: `eval-cheap-module-source-map` is recommend for dev, but it doesn't report error location accurately
+        // See https://github.com/vuejs-templates/webpack/issues/520#issuecomment-356773702
+        'cheap-module-source-map'
       : 'source-map',
     watchOptions: {
       ignored: /node_modules/,
@@ -204,7 +278,7 @@ module.exports = (env, arg) => {
       historyApiFallback: {
         // URL contains dot such as for version (majorV.minV.patchV: 1.0.0) need this rule
         // See https://github.com/bripkens/connect-history-api-fallback#disabledotrule
-        disableDotRule: true
+        disableDotRule: true,
       },
       // suppress HMR and WDS messages about updated chunks
       // NOTE: there is a bug that the line '[HMR] Waiting for update signal from WDS...' is not suppressed
@@ -248,12 +322,22 @@ module.exports = (env, arg) => {
             {
               test: /\.(?:js|ts)$/,
               exclude: /node_modules/,
-              use: [getJavascriptLoaderConfig({ isEnvDevelopment, isProcessingJSXFiles: false })],
+              use: [
+                getJavascriptLoaderConfig({
+                  isEnvDevelopment,
+                  isProcessingJSXFiles: false,
+                }),
+              ],
             },
             {
               test: /\.(?:js|ts)x$/,
               exclude: /node_modules/,
-              use: [getJavascriptLoaderConfig({ isEnvDevelopment, isProcessingJSXFiles: true })],
+              use: [
+                getJavascriptLoaderConfig({
+                  isEnvDevelopment,
+                  isProcessingJSXFiles: true,
+                }),
+              ],
             },
           ],
         },
@@ -267,8 +351,8 @@ module.exports = (env, arg) => {
               // Helps resolve @import and url() like import/require()
               loader: require.resolve('css-loader'),
               options: {
-                sourceMap: isEnvProduction
-              }
+                sourceMap: isEnvProduction,
+              },
             },
             isEnvProduction && {
               // Loads and transforms a CSS/SSS file using PostCSS
@@ -277,26 +361,26 @@ module.exports = (env, arg) => {
                 postcssOptions: {
                   plugins: [
                     'autoprefixer',
-                    'cssnano' // minification
-                  ]
+                    'cssnano', // minification
+                  ],
                 },
-                sourceMap: isEnvProduction
-              }
+                sourceMap: isEnvProduction,
+              },
             },
             {
               loader: require.resolve('sass-loader'),
               options: {
                 implementation: sass,
                 sourceMap: isEnvProduction,
-              }
-            }
-          ].filter(Boolean)
+              },
+            },
+          ].filter(Boolean),
         },
         {
           test: /\.(?:woff2?|ttf|otf|eot|svg|png|gif)$/,
           type: 'asset/resource',
-        }
-      ]
+        },
+      ],
     },
     // optimization: isEnvDevelopment
     //   ? {
@@ -324,13 +408,14 @@ module.exports = (env, arg) => {
     //   },
     plugins: [
       isEnvProduction && new CleanWebpackPlugin(),
-      (enableAdvancedMode || isEnvProduction) && new CircularDependencyPlugin({
-        exclude: /node_modules/,
-        include: /src.+\.(?:t|j)sx?$/,
-        failOnError: true,
-        allowAsyncCycles: false, // allow import cycles that include an asynchronous import, e.g. import(/* webpackMode: "weak" */ './file.js')
-        cwd: process.cwd(), // set the current working directory for displaying module paths
-      }),
+      (enableAdvancedMode || isEnvProduction) &&
+        new CircularDependencyPlugin({
+          exclude: /node_modules/,
+          include: /src.+\.(?:t|j)sx?$/,
+          failOnError: true,
+          allowAsyncCycles: false, // allow import cycles that include an asynchronous import, e.g. import(/* webpackMode: "weak" */ './file.js')
+          cwd: process.cwd(), // set the current working directory for displaying module paths
+        }),
       new MonacoWebpackPlugin({
         // Only include what we need to lessen the bundle loads
         // See https://github.com/microsoft/monaco-editor-webpack-plugin
@@ -349,8 +434,8 @@ module.exports = (env, arg) => {
           'folding',
           'gotoLine',
           'hover',
-          'multicursor'
-        ]
+          'multicursor',
+        ],
       }),
       isEnvDevelopment && new ReactRefreshWebpackPlugin(),
       new HtmlWebPackPlugin({
@@ -358,8 +443,12 @@ module.exports = (env, arg) => {
         // favicon: `${paths.assets}/favicon.ico`,
       }),
       new MiniCssExtractPlugin({
-        filename: `${OUTPUT_STATIC_PATH}/${isEnvDevelopment ? '[name].css' : '[name].[contenthash:8].css'}`,
-        chunkFilename: `${OUTPUT_STATIC_PATH}/${isEnvDevelopment ? '[id].css' : '[id].[contenthash:8].css'}`,
+        filename: `${OUTPUT_STATIC_PATH}/${
+          isEnvDevelopment ? '[name].css' : '[name].[contenthash:8].css'
+        }`,
+        chunkFilename: `${OUTPUT_STATIC_PATH}/${
+          isEnvDevelopment ? '[id].css' : '[id].[contenthash:8].css'
+        }`,
       }),
       isEnvDevelopment && new ForkTsCheckerWebpackFormatterPlugin(),
       // Webpack plugin that runs TypeScript type checker on a separate process.
@@ -397,7 +486,7 @@ module.exports = (env, arg) => {
         //     configFile: (isEnvProduction || enableAdvancedMode) ? paths.advancedEslintConfig : paths.eslintConfig,
         //   }
         // },
-        formatter: isEnvProduction ? 'codeframe' : undefined
+        formatter: isEnvProduction ? 'codeframe' : undefined,
       }),
     ].filter(Boolean),
   };
