@@ -11,12 +11,12 @@ const packages = fs.readdirSync(path.resolve(__dirname, 'packages'));
  * production build; since IDE like `vscode` runs linting on a separate
  * process, we want to run the full set there too.
  *
- * Therefore, we need to detect the CLI development environment. We can use
- * `process.env.NODE_ENV` to differentiate between CLI development and production
- * build fairly proficiently; as for IDE ESLint plugin process, right now we
- * are depending on the fact that `process.env.NODE_ENV = undefined`
+ * NOTE: currently we are making use of a hack to identify IDE ESLint plugin
+ * process: i.e. when `process.env.NODE_ENV = undefined`
  */
-const isEnvCLIDevelopment = process.env.NODE_ENV === 'development';
+const enableFastMode =
+  process.env.NODE_ENV === 'development' &&
+  process.env.DEVELOPMENT_MODE !== 'advanced';
 
 const OFF = 0;
 const WARN = 1;
@@ -286,7 +286,9 @@ module.exports = {
         'no-console': OFF,
         'no-process-env': OFF,
         'no-process-exit': OFF,
+        'import/no-default-export': OFF, // export default from script so we can use `require()` syntax
         '@typescript-eslint/explicit-function-return-type': OFF,
+        '@typescript-eslint/explicit-module-boundary-types': OFF,
         '@typescript-eslint/no-implicit-any-catch': OFF,
         ...Object.keys(EXPENSIVE__RULES).reduce((acc, val) => {
           acc[val] = OFF;
@@ -310,6 +312,6 @@ module.exports = {
     ...TYPESCRIPT_RULES,
     ...IMPORT_RULES,
     ...REACT_RULES,
-    ...(!isEnvCLIDevelopment ? EXPENSIVE__RULES : {}),
+    ...(enableFastMode ? {} : EXPENSIVE__RULES),
   },
 };

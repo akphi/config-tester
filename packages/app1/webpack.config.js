@@ -1,193 +1,22 @@
 const sass = require('sass');
 const path = require('path');
-const fs = require('fs');
-const chalk = require('chalk');
-const strip = require('strip-ansi');
-const table = require('text-table');
-const wrap = require('wrap-ansi');
 const BaseConfig = require('./config.json');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const ForkTsCheckerWebpackPlugin = require('@akphi/dev-utils/ForkTsCheckerWebpackPlugin');
+const ForkTsCheckerWebpackFormatterPlugin = require('@akphi/dev-utils/ForkTsCheckerWebpackFormatterPlugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
-const CONTENT_LINE_LENGTH = 72;
+// const fs = require('fs');
+// const rootDirectory = fs.realpathSync(process.cwd());
+// const resolveApp = (relativePath) => path.resolve(rootDirectory, relativePath);
+// const paths = {
+//   eslintConfig: resolveApp('../../.eslintrc.js'),
+//   tsConfig: resolveApp('tsconfig.json'),
+// };
 
-class ForkTsCheckerWebpackFormatterPlugin {
-  apply(compiler) {
-    const tsCheckerHooks = ForkTsCheckerWebpackPlugin.getCompilerHooks(
-      compiler,
-    );
-    let typeCheckingStartTime;
-    tsCheckerHooks.start.tap('ForkTsCheckerWebpackFormatterPlugin', () => {
-      // this hook is called when type checking is started, so we can reset the time here
-      typeCheckingStartTime = Date.now();
-    });
-    tsCheckerHooks.error.tap('ForkTsCheckerWebpackFormatterPlugin', (error) =>
-      console.error(error),
-    );
-    tsCheckerHooks.waiting.tap('ForkTsCheckerWebpackFormatterPlugin', () => {
-      // since a chunk of time is spent on waiting for webpack to compile, on the very first type checking
-      // the elapsed time then will be off, and since this hook is called only on the first type checking
-      // we set the time here so we can compute the elapsed time right after compilation to when type
-      // checking report is complete
-      typeCheckingStartTime = Date.now();
-      console.info(`${chalk.gray('i [ts]')} : Asynchronously checking type...`);
-    });
-    tsCheckerHooks.issues.tap(
-      'ForkTsCheckerWebpackFormatterPlugin',
-      (issues, compilation) => {
-        const errors = compilation.errors
-          .filter((error) => error.message)
-          .map((error) => ({
-            message: error.message,
-            severity: 'error',
-            file: 'Compilation Issues:',
-          }));
-        const warnings = compilation.warnings
-          .filter((warning) => warning.message)
-          .map((warning) => ({
-            message: warning.message,
-            severity: 'warning',
-            file: 'Compilation Issues:',
-          }));
-        issues = errors.concat(warnings).concat(issues);
-        const issuesByFile = new Map();
-        issues.forEach((issue) => {
-          const file = issue.file;
-          if (!issuesByFile.has(file)) {
-            issuesByFile.set(file, []);
-          }
-          issuesByFile.get(file).push({
-            file: issue.file,
-            message: issue.message,
-            code: issue.code ?? 'unknown',
-            // NOTE: ignore end location for now
-            line: issue.location?.start.line ?? 0,
-            column: issue.location?.start.column ?? 0,
-            level: issue.severity,
-          });
-        });
-        // Sort issues by location within a file
-        Array.from(issuesByFile.keys()).forEach((file) =>
-          issuesByFile.set(
-            file,
-            issuesByFile
-              .get(file)
-              .sort((a, b) => a.column - b.column)
-              .sort((a, b) => a.line - b.line),
-          ),
-        );
-        // Scan and tokenize error/warning message and wrap long message
-        const rows = [];
-        const fileLineMap = new Map();
-        issuesByFile.forEach((items, filePath) => {
-          let lineNumber = 0;
-          const { dim } = chalk;
-          const colors = { error: 'red', warning: 'yellow' };
-          items.forEach((item) => {
-            const message = wrap(item.message, CONTENT_LINE_LENGTH, {
-              hard: true,
-            });
-            const lines = message.split('\n');
-            rows.push([
-              '',
-              dim(`${item.line}:${item.column}`),
-              chalk[colors[item.level]](item.level),
-              chalk.blue(lines[0]),
-              item.code,
-            ]);
-            lineNumber++;
-            for (const line of lines.slice(1)) {
-              rows.push(['', '', '', chalk.blue(line)]);
-              lineNumber++;
-            }
-          });
-          fileLineMap.set(filePath, lineNumber);
-        });
-        // Try to align messages between file by forming a table
-        let tableFromAllLines = [];
-        let skipFormatting = false; // if table forming failed, fall back to normal formatting (using tabs)
-        try {
-          tableFromAllLines = table(rows, {
-            align: ['', 'l', 'l', 'l', 'l'],
-            stringLength: (str) => strip(str).length,
-          }).split('\n');
-        } catch (error) {
-          console.warn(`Can't format message`, error.message); // handle error as sometimes `table()` throws on long compilation messages
-          skipFormatting = true;
-        }
-        // Print result
-        let lineCounter = 0;
-        issuesByFile.forEach((items, filePath) => {
-          let result = [];
-          if (skipFormatting) {
-            result.push('', chalk.underline(filePath));
-            result = result.concat(
-              rows
-                .slice(lineCounter, lineCounter + fileLineMap.get(filePath))
-                .map((row) => row.join('\t')),
-            );
-            lineCounter += fileLineMap.get(filePath);
-          } else {
-            result.push('', chalk.underline(filePath));
-            result = result.concat(
-              tableFromAllLines.slice(
-                lineCounter,
-                lineCounter + fileLineMap.get(filePath),
-              ),
-            );
-            lineCounter += fileLineMap.get(filePath);
-          }
-          console.info(result.join('\n'));
-        });
-        // Summary
-        const time = Math.round(Date.now() - typeCheckingStartTime);
-        const warningCount = issues.filter(
-          (issue) => issue.severity === 'warning',
-        ).length;
-        const errorCount = issues.filter((issue) => issue.severity === 'error')
-          .length;
-        if (!(errorCount + warningCount)) {
-          console.info(
-            `${chalk.gray(
-              'i [ts]',
-            )} : Type checking passed successfully! [${time}ms]`,
-          );
-        } else if (!errorCount) {
-          console.info(
-            `\n${chalk.yellowBright('!')}${chalk.gray(
-              ' [ts]',
-            )} : ${chalk.yellowBright(
-              `Type checking passed with warning(s)! [${time}ms]`,
-            )}`,
-          );
-        } else {
-          console.info(
-            `\n${chalk.redBright('x')}${chalk.gray(
-              ' [ts]',
-            )} : ${chalk.redBright(`Type checking failed! [${time}ms]`)}`,
-          );
-        }
-        // NOTE: since we have already reported all the issues here, we want to pass no more errors down to webpack
-        return [];
-      },
-    );
-  }
-}
-
-const rootDirectory = fs.realpathSync(process.cwd());
-const resolveApp = (relativePath) => path.resolve(rootDirectory, relativePath);
-const paths = {
-  dev: resolveApp('../../dev'),
-  assets: resolveApp('assets'),
-  eslintConfig: resolveApp('.eslintrc.js'),
-  tsConfig: resolveApp('tsconfig.json'),
-  advancedEslintConfig: resolveApp('.eslintrc-advanced.js'),
-};
 // NOTE: due to routes like `/v1.0.0` (with '.'), to refer to static resources, we move all static content to `/static`
 const OUTPUT_STATIC_PATH = 'static';
 
@@ -238,8 +67,8 @@ const getJavascriptLoaderConfig = ({
 module.exports = (env, arg) => {
   const isEnvDevelopment = arg.mode === 'development';
   const isEnvProduction = arg.mode === 'production';
-  const enableAdvancedMode = Boolean(arg.enableAdvancedMode);
-  const enableAsyncTypeCheck = Boolean(arg.enableAsyncTypeCheck);
+  const isEnvDevelopment_Advanced = process.env.DEVELOPMENT_MODE === 'advanced';
+  const isEnvDevelopment_Fast = process.env.DEVELOPMENT_MODE === 'fast';
   const config = {
     mode: arg.mode,
     // WIP: workaround until `webpack-dev-server` watch mode works with webpack@5
@@ -360,7 +189,7 @@ module.exports = (env, arg) => {
               options: {
                 postcssOptions: {
                   plugins: [
-                    'autoprefixer',
+                    'autoprefixer', // adding vendor prefixes
                     'cssnano', // minification
                   ],
                 },
@@ -382,33 +211,32 @@ module.exports = (env, arg) => {
         },
       ],
     },
-    // optimization: isEnvDevelopment
-    //   ? {
-    //     // Keep runtime chunk minimal by enabling runtime chunk
-    //     // See https://webpack.js.org/guides/build-performance/#minimal-entry-chunk
-    //     runtimeChunk: true,
-    //     // Avoid extra optimization step, turning off split-chunk optimization
-    //     // See https://webpack.js.org/guides/build-performance/#avoid-extra-optimization-steps
-    //     removeAvailableModules: false,
-    //     removeEmptyChunks: false,
-    //     splitChunks: false,
-    //   }
-    //   : {
-    //     splitChunks: {
-    //       cacheGroups: {
-    //         defaultVendors: {
-    //           test: /node_modules/,
-    //           chunks: 'initial',
-    //           name: 'vendor',
-    //           priority: -10,
-    //           enforce: true
-    //         }
-    //       }
-    //     }
-    //   },
+    optimization: isEnvDevelopment
+      ? {
+          // Keep runtime chunk minimal by enabling runtime chunk
+          // See https://webpack.js.org/guides/build-performance/#minimal-entry-chunk
+          runtimeChunk: true,
+          // Avoid extra optimization step, turning off split-chunk optimization
+          // See https://webpack.js.org/guides/build-performance/#avoid-extra-optimization-steps
+          removeAvailableModules: false,
+          removeEmptyChunks: false,
+          splitChunks: false,
+        }
+      : {
+          splitChunks: {
+            cacheGroups: {
+              defaultVendors: {
+                test: /node_modules/,
+                chunks: 'initial',
+                name: 'vendor',
+                priority: -10,
+                enforce: true,
+              },
+            },
+          },
+        },
     plugins: [
-      isEnvProduction && new CleanWebpackPlugin(),
-      (enableAdvancedMode || isEnvProduction) &&
+      (isEnvDevelopment_Advanced || isEnvProduction) &&
         new CircularDependencyPlugin({
           exclude: /node_modules/,
           include: /src.+\.(?:t|j)sx?$/,
@@ -416,6 +244,71 @@ module.exports = (env, arg) => {
           allowAsyncCycles: false, // allow import cycles that include an asynchronous import, e.g. import(/* webpackMode: "weak" */ './file.js')
           cwd: process.cwd(), // set the current working directory for displaying module paths
         }),
+      isEnvDevelopment && new ReactRefreshWebpackPlugin(),
+      new MiniCssExtractPlugin({
+        filename: `${OUTPUT_STATIC_PATH}/${
+          isEnvDevelopment ? '[name].css' : '[name].[contenthash:8].css'
+        }`,
+        chunkFilename: `${OUTPUT_STATIC_PATH}/${
+          isEnvDevelopment ? '[id].css' : '[id].[contenthash:8].css'
+        }`,
+      }),
+      isEnvDevelopment && new ForkTsCheckerWebpackFormatterPlugin(),
+      isEnvDevelopment &&
+        // Webpack plugin that runs TypeScript type checker on a separate process.
+        // NOTE: This makes the initial build process slower but allow faster incremental builds
+        // See https://www.npmjs.com/package/fork-ts-checker-webpack-plugin#motivation
+        // See https://github.com/arcanis/pnp-webpack-plugin#fork-ts-checker-webpack-plugin-integration
+        new ForkTsCheckerWebpackPlugin({
+          typescript: {
+            enabled: !isEnvDevelopment_Fast,
+            // configFile: paths.tsConfig,
+            mode: 'write-references', // recommended mode to improve initial compilation time when using `babel-loader`
+            diagnosticsOptions: {
+              syntactic: true,
+              semantic: true,
+              declaration: true,
+              global: true,
+            },
+          },
+          // Allow blocking Webpack `emit` to wait for type checker/linter and to add errors to the Webpack compilation
+          // if we turn `async:true` webpack will compile on one thread and type check on another thread so any type
+          // error will not cause the build to fail, also error/warning from this plugin will not be captured by webpack
+          // so we will have to write our own formatter for the log.
+          async: true,
+          // We will handle the output here using `fork-ts-checker-webpack-formatter-plugin`
+          // since the lint/error/warning output is not grouped by file
+          // See https://github.com/TypeStrong/fork-ts-checker-webpack-plugin/issues/119
+          logger: {
+            infrastructure: 'silent',
+            issues: 'silent',
+            devServer: false,
+          },
+          eslint: {
+            enabled: !isEnvDevelopment_Fast,
+            files: 'src/**/*.{ts,tsx}',
+            options: {
+              // See https://eslint.org/docs/developer-guide/nodejs-api#cliengine
+              // configFile: paths.eslintConfig,
+            },
+          },
+          formatter: undefined,
+        }),
+
+      // WIP: WIP: WIP: WIP:separate config
+      // WIP: WIP: WIP: WIP:separate config
+      // WIP: WIP: WIP: WIP:separate config
+      // WIP: WIP: WIP: WIP:separate config
+      // WIP: WIP: WIP: WIP:separate config
+      // WIP: WIP: WIP: WIP:separate config
+      // WIP: WIP: WIP: WIP:separate config
+      // WIP: WIP: WIP: WIP:separate config
+      // WIP: WIP: WIP: WIP:separate config
+      // WIP: WIP: WIP: WIP:separate config
+      // WIP: WIP: WIP: WIP:separate config
+      // WIP: WIP: WIP: WIP:separate config
+      // WIP: WIP: WIP: WIP:separate config
+      // WIP: WIP: WIP: WIP:separate config
       new MonacoWebpackPlugin({
         // Only include what we need to lessen the bundle loads
         // See https://github.com/microsoft/monaco-editor-webpack-plugin
@@ -437,56 +330,9 @@ module.exports = (env, arg) => {
           'multicursor',
         ],
       }),
-      isEnvDevelopment && new ReactRefreshWebpackPlugin(),
       new HtmlWebPackPlugin({
         template: './src/index.html',
         // favicon: `${paths.assets}/favicon.ico`,
-      }),
-      new MiniCssExtractPlugin({
-        filename: `${OUTPUT_STATIC_PATH}/${
-          isEnvDevelopment ? '[name].css' : '[name].[contenthash:8].css'
-        }`,
-        chunkFilename: `${OUTPUT_STATIC_PATH}/${
-          isEnvDevelopment ? '[id].css' : '[id].[contenthash:8].css'
-        }`,
-      }),
-      isEnvDevelopment && new ForkTsCheckerWebpackFormatterPlugin(),
-      // Webpack plugin that runs TypeScript type checker on a separate process.
-      // NOTE: This makes the initial build process slower but allow faster incremental builds
-      // See https://www.npmjs.com/package/fork-ts-checker-webpack-plugin#motivation
-      // See https://github.com/arcanis/pnp-webpack-plugin#fork-ts-checker-webpack-plugin-integration
-      new ForkTsCheckerWebpackPlugin({
-        typescript: {
-          configFile: paths.tsConfig,
-          mode: 'write-references', // recommended mode to improve initial compilation time when using `babel-loader`
-          diagnosticsOptions: {
-            syntactic: true,
-            semantic: true,
-            declaration: true,
-            global: true,
-          },
-        },
-        // Allow blocking Webpack `emit` to wait for type checker/linter and to add errors to the Webpack compilation
-        // if we turn `async:true` webpack will compile on one thread and type check on another thread so any type
-        // error will not cause the build to fail, also error/warning from this plugin will not be captured by webpack
-        // so we will have to write our own formatter for the log.
-        async: enableAsyncTypeCheck && isEnvDevelopment,
-        // We will handle the output here using fork-ts-checker compiler hooks since the lint/error/warning output is not grouped by file
-        // See https://github.com/TypeStrong/fork-ts-checker-webpack-plugin/issues/119
-        logger: {
-          infrastructure: 'silent',
-          issues: 'silent',
-          devServer: false,
-        },
-        // eslint: {
-        //   enabled: true,
-        //   files: 'src/**/*.{ts,tsx}',
-        //   options: {
-        //     // See https://eslint.org/docs/developer-guide/nodejs-api#cliengine
-        //     configFile: (isEnvProduction || enableAdvancedMode) ? paths.advancedEslintConfig : paths.eslintConfig,
-        //   }
-        // },
-        formatter: isEnvProduction ? 'codeframe' : undefined,
       }),
     ].filter(Boolean),
   };

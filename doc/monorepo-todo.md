@@ -4,9 +4,9 @@
 
 - complete `Babel` config (see next section)
 
-- Try with `ts-fork-checker....`: set Typescript: `false` during production, as already covered by `tsc`, check Studio config
-
-- Create a `dev:fast`: `no linting, no type-check for webpack` and `dev:advanced` mode, using `cross-env SOMEFLAG=advanced ... -> detect this in webpack and eslint and make the config ADVANCED`
+- Use `webpack-dev-server@4` anyway
+- Try with `ts-fork-checker....`
+- Move webpack into `dev-scripts`
 
 - Try to publish something to `NPM` and consume it back somewhere else, inside GS, try a dummy utility function????
 

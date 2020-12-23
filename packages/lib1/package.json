@@ -6,6 +6,7 @@
   "scripts": {
     "build": "yarn clean && tsc",
     "clean": "rimraf './build'",
-    "dev": "tsc --build --watch"
+    "dev": "tsc --watch",
+    "type-check": "tsc --noEmit"
   }
 }

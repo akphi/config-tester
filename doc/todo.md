@@ -2,6 +2,7 @@
 
 ## Legend Studio
 
+- analyze to see if each module include its own chunk for `monaco-editor` if so how do we prevent this? - if not then nvm
 - change generating of `config.json` to points at `legend.finos.` by default, clearly that way
 - Handle creation of `version.json`, skip maven - make this part of the build script maybe? - https://www.npmjs.com/package/git-repo-info
 - `MAYBE` Setup testing `fixtures` (React) or `examples` (Material-UI) for `cypress` e2e test - https://stackoverflow.com/questions/12071344/what-are-fixtures-in-programming

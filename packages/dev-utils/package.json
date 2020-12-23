@@ -1,0 +1,13 @@
+{
+  "name": "@akphi/dev-utils",
+  "version": "0.0.0",
+  "files": [
+    "ForkTsCheckerWebpackFormatterPlugin.js"
+  ],
+  "dependencies": {
+    "fork-ts-checker-webpack-plugin": "6.0.8",
+    "strip-ansi": "6.0.0",
+    "text-table": "0.2.0",
+    "wrap-ansi": "7.0.0"
+  }
+}
