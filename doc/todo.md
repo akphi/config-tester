@@ -1,6 +1,4 @@
-# TODO
-
-## Legend Studio
+## TODO Legend Studio
 
 - analyze to see if each module include its own chunk for `monaco-editor` if so how do we prevent this? - if not then nvm
 - change generating of `config.json` to points at `legend.finos.` by default, clearly that way
@@ -15,6 +13,7 @@
   https://github.com/torvalds/subsurface-for-dirk/blob/a48494d2fbed58c751e9b7e8fbff88582f9b2d02/README#L88
 - Add `copyrightchecker` script like `Jest`, make it run as part of the pipeline
 - Add `copyrightchecker` for husky as hooks for files changed ONLY
+- Improve `CONTRIBUTING.md` with reference to this - https://github.com/rollup/plugins/blob/master/.github/CONTRIBUTING.md
 
 - Consider tidying up the `paths` of `tsconfig.json` using - `tsconfig-paths` and `tsconfig-paths-webpack-plugin` - https://medium.com/@NiGhTTraX/making-typescript-monorepos-play-nice-with-other-tools-a8d197fdc680
 - Consider using conventional-commits

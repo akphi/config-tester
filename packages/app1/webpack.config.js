@@ -31,7 +31,13 @@ const getJavascriptLoaderConfig = ({
     // See https://babeljs.io/docs/en/plugins/#plugin-options
     presets: [
       ['@babel/preset-env', { debug: false }], // use `debug` option to see the lists of plugins being selected
-      ['@babel/preset-react', { development: isEnvDevelopment }], // `development` flag allows accurate source code location
+      [
+        '@babel/preset-react',
+        {
+          development: isEnvDevelopment,
+          runtime: 'automatic', // use React@17 JSX transform
+        },
+      ],
       function () {
         return {
           plugins: [
@@ -46,19 +52,22 @@ const getJavascriptLoaderConfig = ({
         '@babel/preset-typescript',
         {
           // Allow using `declare` in class
-          // NOTE: we have to explicit have this before other class modifier plugins like `@babel/plugin-proposal-class-properties`
+          // NOTE: due to this flag, this plugin has to run before other class modifier plugins like `@babel/plugin-proposal-class-properties`
+          onlyRemoveTypeImports: true,
           // `allowDeclareFields` will be true by default in babel 8
           // See https://babeljs.io/docs/en/babel-preset-typescript#allowdeclarefields
-          onlyRemoveTypeImports: true,
           allowDeclareFields: true,
         },
       ],
     ],
     plugins: [
       // This plugin provides `react-refresh` capability, but it MUST be DISABLED for PROD
-      // NOTE: as of now, this strictly works with React related files so we have to isolate it from non-jsx files
-      // as it will throw error while processing with web-workers at runtime
-      // See https://github.com/pmmmwh/react-refresh-webpack-plugin/issues/24#issuecomment-672816401
+      // NOTE: as of now, this strictly works with React related files (i.e. TSX/JSX) so we have to isolate it from non-jsx files as it will cause a few issues:
+      //  1. Throw error while processing indirection (i.e. web-workers or JS template - this seems to have been resolved when using webpack@5 worker support)
+      //  See https://github.com/pmmmwh/react-refresh-webpack-plugin/blob/main/docs/TROUBLESHOOTING.md#usage-with-indirection-like-workers-and-js-templates
+      //  2. When we allow this to process non-jsx files, it would throw errors like the following potentially because we force HMR on modules that HMR does not support (?):
+      //  `[HMR] Error: Aborted because something.js is not accepted`
+      //  See https://github.com/pmmmwh/react-refresh-webpack-plugin/issues/24#issuecomment-672816401
       isProcessingJSXFiles && isEnvDevelopment && 'react-refresh/babel',
     ].filter(Boolean),
   },
@@ -314,8 +323,8 @@ module.exports = (env, arg) => {
         // See https://github.com/microsoft/monaco-editor-webpack-plugin
         languages: ['json', 'java', 'markdown'],
         // Here we can choose to also exclude/include features but this really does not
-        // significantly affect the bundle size anyhow, but it's also strange that we
-        // need to turn off features in `monaco-editor` on creation anyway
+        // significantly affect the bundle size.
+        // See https://github.com/microsoft/monaco-editor-webpack-plugin/issues/97
         // See https://github.com/microsoft/monaco-editor-webpack-plugin/issues/40
         features: [
           'bracketMatching',

@@ -1,14 +1,11 @@
 # TODO
 
-- add comment for `prietter.rc` explaining about philosophy, limitation and printWidth
-
 - complete `Babel` config (see next section)
-
-- Use `webpack-dev-server@4` anyway
 - Try with `ts-fork-checker....`
-- Move webpack into `dev-scripts`
+- Move webpack into `dev-scripts`, use it in 2 modules: `app1` and `component1`
 
 - Try to publish something to `NPM` and consume it back somewhere else, inside GS, try a dummy utility function????
+- Upgrade to `webpack-dev-server@4.beta.1`
 
 # Babel
 
@@ -17,22 +14,10 @@
 - Tidy up babel config using `env` and `overrides` or `process.env.NODE_ENV` - `*.js` files only need `preset-env`, `*.ts` files don't need `react` preset, `*.tsx` files need all - https://stackoverflow.com/questions/52129579/how-to-properly-override-babel7-plugins-for-separate-webpack-server-client-conf - https://babeljs.io/docs/en/options#overrides
 - Look at babel config from emotion project with cache and filename test overrides, create our own babel module
 
-# Example
+# Monaco Editor and Webpack
 
-- Checkout `codesandbox-client/common/package.json`
-
-```json
-"scripts": {
-    "build": "yarn build:lib",
-    "build:dev": "yarn build",
-    "build:lib": "yarn clean && yarn tsc && yarn babel src --out-dir lib && yarn cpx \"src/**/*.{css,svg,png,jpg,woff,woff2,d.ts}\" lib",
-    "build:storybook": "build-storybook -c .storybook -o public",
-    "clean": "rimraf lib && yarn rimraf node_modules/@types/react-native",
-    "lint": "eslint --ext .js,.ts,.tsx src",
-    "prepublish": "yarn build",
-    "start": "(yarn tsc --watch & yarn babel src --out-dir lib --watch & yarn cpx \"src/**/*.{css,svg,png,jpg,woff,woff2}\" lib --watch)",
-    "start:storybook": "start-storybook",
-    "test": "cross-env NODE_ENV=test jest --maxWorkers 2",
-    "typecheck": "tsc --noEmit"
-  },
-```
+- Try to have `monaco` in `component1` and `app1` to see if it gets duplicated:
+  - do experiment with https://github.com/microsoft/monaco-editor-webpack-plugin/issues/97
+  - then try to create a file that `export *` and re-measure bundlesize
+  - otherwise, TRY create our own module to load `monaco-editor`
+    https://webpack.js.org/guides/code-splitting/

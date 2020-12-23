@@ -2,7 +2,8 @@
   "name": "@akphi/dev-utils",
   "version": "0.0.0",
   "files": [
-    "ForkTsCheckerWebpackFormatterPlugin.js"
+    "ForkTsCheckerWebpackFormatterPlugin.js",
+    "ForkTsCheckerWebpackPlugin.js"
   ],
   "dependencies": {
     "fork-ts-checker-webpack-plugin": "6.0.8",
