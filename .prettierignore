@@ -1,3 +1,5 @@
-# Artifacts
-build
-packages/*/build
+# Build
+/build/
+/packages/*/build/
+/packages/*/dist/
+/packages/*/lib/

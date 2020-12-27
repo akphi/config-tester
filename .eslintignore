@@ -1,6 +1,8 @@
 # Dependencies
 **/node_modules
 
-# Build products
-packages/*/build/
-packages/*/coverage/
+# Build
+/build/
+/packages/*/build/
+/packages/*/dist/
+/packages/*/lib/

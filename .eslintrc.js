@@ -199,19 +199,19 @@ const REACT_RULES = {
 };
 
 const EXPENSIVE__IMPORT_RULES = {
-  // NOTE: while we're waiting for `eslint-import-plugin` to have better support for monorepo
-  // using glob patterns, we must use this workaround
+  // NOTE: this rule prevents using dependencies not listed in `package.json` but
+  // currently, it's not working well with monorepo
   // See https://github.com/benmosher/eslint-plugin-import/pull/1696
-  'import/no-extraneous-dependencies': [
-    ERROR,
-    {
-      packageDir: [__dirname].concat(
-        packages.map((packageName) =>
-          path.resolve(__dirname, `packages/${packageName}`),
-        ),
-      ),
-    },
-  ],
+  // 'import/no-extraneous-dependencies': [
+  //   ERROR,
+  //   {
+  //     packageDir: [__dirname].concat(
+  //       packages.map((packageName) =>
+  //         path.resolve(__dirname, `packages/${packageName}/`),
+  //       ),
+  //     ),
+  //   },
+  // ],
   // See https://github.com/benmosher/eslint-plugin-import/blob/master/config/warnings.js
   'import/no-named-as-default': ERROR,
   'import/no-named-as-default-member': ERROR,
@@ -263,16 +263,10 @@ module.exports = {
       version: 'detect',
     },
   },
-  // Parser option is required for generating parserService to run specific rules like
-  // `prefer-nullish-coalescing`, and `prefer-optional-chain`
-  // This seems like a problem with either `vscode-eslint` or `@typescript-eslint/parser`
-  // See https://github.com/typescript-eslint/typescript-eslint/issues/251
-  // See https://github.com/microsoft/vscode-eslint/issues/605
   parserOptions: {
+    // `parserOptions.project` is required for generating parser service to run specific rules like
+    // `prefer-nullish-coalescing`, and `prefer-optional-chain`
     project: ['packages/*/tsconfig.json'],
-    // make ESLint work in IDE for files like `.eslintrc.js` when `parserOptions.project` is specified
-    // See https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/parser#parseroptionsproject
-    createDefaultProgram: true,
     // Use this experimental flag to improve memory usage while using Typescript project reference
     // See https://github.com/typescript-eslint/typescript-eslint/issues/2094
     EXPERIMENTAL_useSourceOfProjectReferenceRedirect: true,
@@ -281,7 +275,7 @@ module.exports = {
     {
       // relax linting rules for scripts
       files: ['**.js'],
-      parserOptions: undefined,
+      parser: 'babel-eslint', // use this parser for non-ts files so it does not require `parserOptions.project` config like `@typescript-eslint/parser`
       rules: {
         'no-console': OFF,
         'no-process-env': OFF,

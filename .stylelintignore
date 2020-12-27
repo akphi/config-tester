@@ -1,0 +1,8 @@
+# skip linting HTML as this is handled by `prettier`
+**/*.html
+
+# Build
+/build/
+/packages/*/build/
+/packages/*/dist/
+/packages/*/lib/

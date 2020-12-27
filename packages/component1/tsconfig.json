@@ -1,11 +1,12 @@
 {
   "extends": "../../scripts/typescript/tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "build/lib",
+    "outDir": "lib",
     "tsBuildInfoFile": "build/tsconfig.tsbuildinfo",
     "rootDir": "src",
     "emitDeclarationOnly": true,
-    "jsx": "react-jsxdev"
+    "jsx": "react-jsxdev",
+    "strictNullChecks": true
   },
   "include": ["src"],
   "references": [{ "path": "../lib1" }]

@@ -2,4 +2,3 @@
 **/__tests__/**
 tsconfig.json
 build
-!build/lib

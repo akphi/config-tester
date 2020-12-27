@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "build": "yarn clean && yarn build:tsc && yarn build:webpack",
+    "build:analyze": "webpack --mode production --analyze",
     "build:tsc": "tsc --project ./tsconfig.build.json",
     "build:webpack": "webpack --mode production",
-    "clean": "rimraf './build'",
+    "clean": "rimraf \"build\" \"dist\"",
     "dev": "webpack serve --mode development --hot",
     "dev:advanced": "cross-env DEVELOPMENT_MODE=advaned webpack serve --mode development --hot",
     "dev:fast": "cross-env DEVELOPMENT_MODE=fast webpack serve --mode development --hot",
@@ -18,7 +19,9 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@akphi/component1": "^0.0.0"
+    "@akphi/component1": "^0.0.0",
+    "react": "17.0.1",
+    "react-dom": "17.0.1"
   },
   "devDependencies": {
     "@akphi/dev-utils": "^0.0.0"

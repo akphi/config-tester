@@ -1,19 +1,33 @@
 {
   "name": "@akphi/component1",
   "version": "0.0.0",
-  "main": "build/lib/index.js",
-  "types": "build/lib/index.d.ts",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "build": "yarn clean && yarn build:tsc && yarn build:webpack",
+    "build:analyze": "webpack --mode production --analyze",
     "build:tsc": "tsc --project ./tsconfig.build.json",
     "build:webpack": "webpack --mode production",
-    "clean": "rimraf './build'",
-    "dev:advanced": "cross-env DEVELOPMENT_MODE=advaned webpack --mode development",
-    "dev:fast": "cross-env DEVELOPMENT_MODE=fast webpack --mode development",
-    "dev:type-check": "tsc --noEmit --watch",
-    "type-check": "tsc --noEmit"
+    "clean": "rimraf \"build\" \"lib\"",
+    "dev": "webpack --mode development --hot --watch",
+    "dev:advanced": "cross-env DEVELOPMENT_MODE=advaned webpack --mode development --hot --watch",
+    "dev:fast": "cross-env DEVELOPMENT_MODE=fast webpack --mode development --hot --watch",
+    "dev:type-check": "tsc --watch",
+    "type-check": "tsc"
   },
   "dependencies": {
-    "@akphi/lib1": "^0.0.0"
+    "@akphi/lib1": "^0.0.0",
+    "@material-ui/core": "4.11.2",
+    "react": "17.0.1",
+    "react-dom": "17.0.1"
+  },
+  "devDependencies": {
+    "@akphi/dev-utils": "^0.0.0"
+  },
+  "peerDependencies": {
+    "@material-ui/core": "^4.11.0",
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0"
   }
 }

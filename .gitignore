@@ -4,7 +4,6 @@
 *~
 
 # IDE
-.eslintcache
 .idea
 **/*.iml
 **/jsconfig.json
@@ -12,17 +11,15 @@
 .project
 .classpath
 
-# Build products
-**/npm
-*.tsbuildinfo
+# Build
 lerna-debug.log
 npm-debug.log
 npm-debug.log*
 yarn-error.log*
-junit.xml
 /build/
 /packages/*/build/
-/packages/*/coverage/
+/packages/*/dist/
+/packages/*/lib/
 
 # Dependencies
 **/node_modules
