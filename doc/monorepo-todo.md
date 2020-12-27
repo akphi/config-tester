@@ -26,7 +26,7 @@
   https://github.com/dherman/defense-of-dot-js/blob/master/proposal.md#typical-usage
 - We want to use ESM when bundling from Webpack so consumer can do tree-shaking. This is on Webpack roadmap
   https://github.com/webpack/webpack/issues/2933
-- The alternative like `rollup` and `parcel` don't have rich enough plugin support for `react` `fast-refresh` or `HotModuleReplacement` or loading `monaco-editor`
+- The alternative like `rollup` and `parcel` don't have rich enough plugin support for `React Fast Refresh` or `HotModuleReplacement` or loading `monaco-editor`
 - Check if we need to force `babel-preset-env` to export to the right kind of module with `modules` flag
   https://stackoverflow.com/questions/55792519/what-does-the-modulesauto-means-in-babel-preset-env-field
   https://babeljs.io/docs/en/babel-preset-env#modules
