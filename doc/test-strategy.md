@@ -1,6 +1,6 @@
 # Testing (TODO)
 
-- Write doc for testing strategy, highlight the following points:
+- (TODO) Write doc for testing strategy, highlight the following points:
   - Unit test is for truly unit stuffs, utilities, etc.
   - Integration test is Studio alone, isolated from backends, we should mock network calls
   - Cypress/E2E test is for interacting with the whole stack and be able to play/see the result -> good for demoing in a sense
