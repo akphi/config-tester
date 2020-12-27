@@ -25,8 +25,6 @@
 
 # Licensing
 
-- Add `copyrightchecker` script like `Jest`, make it run as part of the pipeline
-- Add `copyrightchecker` for husky as hooks for files changed ONLY
 - check if we can shorten the copyright message to point at the copyright file at the root of the module
 
 ```

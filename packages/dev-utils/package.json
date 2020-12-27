@@ -2,6 +2,7 @@
   "name": "@akphi/dev-utils",
   "version": "0.0.0",
   "files": [
+    "CopyrightUtils.js",
     "ForkTsCheckerWebpackFormatterPlugin.js",
     "ForkTsCheckerWebpackPlugin.js",
     "WebpackConfigUtils.js"
