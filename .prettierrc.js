@@ -1,4 +1,11 @@
 /**
+ * Copyright (c) An Phi.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+/**
  * Prettier is an __opinionated__ way to format code.
  * As they put it `By far the biggest reason for adopting Prettier is to stop all the ongoing debates over styles.`
  * To comply with this spirit, we did 2 things:
