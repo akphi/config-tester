@@ -4,7 +4,7 @@
 - Handle creation of `version.json`, skip maven - make this part of the build script maybe? - https://www.npmjs.com/package/git-repo-info
 - change generating of `config.json` to points at `legend.finos.` by default, clearly that way
 - `MAYBE` Setup testing `fixtures` (React) or `examples` (Material-UI) for `cypress` e2e test - https://stackoverflow.com/questions/12071344/what-are-fixtures-in-programming
-- Check with @maoo to enable `Renovate` bot for Studio - https://github.com/apps/renovate
+- Enable `dependabot` or for the repo
 - Create an `npx` program to create a site that uses legend studio - see `docusaurus` and `create-react-app` for inspiration. Use `cli` to do so - https://dev.to/iulianoctavianpreda/run-your-npx-script-directly-from-github-create-your-own-cli-commands-and-other-stories-4pn3
 
 # License
