@@ -106,9 +106,11 @@ const checkCopyrightHeaders = ({
 
   if (files.length > 0) {
     console.log(
-      `Found ${files.length} file(s) without copyright header:\n${files.join(
-        '\n',
-      )}\n\nPlease include the header or exclude the files in '${configFileLocation}'`,
+      `Found ${files.length} file(s) without copyright header:\n${files
+        .map((file) => `${chalk.red('\u2717')} ${file}`)
+        .join(
+          '\n',
+        )}\nPlease include the header or exclude the files in '${configFileLocation}'`,
     );
     process.exit(1);
   } else {
