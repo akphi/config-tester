@@ -34,7 +34,7 @@ jobs:
         server-username: CI_DEPLOY_USERNAME
         server-password: CI_DEPLOY_PASSWORD
     - name: Set up Node
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v2.1.4
       with:
         node-version: '14.3.0'
     - name: Configure git
