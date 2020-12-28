@@ -1,13 +1,12 @@
 # TODO
 
-- Create a script called `check:project-reference` to check typescript tsconfig file references using `package.json`, we shouldn't update since the `tsconfig.json` file might contain comments. Call this script as part of the build pipeline
-- Handle creation of `version.json`, skip maven - make this part of the build script maybe? - https://www.npmjs.com/package/git-repo-info
 - Try to publish something to `NPM` and consume it back somewhere else, try a dummy utility function????
 
 # Github Actions
 
-- Setup build pipeline with various checks
-- etc.
+- Learn from `babel` `github-actions` script to respond to issue on github
+- Setup build pipeline with various checks: copyright, project-reference, build, test, lint, deploy?
+- setup `renovate` bot also
 
 # Conventional commits
 
