@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-const { check } = require('@akphi/dev-utils/CopyrightUtils');
+const { checkCopyrightHeaders } = require('@akphi/dev-utils/CopyrightUtils');
 const config = require('./copyright.config');
 
-check({
+checkCopyrightHeaders({
   ...config,
   configFileLocation: 'scripts/copyright/copyright.config.js',
 });

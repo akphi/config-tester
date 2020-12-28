@@ -88,7 +88,7 @@ const getInvalidFiles = ({
   );
 };
 
-const check = ({
+const checkCopyrightHeaders = ({
   extensions,
   excludePatterns,
   copyrightText,
@@ -112,11 +112,11 @@ const check = ({
     );
     process.exit(1);
   } else {
-    console.log(`Copyright header check passed!`);
+    console.log('No issues found!');
   }
 };
 
-const update = async ({
+const updateCopyrightHeaders = async ({
   extensions,
   excludePatterns,
   copyrightText,
@@ -148,11 +148,11 @@ const update = async ({
       ),
     );
   } else {
-    console.log(`All files are good!`);
+    console.log('All files look good!');
   }
 };
 
 module.exports = {
-  check,
-  update,
+  checkCopyrightHeaders,
+  updateCopyrightHeaders,
 };

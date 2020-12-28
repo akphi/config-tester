@@ -5,12 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-const { update } = require('@akphi/dev-utils/CopyrightUtils');
+const { updateCopyrightHeaders } = require('@akphi/dev-utils/CopyrightUtils');
 const config = require('./copyright.config');
 
 const onlyApplyToModifiedFiles = process.argv.includes('--modified');
 
-update({
+updateCopyrightHeaders({
   ...config,
   onlyApplyToModifiedFiles,
 });
