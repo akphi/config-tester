@@ -1,34 +1,6 @@
 name: Node CI
 
-on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - '**'
-
-aliases:
-  - &job_setup
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: Get Yarn cache directory path
-      id: yarn-cache-dir-path
-      run: echo "::set-output name=dir::$(yarn cache dir)"
-    - name: Setup Yarn cache
-      uses: actions/cache@v2
-      id: yarn-cache
-      with:
-        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-yarn-
-    - name: Setup Node
-      uses: actions/setup-node@v2.1.4
-      with:
-        node-version: 14.x
-    - name: Install dependencies
-      run: yarn
+on: [push, pull_request]
 
 jobs:
   # `github-actions` currently does not support cancelling previous CI runs
@@ -41,7 +13,25 @@ jobs:
     name: Lint & Check
     runs-on: ubuntu-latest
     steps:
-      - <<: &job_setup
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Get Yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Setup Yarn cache
+        uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Setup Node
+        uses: actions/setup-node@v2.1.4
+        with:
+          node-version: 14.x
+      - name: Install dependencies
+        run: yarn
       - name: Check Typescript project reference configuration
         run: yarn check:project-ref
       - name: Build Typescript
@@ -55,88 +45,35 @@ jobs:
       - name: Check copyright headers
         run: yarn copyright:check
 
-  # test:
-  #   name: Build & Test
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
-  #     - name: Get Yarn cache directory path
-  #       id: yarn-cache-dir-path
-  #       run: echo "::set-output name=dir::$(yarn cache dir)"
-  #     - name: Setup Yarn cache
-  #       uses: actions/cache@v2
-  #       id: yarn-cache
-  #       with:
-  #         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-  #         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-  #         restore-keys: |
-  #           ${{ runner.os }}-yarn-
-  #     - name: Setup Node
-  #       uses: actions/setup-node@v2.1.4
-  #       with:
-  #         node-version: 14.x
-  #     - name: Install dependencies
-  #       run: yarn
-  #     - name: build
-  #       run: yarn build:js
-  #     - name: Get number of CPU cores
-  #       id: cpu-cores
-  #       uses: SimenB/github-actions-cpu-cores@v1
-  #     - name: run tests
-  #       run: yarn test-ci-partial:parallel --max-workers ${{ steps.cpu-cores.outputs.count }}
-  #       env:
-  #         CI: true
-# name: legend-build
-
-# env:
-#   CI_DEPLOY_USERNAME: ${{ secrets.CI_DEPLOY_USERNAME }}
-#   CI_DEPLOY_PASSWORD: ${{ secrets.CI_DEPLOY_PASSWORD }}
-#   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-# on: [push, pull_request]
-
-# jobs:
-#   build:
-#     if: "!contains(github.event.head_commit.message, '[maven-release-plugin]')"
-#     runs-on: ubuntu-latest
-#     steps:
-#     - name: Checkout repo
-#       uses: actions/checkout@v2
-#     - name: Cache Maven dependencies
-#       uses: actions/cache@v2
-#       env:
-#         cache-name: cache-mvn-deps
-#       with:
-#         path: ~/.m2
-#         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/pom.xml') }}
-#         restore-keys: |
-#           ${{ runner.os }}-build-${{ env.cache-name }}-
-#           ${{ runner.os }}-build-
-#           ${{ runner.os }}-
-#     - name: Set up JDK
-#       uses: actions/setup-java@v1
-#       with:
-#         java-version: 13
-#         server-id: ossrh
-#         server-username: CI_DEPLOY_USERNAME
-#         server-password: CI_DEPLOY_PASSWORD
-#     - name: Set up Node
-#       uses: actions/setup-node@v1
-#       with:
-#         node-version: '14.3.0'
-#     - name: Configure git
-#       run: |
-#         git config --global committer.email "infra@finos.org"
-#         git config --global committer.name "FINOS Admin"
-#         git config --global author.email "${GITHUB_ACTOR}@users.noreply.github.com"
-#         git config --global author.name "${GITHUB_ACTOR}"
-#     - name: Download deps and plugins
-#       run: mvn de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
-#     - name: Build + Test
-#       if: github.ref != 'refs/heads/master'
-#       run: mvn install javadoc:javadoc
-#     - name: Build + Test + Sonar + Maven Deploy
-#       if: github.ref == 'refs/heads/master'
-#       run: mvn javadoc:javadoc deploy -Psonar
+  test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Get Yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Setup Yarn cache
+        uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Setup Node
+        uses: actions/setup-node@v2.1.4
+        with:
+          node-version: 14.x
+      - name: Install dependencies
+        run: yarn
+      - name: Build
+        run: yarn build
+      - name: Test
+        run: yarn test:coverage
+      - name: Upload test coverage report
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./build/coverage

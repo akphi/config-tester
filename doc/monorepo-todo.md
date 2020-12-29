@@ -1,12 +1,7 @@
 # TODO
 
+- Script to add paths module aliases in TSConfig to Jest and Webpack - hm check wtf is going on
 - Try to publish something to `NPM` and consume it back somewhere else, try a dummy utility function????
-
-# Github Actions
-
-- Learn from `babel` `github-actions` script to respond to issue on github
-- Setup build pipeline with various checks: copyright, project-reference, build, test, lint, deploy?
-- setup `renovate` bot also
 
 # Conventional commits
 

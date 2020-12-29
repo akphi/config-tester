@@ -13,7 +13,7 @@ module.exports = {
     // See https://jestjs.io/docs/en/getting-started#using-typescript
     '^.+\\.[jt]sx?$': ['babel-jest'],
   },
-  setupTests: ['<rootDir>/scripts/jest/setupTests.js'],
+  setupFiles: ['<rootDir>/scripts/jest/setupTests.js'],
   // Setup to run immediately after the test framework has been installed in the environment
   // before each test file in the suite is executed
   // See https://jestjs.io/docs/en/configuration#setupfilesafterenv-array
@@ -34,19 +34,9 @@ module.exports = {
   collectCoverageFrom: [
     '<rootDir>/packages/*/src/**/*.[jt]s?(x)',
     '!<rootDir>/packages/*/src/**/__tests__/**/*.[jt]s?(x)',
+    '!<rootDir>/packages/*/src/**/__mocks__/**/*.[jt]s?(x)',
   ],
   coverageDirectory: '<rootDir>/build/coverage',
-  coverageReporters: ['text-summary', 'html', 'lcov'],
-  reporters: [
-    'default',
-    [
-      'jest-junit',
-      {
-        outputDirectory: '<rootDir>/build/test-results',
-        outputName: 'test-results.xml',
-      },
-    ],
-  ],
   // Allow searching for file/test name while running Jest in watch mode
   watchPlugins: [
     'jest-watch-typeahead/filename',

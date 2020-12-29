@@ -175,6 +175,15 @@ const getBaseWebpackConfig = (env, arg, dirname) => {
               declaration: true,
               global: true,
             },
+            configOverwrite: {
+              // ignore test files for faster check
+              exclude: [
+                'src/**/__tests__/**/*.ts',
+                'src/**/__tests__/**/*.tsx',
+                'src/**/__mocks__/**/*.ts',
+                'src/**/__mocks__/**/*.tsx',
+              ],
+            },
           },
           // Allow blocking Webpack `emit` to wait for type checker/linter and to add errors to the Webpack compilation
           // if we turn `async:true` webpack will compile on one thread and type check on another thread so any type
@@ -192,6 +201,13 @@ const getBaseWebpackConfig = (env, arg, dirname) => {
           eslint: {
             files: 'src/**/*.{ts,tsx}',
             options: {
+              // ignore test files for faster check
+              ignorePattern: [
+                'src/**/__tests__/*.ts',
+                'src/**/__tests__/*.tsx',
+                'src/**/__mocks__/*.ts',
+                'src/**/__mocks__/*.tsx',
+              ],
               parserOptions: {
                 project: path.resolve(dirname, './tsconfig.json'),
               },
@@ -300,7 +316,11 @@ const getWebAppBaseWebpackConfig = (
       publicPath: '/',
       open: true,
       port: 3000,
-      openPage: appConfig.baseUrl,
+      openPage:
+        // trim the leading and trailing slash
+        appConfig.baseUrl.length === 1
+          ? undefined
+          : appConfig.baseUrl.slice(1, -1),
       // redirect 404s to /index.html
       historyApiFallback: {
         // URL contains dot such as for version (majorV.minV.patchV: 1.0.0) need this rule

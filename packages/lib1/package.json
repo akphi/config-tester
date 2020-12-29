@@ -5,7 +5,8 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "yarn clean && tsc",
+    "build": "yarn clean && yarn build:tsc",
+    "build:tsc": "tsc --project ./tsconfig.build.json",
     "clean": "rimraf \"build\" \"lib\"",
     "dev": "tsc --watch",
     "type-check": "tsc --noEmit"

@@ -6,6 +6,7 @@
  */
 
 import ReactDOM from 'react-dom';
+// import { App } from '@akphi/app1/App';
 import { App } from './App';
 
 const root = ((): Element => {

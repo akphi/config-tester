@@ -1,8 +1,8 @@
 {
   "extends": "../../scripts/typescript/tsconfig.base.json",
   "compilerOptions": {
+    "tsBuildInfoFile": "build/dev.tsbuildinfo",
     "outDir": "lib",
-    "tsBuildInfoFile": "build/tsconfig.tsbuildinfo",
     "rootDir": "src"
   },
   "include": ["src"]

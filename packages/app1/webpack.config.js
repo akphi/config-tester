@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+const path = require('path');
 const appConfig = require('./app.config');
 const {
   getWebAppBaseWebpackConfig: getAppBaseWebpackConfig,
@@ -18,6 +19,13 @@ module.exports = (env, arg) => {
   });
   const config = {
     ...baseConfig,
+    // resolve: {
+    //   ...baseConfig.resolve,
+    //   alias: {
+    //     ...baseConfig.resolve.alias,
+    //     '@akphi/app1': path.resolve(__dirname, 'src'),
+    //   },
+    // },
     plugins: [
       ...baseConfig.plugins,
       // new MonacoWebpackPlugin({

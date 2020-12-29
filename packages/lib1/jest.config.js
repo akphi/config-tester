@@ -6,11 +6,14 @@
  */
 
 const base = require('../../scripts/jest/jest.config.base.js');
+const packageJson = require('./package.json');
 
 module.exports = {
   ...base,
-  displayName: '@akphi/lib1',
-  name: '@akphi/lib1',
+  displayName: packageJson.name,
+  name: packageJson.name,
   rootDir: '../..',
-  projects: ['<rootDir>/packages/*'],
+  testMatch: [
+    `<rootDir>/packages/lib1/src/**/__tests__/**/?(*.)+(test).[jt]s?(x)`,
+  ],
 };
