@@ -9,6 +9,7 @@
     "build:ts": "tsc --build",
     "check:format": "prettier --check \"scripts/**/*.js\" \"packages/*/src/**/*.{js,ts,tsx,html,scss,css}\"",
     "check:project-ref": "node ./scripts/typescript/checkProjectReferenceConfigs.js",
+    "check:typings": "lerna run type-check --stream",
     "check:update": "yarn upgrade-interactive --latest",
     "clean": "rimraf \"build\" && lerna run clean --parallel",
     "copyright:check": "node ./scripts/copyright/checkCopyrightHeaders.js",
@@ -23,8 +24,7 @@
     "lint:style": "stylelint --cache --cache-location ./build/.stylelintcache \"packages/*/src/**/*.{scss,css}\"",
     "setup": "node ./scripts/bootstrap.js",
     "start": "yarn dev",
-    "test": "jest",
-    "type-check": "lerna run type-check --stream"
+    "test": "jest"
   },
   "husky": {
     "hooks": {

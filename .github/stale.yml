@@ -6,12 +6,12 @@ daysUntilStale: 90
 daysUntilClose: 7
 # Issues with these labels will never be considered stale
 exemptLabels:
-  - "Type: Bug"
-  - "Type: Discussion"
-  - "Type: Needs Investigation"
-  - "Type: Regression"
+  - 'Type: Bug'
+  - 'Type: Discussion'
+  - 'Type: Needs Investigation'
+  - 'Type: Regression'
 # Label to use when marking an issue as stale
-staleLabel: "Resolution: Stale"
+staleLabel: 'Resolution: Stale'
 issues:
   # Comment to post when marking an issue as stale.
   markComment: >

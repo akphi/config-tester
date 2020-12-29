@@ -22,7 +22,7 @@
 
 # Further Improvements
 
-- Yarn 2 with `PNP`, or NPM 7
+- Yarn 2 with `PNP` (See `jest` for example - https://github.com/facebook/jest), or NPM 7
 - Code-splitting and lazy-loading
   https://github.com/dan-kez/lerna-webpack-example
   https://github.com/jamiebuilds/react-loadable
