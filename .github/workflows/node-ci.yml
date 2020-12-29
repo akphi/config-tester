@@ -8,6 +8,28 @@ on:
     branches:
       - '**'
 
+aliases:
+  - &job_setup
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Get Yarn cache directory path
+      id: yarn-cache-dir-path
+      run: echo "::set-output name=dir::$(yarn cache dir)"
+    - name: Setup Yarn cache
+      uses: actions/cache@v2
+      id: yarn-cache
+      with:
+        path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+        key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-yarn-
+    - name: Setup Node
+      uses: actions/setup-node@v2.1.4
+      with:
+        node-version: 14.x
+    - name: Install dependencies
+      run: yarn
+
 jobs:
   # `github-actions` currently does not support cancelling previous CI runs
   # on pushes to the same branch. This is particularly useful when the build
@@ -16,29 +38,10 @@ jobs:
   # See https://github.com/marketplace/actions/workflow-run-cleanup-action
 
   lint-and-check:
-    name: Running TypeScript compiler & ESLint
+    name: Lint & Check
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Get Yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: Setup Yarn cache
-        uses: actions/cache@v2
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - name: Setup Node
-        uses: actions/setup-node@v2.1.4
-        with:
-          node-version: 14.x
-      - name: Install dependencies
-        run: yarn
+      - <<: &job_setup
       - name: Check Typescript project reference configuration
         run: yarn check:project-ref
       - name: Build Typescript
@@ -51,48 +54,39 @@ jobs:
         run: yarn check:format
       - name: Check copyright headers
         run: yarn copyright:check
-#   test:
-#     name: Node v${{ matrix.node-version }} on ${{ matrix.os }}
-#     strategy:
-#       fail-fast: false
-#       matrix:
-#         node-version: [10.x, 12.x, 13.x, 14.x, 15.x]
-#         os: [ubuntu-latest, macOS-latest, windows-latest]
-#     runs-on: ${{ matrix.os }}
 
-#     steps:
-#       - name: Set git config
-#         shell: bash
-#         run: |
-#           git config --global core.autocrlf false
-#           git config --global core.symlinks true
-#         if: runner.os == 'Windows'
-#       - uses: actions/checkout@v2
-#       - name: Get yarn cache
-#         id: yarn-cache
-#         run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
-#       - uses: actions/cache@v2
-#         with:
-#           path: ${{ steps.yarn-cache.outputs.dir }}
-#           key: ${{ runner.os }}-node-${{ matrix.node-version }}-yarn-${{ hashFiles('**/yarn.lock') }}
-#           restore-keys: |
-#             ${{ runner.os }}-node-${{ matrix.node-version }}-yarn-
-#       - name: Use Node.js ${{ matrix.node-version }}
-#         uses: actions/setup-node@v2.1.2
-#         with:
-#           node-version: ${{ matrix.node-version }}
-#       - name: install
-#         run: yarn
-#       - name: build
-#         run: yarn build:js
-#       - name: Get number of CPU cores
-#         id: cpu-cores
-#         uses: SimenB/github-actions-cpu-cores@v1
-#       - name: run tests
-#         run: yarn test-ci-partial:parallel --max-workers ${{ steps.cpu-cores.outputs.count }}
-#         env:
-#           CI: true
-
+  # test:
+  #   name: Build & Test
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
+  #     - name: Get Yarn cache directory path
+  #       id: yarn-cache-dir-path
+  #       run: echo "::set-output name=dir::$(yarn cache dir)"
+  #     - name: Setup Yarn cache
+  #       uses: actions/cache@v2
+  #       id: yarn-cache
+  #       with:
+  #         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+  #         key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-yarn-
+  #     - name: Setup Node
+  #       uses: actions/setup-node@v2.1.4
+  #       with:
+  #         node-version: 14.x
+  #     - name: Install dependencies
+  #       run: yarn
+  #     - name: build
+  #       run: yarn build:js
+  #     - name: Get number of CPU cores
+  #       id: cpu-cores
+  #       uses: SimenB/github-actions-cpu-cores@v1
+  #     - name: run tests
+  #       run: yarn test-ci-partial:parallel --max-workers ${{ steps.cpu-cores.outputs.count }}
+  #       env:
+  #         CI: true
 # name: legend-build
 
 # env:
