@@ -2,6 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "tsBuildInfoFile": "build/prod.tsbuildinfo",
+    "emitDeclarationOnly": true,
     "jsx": "react-jsx"
   },
   "exclude": [

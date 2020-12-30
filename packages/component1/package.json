@@ -6,15 +6,15 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "yarn clean && yarn build:tsc && yarn build:webpack",
-    "build:analyze": "webpack --mode production --analyze",
+    "build:analyze": "cross-env NODE_ENV=production webpack --mode production --analyze",
     "build:tsc": "tsc --project ./tsconfig.build.json",
-    "build:webpack": "webpack --mode production",
+    "build:webpack": "cross-env NODE_ENV=production webpack --mode production",
     "clean": "rimraf \"build\" \"lib\"",
-    "dev": "webpack --mode development --hot --watch",
-    "dev:advanced": "cross-env DEVELOPMENT_MODE=advaned webpack --mode development --hot --watch",
-    "dev:fast": "cross-env DEVELOPMENT_MODE=fast webpack --mode development --hot --watch",
-    "dev:type-check": "tsc --watch",
-    "type-check": "tsc"
+    "dev": "cross-env NODE_ENV=development webpack --mode development --watch",
+    "dev:advanced": "cross-env NODE_ENV=development DEVELOPMENT_MODE=advaned webpack --mode development --hot --watch",
+    "dev:fast": "cross-env NODE_ENV=development DEVELOPMENT_MODE=fast webpack --mode development --hot --watch",
+    "dev:ts": "tsc --emitDeclarationOnly --watch",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@akphi/lib1": "^0.0.0",

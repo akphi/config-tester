@@ -1,6 +1,7 @@
 # TODO
 
 - Script to add paths module aliases in TSConfig to Jest and Webpack - hm check wtf is going on
+- try `babel-plugin-module-resolver` if not delete
 - Try to publish something to `NPM` and consume it back somewhere else, try a dummy utility function????
 
 # Conventional commits

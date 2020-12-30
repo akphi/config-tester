@@ -4,7 +4,6 @@
     "outDir": "lib",
     "tsBuildInfoFile": "build/dev.tsbuildinfo",
     "rootDir": "src",
-    "emitDeclarationOnly": true,
     "jsx": "react-jsxdev",
     "strictNullChecks": true
   },

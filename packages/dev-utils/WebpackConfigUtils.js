@@ -152,7 +152,7 @@ const getBaseWebpackConfig = (env, arg, dirname) => {
           allowAsyncCycles: false, // allow import cycles that include an asynchronous import, e.g. import(/* webpackMode: "weak" */ './file.js')
           cwd: process.cwd(), // set the current working directory for displaying module paths
         }),
-      isEnvDevelopment && new ReactRefreshWebpackPlugin(),
+      // isEnvDevelopment && new ReactRefreshWebpackPlugin(),
       new MiniCssExtractPlugin({
         filename: '[name].css',
         chunkFilename: '[id].css',
@@ -218,7 +218,13 @@ const getBaseWebpackConfig = (env, arg, dirname) => {
       // NOTE: need to clean the `lib` directory since during development, we re-build module
       // on code change and save the build artifacts to disk so HMR can litter the `lib` directory
       // with chunk files overtime.
-      isEnvDevelopment && new CleanWebpackPlugin(),
+      isEnvDevelopment &&
+        new CleanWebpackPlugin({
+          // Do not remove type declaration files. This forces the user
+          // to run separate processes to rebuild typings on changes
+          cleanOnceBeforeBuildPatterns: ['!**/*.d.ts'],
+          cleanAfterEveryBuildPatterns: ['!**/*.d.ts'],
+        }),
     ].filter(Boolean),
   };
   return config;
@@ -228,7 +234,7 @@ const getLibraryModuleBaseWebpackConfig = (
   env,
   arg,
   dirname,
-  { mainEntryPath, libraryName },
+  { mainEntryPath },
 ) => {
   if (!dirname) {
     throw new Error(`\`dirname\` is required to build Webpack config`);
@@ -237,7 +243,7 @@ const getLibraryModuleBaseWebpackConfig = (
 
   const config = {
     ...baseConfig,
-    entry: { main: path.resolve(dirname, mainEntryPath) },
+    entry: { index: path.resolve(dirname, mainEntryPath) },
     output: {
       ...baseConfig.output,
       // NOTE: currently `webpack` does not support bundle library as ES standard modules (ESM)
@@ -245,9 +251,7 @@ const getLibraryModuleBaseWebpackConfig = (
       // See https://webpack.js.org/guides/author-libraries/#final-steps
       // See https://github.com/webpack/webpack/issues/2933
       path: path.join(dirname, 'lib'),
-      filename: (pathData) =>
-        pathData.chunk.name === 'main' ? 'index.js' : '[name].js',
-      library: libraryName,
+      filename: '[name].js',
       libraryTarget: 'commonjs2',
     },
   };
@@ -299,7 +303,7 @@ const getWebAppBaseWebpackConfig = (
     // WIP: workaround until `webpack-dev-server` watch mode works with webpack@5
     // See https://github.com/webpack/webpack-dev-server/issues/2758#issuecomment-710086019
     target: isEnvDevelopment ? 'web' : 'browserslist',
-    entry: { main: path.resolve(dirname, mainEntryPath) },
+    entry: { index: path.resolve(dirname, mainEntryPath) },
     output: {
       ...baseConfig.output,
       path: path.join(dirname, `dist${appConfig.baseUrl}`),
