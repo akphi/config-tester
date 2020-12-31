@@ -3,8 +3,9 @@ coverage:
     javascript:
       enable_partials: yes
   status:
-    project:
-      default:
-        target: 90%
+    # TODO: renable this when we start having more tests
+    # project:
+    #   default:
+    #     target: 90%
     patch:
       enabled: false
