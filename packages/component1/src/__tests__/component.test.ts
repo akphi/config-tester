@@ -5,4 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-console.log('(TODO) call yarn install');
+import { data, returnDummyOne } from './testData';
+
+test('some dummy test', () => {
+  expect(data).toEqual(returnDummyOne());
+});

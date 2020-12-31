@@ -44,11 +44,11 @@ With this, we could start shaping our codebase in monorepo structure. The follow
 For modules with non-JS code, such as `HTML` or `Sass` - similar to `component-B` and `app-C` - the devtool operations require multiple steps. For `build` phase can be broken down into a series of steps, e.g. `build:typescript && build:sass && build:html && ...`. However, for `develop` phase, it implies we either have to:
 
 - run `watch` processes in parallel: `<run-script-in-parallel> watch:typescript watch:sass ...`
-- or, use tools like `webpack` or `gulp` to collate those tasks into one `atomic` operation.
+- or, use tools like `webpack` or `gulp` to collate those tasks into one seemingly `atomic` operation, hence pipeline.
 
-The latter is the option we choose to go with for both `build` and `develop`. We pick `webpack` because it is mature, highly customizable, and because it has a [rich and mature set of plugins](https://webpack.js.org/plugins/) for code processing as well as an out-of-the-box `watcher` with [Hot Module Replacement](https://webpack.js.org/concepts/hot-module-replacement/) support and [`dev-server`](https://webpack.js.org/configuration/dev-server/) which are extremely powerful for development.
+Ideally, the latter is the option we want choose to go with for both `build` and `develop`. We pick `webpack` because it is mature, highly customizable, and because it has a [rich and mature set of plugins](https://webpack.js.org/plugins/) for code processing as well as an out-of-the-box `watcher` with [Hot Module Replacement](https://webpack.js.org/concepts/hot-module-replacement/) support and [`dev-server`](https://webpack.js.org/configuration/dev-server/) which are extremely powerful for development.
 
-> [`parcel`](https://parceljs.org/) and [`rollup`](https://rollupjs.org/guide/en/) are [decent and simpler alternatives](https://blog.logrocket.com/benchmarking-bundlers-2020-rollup-parcel-webpack/) to `webpack` but due to the lack of support for certain plugins, and the fact that our monolithic codebase already used `webpack` we decide to evaluate these tools later.
+> With `webpack`, building standard ES Module library (for tree-shaking) [is currently not supported](https://github.com/webpack/webpack/issues/2933). Also, for `develop` phase, we would prefer `webpack` to not do bundle automatically, we had trouble setup a workflow where `app-C` module can depend on `component-B` that was built in dev mode. As such, we settle with the popular industrial solution - [`rollup`](https://rollupjs.org/guide/en/).
 
 In terms of development workflow, for leaf modules like webapp `app-C`, when we rebuild modules that `app-C` depends on, `webpack-dev-server` should be able to pick up this change and either reload the app or `hot-replace` its module without refreshing the web page.
 

@@ -152,7 +152,6 @@ const getBaseWebpackConfig = (env, arg, dirname) => {
           allowAsyncCycles: false, // allow import cycles that include an asynchronous import, e.g. import(/* webpackMode: "weak" */ './file.js')
           cwd: process.cwd(), // set the current working directory for displaying module paths
         }),
-      // isEnvDevelopment && new ReactRefreshWebpackPlugin(),
       new MiniCssExtractPlugin({
         filename: '[name].css',
         chunkFilename: '[id].css',
@@ -239,6 +238,12 @@ const getLibraryModuleBaseWebpackConfig = (
   if (!dirname) {
     throw new Error(`\`dirname\` is required to build Webpack config`);
   }
+  const { isEnvDevelopment, isEnvProduction } = getEnvInfo(env, arg);
+  if (isEnvDevelopment || isEnvProduction) {
+    throw new Error(
+      `NOTE: \`webpack\` currently does not support for ESM module. Please use \`rollup\` instead/`,
+    );
+  }
   const baseConfig = getBaseWebpackConfig(env, arg, dirname);
 
   const config = {
@@ -300,9 +305,6 @@ const getWebAppBaseWebpackConfig = (
 
   const config = {
     ...baseConfig,
-    // WIP: workaround until `webpack-dev-server` watch mode works with webpack@5
-    // See https://github.com/webpack/webpack-dev-server/issues/2758#issuecomment-710086019
-    target: isEnvDevelopment ? 'web' : 'browserslist',
     entry: { index: path.resolve(dirname, mainEntryPath) },
     output: {
       ...baseConfig.output,
@@ -317,9 +319,17 @@ const getWebAppBaseWebpackConfig = (
     },
     devServer: {
       compress: true, // enable gzip compression for everything served to reduce traffic size
-      publicPath: '/',
+      dev: {
+        publicPath: '/',
+      },
       open: true,
+      // start - should remove this in next iteration of webpack-dev-server@4.beta
+      static: {
+        watch: false,
+      },
+      // end - should remove this in next iteration of webpack-dev-server@4.beta
       port: 3000,
+      host: 'localhost',
       openPage:
         // trim the leading and trailing slash
         appConfig.baseUrl.length === 1
@@ -331,19 +341,11 @@ const getWebAppBaseWebpackConfig = (
         // See https://github.com/bripkens/connect-history-api-fallback#disabledotrule
         disableDotRule: true,
       },
-      // suppress HMR and WDS messages about updated chunks
-      // NOTE: there is a bug that the line '[HMR] Waiting for update signal from WDS...' is not suppressed
-      // See https://github.com/webpack/webpack-dev-server/issues/2166
-      clientLogLevel: 'warn',
-      stats: {
-        // Make Webpack Dev Middleware less verbose, consider `quiet` and `noInfo` options as well
-        // NOTE: Use custom reporter to output errors and warnings from TS fork checker in `stylish` format. It's less verbose and
-        // repetitive. Since we use the custom plugin, we want to mute `errors` and `warnings` from `webpack-dev-middleware`
-        // See https://github.com/webpack-contrib/webpack-stylish
-        // See https://github.com/TypeStrong/fork-ts-checker-webpack-plugin/issues/119
-        all: false,
-        colors: true,
-        timings: true,
+      client: {
+        // suppress HMR and WDS messages about updated chunks
+        // NOTE: there is a bug that the line '[HMR] Waiting for update signal from WDS...' is not suppressed
+        // See https://github.com/webpack/webpack-dev-server/issues/2166
+        logging: 'warn',
       },
       ...(appConfig.devServer ?? {}),
     },
@@ -364,13 +366,14 @@ const getWebAppBaseWebpackConfig = (
       : baseConfig.optimization,
     plugins: [
       ...baseConfig.plugins,
+      isEnvDevelopment && new ReactRefreshWebpackPlugin(),
       new HtmlWebpackPlugin({
         template: path.resolve(dirname, indexHtmlPath),
         favicon: appConfig.faviconPath
           ? path.resolve(dirname, appConfig.faviconPath)
           : undefined,
       }),
-    ],
+    ].filter(Boolean),
   };
   return config;
 };

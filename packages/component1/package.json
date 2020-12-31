@@ -2,18 +2,21 @@
   "name": "@akphi/component1",
   "version": "0.0.0",
   "license": "MIT",
-  "main": "lib/index.js",
+  "sideEffects": false,
+  "main": "lib/index.cjs",
+  "module": "lib/index.mjs",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "yarn clean && yarn build:tsc && yarn build:webpack",
-    "build:analyze": "cross-env NODE_ENV=production webpack --mode production --analyze",
+    "build": "yarn clean && yarn build:tsc && yarn build:rollup",
+    "build:analyze": "cross-env NODE_ENV=development BUILD_MODE=analyze rollup --config",
+    "build:rollup": "cross-env NODE_ENV=production rollup --config",
     "build:tsc": "tsc --project ./tsconfig.build.json",
-    "build:webpack": "cross-env NODE_ENV=production webpack --mode production",
     "clean": "rimraf \"build\" \"lib\"",
-    "dev": "cross-env NODE_ENV=development webpack --mode development --watch",
-    "dev:advanced": "cross-env NODE_ENV=development DEVELOPMENT_MODE=advaned webpack --mode development --hot --watch",
-    "dev:fast": "cross-env NODE_ENV=development DEVELOPMENT_MODE=fast webpack --mode development --hot --watch",
-    "dev:ts": "tsc --emitDeclarationOnly --watch",
+    "dev": "npm-run-all --parallel dev:ts dev:rollup",
+    "dev:advanced": "cross-env NODE_ENV=development DEVELOPMENT_MODE=advaned rollup --config --watch",
+    "dev:fast": "cross-env NODE_ENV=development DEVELOPMENT_MODE=fast rollup --config --watch",
+    "dev:rollup": "cross-env NODE_ENV=development rollup --config --watch",
+    "dev:ts": "tsc --emitDeclarationOnly --watch --preserveWatchOutput",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
@@ -23,7 +26,9 @@
     "react-dom": "17.0.1"
   },
   "devDependencies": {
-    "@akphi/dev-utils": "^0.0.0"
+    "@akphi/dev-utils": "^0.0.0",
+    "@rollup/plugin-commonjs": "17.0.0",
+    "@rollup/plugin-replace": "2.3.4"
   },
   "peerDependencies": {
     "@material-ui/core": "^4.11.0",

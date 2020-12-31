@@ -5,9 +5,4 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { returnOne } from '../helpers';
-import { data } from './testData';
-
-test('some other dummy test', () => {
-  expect(data).toEqual(returnOne());
-});
+export const returnOne = (): number => 1;

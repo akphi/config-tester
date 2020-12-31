@@ -1,8 +1,7 @@
 # TODO
 
-- Script to add paths module aliases in TSConfig to Jest and Webpack - hm check wtf is going on
-- try `babel-plugin-module-resolver` if not delete
-- Try to publish something to `NPM` and consume it back somewhere else, try a dummy utility function????
+- Script to add paths module aliases in TSConfig to Jest and Webpack - try `babel-plugin-module-resolver` if not delete
+- Try to publish something to `NPM` and consume it back somewhere else, try a dummy utility function with typings and do CommonJs as well????
 
 # Conventional commits
 
@@ -18,11 +17,6 @@
   https://github.com/conventional-changelog/conventional-changelog
   https://github.com/facebook/docusaurus/blob/master/CONTRIBUTING.md#semantic-commit-messages
 
-# Upgrade Deps
-
-- Upgrade to `webpack-dev-server@4.beta.1`
-- Upgrade to `@pmmmwh/react-refresh-webpack-plugin@0.5.0-beta.0`
-
 # Bundle size issues
 
 - check `react-icons` bundling shenanigan
@@ -35,22 +29,10 @@
   - otherwise, TRY create our own module to load `monaco-editor`
     https://webpack.js.org/guides/code-splitting/
 
-# Webpack ESM
+# Webpack 5
 
-- Use `module` instead of `main` in `package.json`
-  https://webpack.js.org/guides/author-libraries/#final-steps
-  https://github.com/dherman/defense-of-dot-js/blob/master/proposal.md#typical-usage
-- We want to use ESM when bundling from Webpack so consumer can do tree-shaking. This is on Webpack roadmap
-  https://github.com/webpack/webpack/issues/2933
-- The alternative like `rollup` and `parcel` don't have rich enough plugin support for `React Fast Refresh` or `HotModuleReplacement` or loading `monaco-editor`
-- Check if we need to force `babel-preset-env` to export to the right kind of module with `modules` flag
-  https://stackoverflow.com/questions/55792519/what-does-the-modulesauto-means-in-babel-preset-env-field
-  https://babeljs.io/docs/en/babel-preset-env#modules
-- Check out webpack guide to tree-shaking:
-  https://webpack.js.org/guides/tree-shaking/
-- Need to add `sideEffects: false` to `package.json`
-  https://stackoverflow.com/questions/49160752/what-does-webpack-4-expect-from-a-package-with-sideeffects-false
-- Explicitly tell `babel-jest` to export CommonJS as Jest does not currently support ESM. Check
-  https://github.com/facebook/jest/issues/9430
-  https://jestjs.io/docs/en/next/configuration#extensionstotreatasesm-arraystring
-  https://medium.com/@craigmiller160/how-to-fully-optimize-webpack-4-tree-shaking-405e1c76038
+- Upgrade to non-beta
+
+# ESM
+
+- `jest` with ESM so we can eliminate the `cjs` build for `rollup`

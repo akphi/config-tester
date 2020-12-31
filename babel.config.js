@@ -9,15 +9,21 @@ const path = require('path');
 
 const isJSXSourceFile = (filename) =>
   /\.tsx$/.test(filename) && // don't care about `*.jsx` files
-  !filename.includes(`${path.sep}__tests__${path.sep}`); // exclude test files
+  !filename.includes(`${path.sep}__tests__${path.sep}`) && // exclude tests
+  !filename.includes(`${path.sep}__mocks__${path.sep}`); // exclude mocks
 
 module.exports = (api) => {
   api.cache.using(() => process.env.NODE_ENV); // cache based on the value of NODE_ENV. Anytime the environment changes, the config is recomputed
   const isEnvDevelopment = api.env('development');
 
-  return {
+  const config = {
     presets: [
-      ['@babel/preset-env', { debug: false }], // use `debug` option to see the lists of plugins being selected
+      [
+        '@babel/preset-env',
+        {
+          debug: false, // use `debug` option to see the lists of plugins being selected
+        },
+      ],
       [
         '@babel/preset-react',
         {
@@ -47,6 +53,19 @@ module.exports = (api) => {
         },
       ],
     ],
+    plugins: [
+      [
+        // Reduce bundle size by referencing `babel` helpers from `@babel/runtime`
+        // See https://babeljs.io/docs/en/babel-plugin-transform-runtime
+        '@babel/plugin-transform-runtime',
+        {
+          version: require('@babel/runtime/package.json').version,
+          // We should turn this on once the lowest version of Node LTS supports ES Modules.
+          // See https://babeljs.io/docs/en/babel-plugin-transform-runtime#useesmodules
+          useESModules: true,
+        },
+      ],
+    ].filter(Boolean),
     overrides: [
       {
         test: (filename) => filename && isJSXSourceFile(filename),
@@ -58,9 +77,11 @@ module.exports = (api) => {
           //  2. When we allow this to process non-jsx files, it would throw errors like the following potentially because we force HMR on modules that HMR does not support (?):
           //  `[HMR] Error: Aborted because something.js is not accepted`
           //  See https://github.com/pmmmwh/react-refresh-webpack-plugin/issues/24#issuecomment-672816401
-          // isEnvDevelopment && 'react-refresh/babel',
+          isEnvDevelopment && 'react-refresh/babel',
         ].filter(Boolean),
       },
     ],
   };
+
+  return config;
 };

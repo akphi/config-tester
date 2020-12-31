@@ -8,7 +8,7 @@
     "build": "yarn clean && yarn build:tsc",
     "build:tsc": "tsc --project ./tsconfig.build.json",
     "clean": "rimraf \"build\" \"lib\"",
-    "dev": "tsc --watch",
+    "dev": "tsc --watch --preserveWatchOutput",
     "type-check": "tsc --noEmit"
   }
 }
