@@ -17,6 +17,8 @@
     "lint:fix": "eslint --config ./.eslintrc-advanced.js --fix .",
     "serve": "npx http-server ./dist -p 3000 -a localhost -g --cors -o /ct",
     "setup": "node ../../scripts/createAppConfig.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {

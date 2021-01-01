@@ -17,6 +17,8 @@
     "dev:fast": "cross-env NODE_ENV=development DEVELOPMENT_MODE=fast rollup --config --watch",
     "dev:rollup": "cross-env NODE_ENV=development rollup --config --watch",
     "dev:ts": "tsc --emitDeclarationOnly --watch --preserveWatchOutput",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {

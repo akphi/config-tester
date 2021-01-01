@@ -5,13 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+const path = require('path');
+
 module.exports = {
   transform: {
     // Since `babel-jest` will not do type checking for the test code.
     // We need to manually run `tsc`. Another option is to use `jest-runner-tsc`
     // which currently has certain performance limitation
     // See https://jestjs.io/docs/en/getting-started#using-typescript
-    '^.+\\.[jt]sx?$': ['babel-jest'],
+    '^.+\\.[jt]sx?$': [
+      'babel-jest',
+      { configFile: path.resolve(__dirname, '../../babel.config.js') },
+    ],
   },
   setupFiles: ['<rootDir>/scripts/jest/setupTests.js'],
   // Setup to run immediately after the test framework has been installed in the environment

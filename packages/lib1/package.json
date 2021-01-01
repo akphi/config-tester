@@ -9,6 +9,8 @@
     "build:tsc": "tsc --project ./tsconfig.build.json",
     "clean": "rimraf \"build\" \"lib\"",
     "dev": "tsc --watch --preserveWatchOutput",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "type-check": "tsc --noEmit"
   }
 }

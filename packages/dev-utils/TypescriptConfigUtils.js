@@ -35,16 +35,46 @@ const resolveFullTsConfig = (fullTsConfigPath) => {
   while (ext) {
     const parentTsConfigPath = path.resolve(tsConfigDir, ext);
     tsConfigDir = getDir(parentTsConfigPath);
-    let parentTsConfig;
+    let parentTsFullConfig;
     try {
-      parentTsConfig = getTsConfigJSON(parentTsConfigPath);
+      parentTsFullConfig = getTsConfigJSON(parentTsConfigPath);
     } catch {
       throw new Error(
         `Can't resolve parent Typescript config file with relative path '${ext}' for config file with path '${fullTsConfigPath}'`,
       );
     }
-    tsConfig = { ...parentTsConfig, ...tsConfig };
-    ext = parentTsConfig.extends;
+    /**
+     * NOTE: here we need to get the right understanding of the `extends` in `tsconfig`
+     * `extends` means overriding, not merge (like `webpack-merge`) i.e.
+     *
+     * The configuration from the base file are loaded first, then overridden by those in the
+     * inheriting config file. All relative paths found in the configuration file will be resolved
+     * relative to the configuration file they originated in.
+     *
+     * It’s worth noting that `files`, `include` and `exclude` from the inheriting config file overwrite
+     * those from the base config file, and that circularity between configuration files is not allowed.
+     *
+     * Currently, the only top-level property that is excluded from inheritance is `references`,
+     * which means that if `tsconfigA` extends `tsconfigB`, even if `tsconfigB` has `references`,
+     * those will not be passed down to `tsconfigA`
+     *
+     * See https://www.typescriptlang.org/tsconfig#extends
+     * See https://www.typescriptlang.org/docs/handbook/tsconfig-json.html
+     *
+     * Therefore, the only field within `tsconfig` that we needs to destruct is `compilerOptions`.
+     */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { references, ...parentTsConfig } = parentTsFullConfig; // omit `references` from parent config
+    tsConfig = {
+      ...parentTsConfig,
+      ...tsConfig,
+      extends: parentTsConfig.extends,
+      compilerOptions: {
+        ...parentTsConfig.compilerOptions,
+        ...tsConfig.compilerOptions,
+      },
+    };
+    ext = parentTsFullConfig.extends;
   }
   return tsConfig;
 };

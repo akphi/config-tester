@@ -4,11 +4,7 @@
     "tsBuildInfoFile": "build/dev.tsbuildinfo",
     "rootDir": "src",
     "noEmit": true,
-    "jsx": "preserve",
-    "baseUrl": ".",
-    "paths": {
-      "@akphi/app1/*": ["./src/*"]
-    }
+    "jsx": "preserve"
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "references": [{ "path": "../component1" }]
