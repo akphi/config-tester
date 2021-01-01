@@ -69,6 +69,7 @@ const needsCopyrightHeader = (copyrightText, file) => {
   // comment might have been merged with another comment.
   const text = generateCopyrightComment({
     text: copyrightText,
+    pkg: {},
     onlyGenerateCommentContent: true,
   });
   return fileContent.trim().length > 0 && !fileContent.includes(text);
@@ -153,6 +154,7 @@ const updateCopyrightHeaders = async ({
     );
     const copyrightComment = generateCopyrightComment({
       text: copyrightText,
+      pkg: {},
       onlyGenerateCommentContent: false,
     });
     await Promise.all(
