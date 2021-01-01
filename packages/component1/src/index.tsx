@@ -22,6 +22,5 @@ export function Component1() {
 
 export function Component2() {
   helloworld();
-
   return <div className="blue">lanister</div>;
 }

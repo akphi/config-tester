@@ -13,7 +13,10 @@
     "**/yarn.lock": true,
     "packages/*/build": true
   },
+  "javascript.preferences.importModuleSpecifier": "non-relative",
   "typescript.preferences.importModuleSpecifier": "non-relative",
   // needed this to be `on` instead of `auto` so auto-import suggestion works properly with monorepo
-  "typescript.preferences.includePackageJsonAutoImports": "on"
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "javascript.preferences.quoteStyle": "single",
+  "typescript.preferences.quoteStyle": "single"
 }

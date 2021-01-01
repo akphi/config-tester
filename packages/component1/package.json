@@ -13,7 +13,7 @@
     "build:tsc": "tsc --project ./tsconfig.build.json",
     "clean": "rimraf \"build\" \"lib\"",
     "dev": "npm-run-all --parallel dev:ts dev:rollup",
-    "dev:advanced": "cross-env NODE_ENV=development DEVELOPMENT_MODE=advaned rollup --config --watch",
+    "dev:advanced": "cross-env NODE_ENV=development DEVELOPMENT_MODE=advanced rollup --config --watch",
     "dev:fast": "cross-env NODE_ENV=development DEVELOPMENT_MODE=fast rollup --config --watch",
     "dev:rollup": "cross-env NODE_ENV=development rollup --config --watch",
     "dev:ts": "tsc --emitDeclarationOnly --watch --preserveWatchOutput",
@@ -26,9 +26,7 @@
     "react-dom": "17.0.1"
   },
   "devDependencies": {
-    "@akphi/dev-utils": "^0.0.0",
-    "@rollup/plugin-commonjs": "17.0.0",
-    "@rollup/plugin-replace": "2.3.4"
+    "@akphi/dev-utils": "^0.0.0"
   },
   "peerDependencies": {
     "@material-ui/core": "^4.11.0",

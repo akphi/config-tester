@@ -9,7 +9,7 @@
     "build:webpack": "cross-env NODE_ENV=production webpack --mode production",
     "clean": "rimraf \"build\" \"dist\"",
     "dev": "npm-run-all --parallel dev:ts dev:webpack",
-    "dev:advanced": "cross-env NODE_ENV=development DEVELOPMENT_MODE=advaned webpack serve --mode development",
+    "dev:advanced": "cross-env NODE_ENV=development DEVELOPMENT_MODE=advanced webpack serve --mode development",
     "dev:fast": "cross-env NODE_ENV=development DEVELOPMENT_MODE=fast webpack serve --mode development",
     "dev:ts": "tsc --noEmit --watch --preserveWatchOutput",
     "dev:webpack": "cross-env NODE_ENV=development webpack serve --mode development",

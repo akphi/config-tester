@@ -21,4 +21,9 @@ If you are making a change that should have a docs update: submit another PR at:
 | Any Dependency Changes? |
 | License                 | MIT                                                                                                        |
 
-<!-- Describe your changes below in as much detail as possible -->
+<!--
+Describe your changes below in as much detail as possible
+
+If you made dependency changes, please explain why you need it and what are the alternatives you consider
+if applicable
+-->

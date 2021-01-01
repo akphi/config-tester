@@ -8,10 +8,8 @@
 const fs = require('fs');
 const { execSync } = require('child_process');
 const { isBinaryFileSync } = require('isbinaryfile');
+const { getFileContent, createRegExp } = require('./DevUtils');
 const chalk = require('chalk');
-
-const getFileContent = (file) => fs.readFileSync(file, { encoding: 'utf-8' });
-const createRegExp = (pattern) => new RegExp(pattern);
 
 const GENERIC_INCLUDE_PATTERNS = [
   /\.[^/]+$/, // files with extension
@@ -21,8 +19,14 @@ const GENERIC_EXCLUDE_PATTERNS = [
   // nothing
 ];
 
-const getCopyrightComment = (
+const generateCopyrightComment = ({
   text,
+  /**
+   * Optional. This text will be added prior to the copyright content.
+   * This is often useful for bundled code.
+   * e.g. `@license some-package v1.0.0`
+   */
+  pkg: { name, version },
   /**
    * Boolean flag indicating if we are to generate just the content of the comment
    * or the opening/closing syntax for it
@@ -31,18 +35,27 @@ const getCopyrightComment = (
   /**
    * TODO: account for file extension to generate different kinds of comments.
    * e.g. `html` comment is a tag `<!-- content -->`
+   * e.g. `yaml` comment uses `#`
    */
   file,
-) => {
-  let comment = text
+}) => {
+  // TODO: depending on the file type, these params might differ
+  const headerPrefix = '/**';
+  const contentPrefix = ' *';
+  const footerPrefix = ' */';
+
+  let lines = text
     .trim()
     .split('\n')
-    .map((line) => ` *${line.length ? ` ${line}` : ''}`)
-    .join('\n');
+    .map((line) => `${contentPrefix}${line.length ? ` ${line}` : ''}`);
   if (!onlyGenerateCommentContent) {
-    comment = `/**\n${comment}\n */`;
+    lines = [
+      `${headerPrefix}${name && version ? ` @license ${name} ${version}` : ''}`,
+      ...lines,
+      footerPrefix,
+    ];
   }
-  return comment;
+  return lines.join('\n');
 };
 
 const getIncludedPatterns = ({ extensions }) => [
@@ -54,11 +67,14 @@ const needsCopyrightHeader = (copyrightText, file) => {
   // NOTE: while checking for copyright header, we just generate the copyright comment content
   // not including the full comment (with opening/closing syntax) because potentially the copyright
   // comment might have been merged with another comment.
-  const text = getCopyrightComment(copyrightText, true);
+  const text = generateCopyrightComment({
+    text: copyrightText,
+    onlyGenerateCommentContent: true,
+  });
   return fileContent.trim().length > 0 && !fileContent.includes(text);
 };
 
-// Jest has a fairly complex check for copyright license header that we used as reference
+// Jest has a fairly sophisticated check for copyright license header that we used as reference
 // See https://github.com/facebook/jest/blob/master/scripts/checkCopyrightHeaders.js
 const getInvalidFiles = ({
   extensions,
@@ -135,7 +151,10 @@ const updateCopyrightHeaders = async ({
     console.log(
       `Found ${files.length} file(s) without copyright header. Processing...`,
     );
-    const copyrightComment = getCopyrightComment(copyrightText, false);
+    const copyrightComment = generateCopyrightComment({
+      text: copyrightText,
+      onlyGenerateCommentContent: false,
+    });
     await Promise.all(
       files.map((file) =>
         fs.writeFile(
@@ -155,6 +174,7 @@ const updateCopyrightHeaders = async ({
 };
 
 module.exports = {
+  generateCopyrightComment,
   checkCopyrightHeaders,
   updateCopyrightHeaders,
 };
