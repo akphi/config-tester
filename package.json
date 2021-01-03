@@ -55,7 +55,8 @@
   },
   "config": {
     "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
+      "path": "./node_modules/cz-conventional-changelog",
+      "maxHeaderWidth": 72
     }
   },
   "browserslist": [

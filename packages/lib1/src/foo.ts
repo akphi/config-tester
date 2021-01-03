@@ -13,6 +13,6 @@ export function helloworld() {
   return 'Hello world';
 }
 
-export function doThis() {
-  console.log('doThis');
+export function doThis2() {
+  console.log('doThis2');
 }
