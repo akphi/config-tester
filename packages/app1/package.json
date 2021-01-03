@@ -1,6 +1,6 @@
 {
   "name": "@akphi/app1",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "build": "yarn clean && yarn build:tsc && yarn build:webpack",
@@ -22,11 +22,11 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@akphi/component1": "^0.0.0",
+    "@akphi/component1": "^0.0.1",
     "react": "17.0.1",
     "react-dom": "17.0.1"
   },
   "devDependencies": {
-    "@akphi/dev-utils": "^0.0.0"
+    "@akphi/dev-utils": "^0.0.1"
   }
 }
