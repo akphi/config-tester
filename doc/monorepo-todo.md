@@ -1,9 +1,3 @@
-# Conventional commits
-
-- Fix up the doc COMMIT_CONVENTION.md - Follow commit message format in vue.js
-- Use `@commitlint`
-- Create a script for cz
-
 # Changelog
 
 - Consider using conventional-commits to generate change-log
@@ -16,6 +10,7 @@
 
 # TODO
 
+- try to do a github release
 - Try to publish something to `NPM` and consume it back somewhere else, try a dummy utility function with typings.
 
 # Release process

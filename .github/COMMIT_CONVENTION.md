@@ -1,30 +1,31 @@
 ## Git Commit Message Convention
 
-> This is adapted from [Angular's commit convention](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular).
+> This is adapted from [Angular's commit convention](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular) and [conventional commit](https://www.conventionalcommits.org/en/v1.0.0/)
 
-https://www.conventionalcommits.org/en/v1.0.0/
-https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular
+### Overview
 
-#### TL;DR:
-
-Messages must be matched by the following regex:
+The commit message must match the following regular expression:
 
 ```js
 /^(revert: )?(feat|fix|polish|docs|style|refactor|perf|test|workflow|ci|chore|types)(\(.+\))?: .{1,50}/;
+// <type>(<scope>): <subject>
+// e.g. feat(core): add new option for plugin
+// e.g. fix(core): handle garbage collection
+// e.g. chore(deps): update typescript to v4
 ```
 
-#### Examples
+### Examples
 
-Appears under "Features" header, `compiler` subheader:
-
-```
-feat(compiler): add 'comments' option
-```
-
-Appears under "Bug Fixes" header, `v-model` subheader, with a link to issue #28:
+Appears under "Features" header, `core` subheader:
 
 ```
-fix(v-model): handle events on blur
+feat(core): add 'comments' option
+```
+
+Appears under "Bug Fixes" header, `compiler` subheader, with a link to issue #28:
+
+```
+fix(compiler): handle garbage collection
 
 close #28
 ```
@@ -51,13 +52,23 @@ A commit message consists of a **header**, **body** and **footer**. The header h
 
 ```
 <type>(<scope>): <subject>
+  │       │          │
+  │       │          └──⫸ Subject [required]: A short summary of the changes
+  │       │
+  │       └────⫸ Commit Scope [optional]: core|compiler|...
+  │
+  └───⫸ Commit Type [required]: build|ci|docs|feat|fix|perf|refactor|test|style|...
+
 <BLANK LINE>
-<body>
+
+<body>  ───────⫸ Body [optional]: Include documentation/context/motivation of the changes
+
 <BLANK LINE>
-<footer>
+
+<footer> ──────⫸ Footer: Other information like BREAKING CHANGES or referenced issues
 ```
 
-The **header** is mandatory and the **scope** of the header is optional.
+For the **header**, the **type** and **summary** are mandatory while the **scope** is optional.
 
 ### Revert
 
@@ -71,7 +82,7 @@ Other prefixes are up to your discretion. Suggested prefixes are `docs`, `chore`
 
 ### Scope
 
-The scope could be anything specifying the place of the commit change. For example `core`, `compiler`, `ssr`, `v-model`, `transition` etc...
+The scope could be anything specifying the place of the commit change. For example: `core`, `transition` etc...
 
 ### Subject
 
@@ -82,6 +93,8 @@ The subject contains a succinct description of the change:
 - no dot (.) at the end
 
 ### Body
+
+> This section is often optional but highly recommended. This is a good place to put documentation with references to RFCs, issues, literatures... Documentation like this often provide invaluable contextual knowledge on the change and it is saved permanantly by Git so it does not become lost over time like code comments.
 
 Just as in the **subject**, use the imperative, present tense: "change" not "changed" nor "changes".
 The body should include the motivation for the change and contrast this with previous behavior.

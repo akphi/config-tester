@@ -33,7 +33,7 @@
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS --help-url 'Use `yarn commit` or see guide at: https://github.com/akphi/config-tester/blob/master/.github/COMMIT_CONVENTION.md'"
     }
   },
   "lint-staged": {
