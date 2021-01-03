@@ -7,10 +7,14 @@
 - `MAYBE` Setup testing `fixtures` (React) or `examples` (Material-UI) for `cypress` e2e test - https://stackoverflow.com/questions/12071344/what-are-fixtures-in-programming
 - Create an `npx` program to create a site that uses legend studio - see `docusaurus` and `create-react-app` for inspiration. Use `cli` to do so - https://dev.to/iulianoctavianpreda/run-your-npx-script-directly-from-github-create-your-own-cli-commands-and-other-stories-4pn3
 - Refer to `rollup` for issue template (Modification/New Plugin/ etc.) - https://github.com/rollup/plugins/issues/new/choose
+- Improve `CONTRIBUTING.md` with reference to this
+  https://github.com/rollup/plugins/blob/master/.github/CONTRIBUTING.md
 
 # Further Improvements
 
 - Yarn 2 with `PNP` (See `jest` for example - https://github.com/facebook/jest), or NPM 7
+  This fixes problem with unmet peer dependencies as well - https://github.com/yarnpkg/yarn/issues/5810
+  https://yarnpkg.com/getting-started/migration
 - Code-splitting and lazy-loading
   https://github.com/dan-kez/lerna-webpack-example
   https://github.com/jamiebuilds/react-loadable

@@ -31,15 +31,32 @@ Our monolithic codebase has a fairly standard setup, nothing far from a project 
 
 At the point of writing, the most prominent package managers like [NPM](https://docs.npmjs.com/cli/v6/commands/npm) and [Yarn](https://yarnpkg.com/package/yarn) have support for monorepo project via the `workspaces` feature. Nevertheless, we have opted in to using [Yarn workspaces](https://classic.yarnpkg.com/en/docs/workspaces/) because firstly, the NPM counterpart is still [work-in-progress](https://docs.npmjs.com/cli/v7/using-npm/workspaces) and secondly, we have already used `Yarn` as our default package manager thanks to its richer feature set.
 
-With this, we could start shaping our codebase in monorepo structure. The following section details the tooling support and setup
+With this, we could start shaping our codebase in monorepo structure. The following section details the tooling support and setup.
 
-### Lerna
+### Monorepo Manager: Yarn Workspace and Lerna
 
 [Lerna](https://lerna.js.org/) is **not essential** for working with a monorepo project; however, it helps optimize the workflow around managing monorepo project, especially with the `setup` and `publish` phase.
 
 > One of the most important feature of `lerna` is the ability to run task in topologically-sorted order (similar to [Maven](https://maven.apache.org/)). One particularly popular lerna command is [`bootstrap`](https://github.com/lerna/lerna/tree/main/commands/bootstrap), which is [made redundant](https://github.com/lerna/lerna/issues/1308#issuecomment-370848535) by `Yarn workspaces`, but the [`run`](https://github.com/lerna/lerna/tree/main/commands/run) command is still very useful for running script in topological order.
 
-### Webpack
+### Module System: ECMAScript Module (ESM)
+
+One problem that we have to deal with that does not happen for a monolithic codebase is to decide the type of Javascript modules we want to produce during `build` phase for each modules. The top level modules are consumed directly by the browser, and tools like `webpack` handles this well. Bundled code at the top level include source code from all dependencies, usually minified to optimize download speed (there are other techniques that we yet to consider such as [code-splitting](https://developer.mozilla.org/en-US/docs/Glossary/Code_splitting) or [module-federation](https://webpack.js.org/concepts/module-federation/)). But when we build library modules, if we choose the same strategy for bundling code, we will end up with duplicated dependencies in the top level module bundle.
+
+This is why we need to be able to do either the followings for library module bundle:
+
+- Run [tree-shaking](https://developer.mozilla.org/en-US/docs/Glossary/Tree_shaking) while bundling top-level module.
+- While bundling library modules, mark some dependencies as external and force them to be specified as dependencies in the consumer/top-level modules.
+
+The latter is supported by most bundlers like `webpack` or `rollup`. The former, however is not too straight-forward: to [fully support tree-shaking](https://webpack.js.org/guides/tree-shaking/), we need to bundle the library modules (i.e. non-top-level modules) as [ESM](https://hacks.mozilla.org/2018/03/es-modules-a-cartoon-deep-dive/), rather than [CommonJS (CJS)](https://auth0.com/blog/javascript-module-systems-showdown/). Unfortunately, the tooling support for ESM at the moment is not quite fully in place (e.g. at the time of speaking, `webpack@5` and `Jest@26` does not fully support ESM).
+
+> Due to `Jest@26`'s [not usupporting ESM](https://github.com/facebook/jest/issues/9430), we currently we still need to build an extra CJS bundle for each library module just for testing.
+
+Then, not all dependencies support ESM (most have support for CJS as it's still the dominant one), and while some of them do, there are particular setup we have to follow to not wrongly pick the CJS bundle.
+
+> Take `lodash` for example, to use ESM `lodash`, we have to use the library [lodash-es](https://www.npmjs.com/package/lodash-es). For big library like `monaco-editor`, tree-shaking also becomes vital, and their setup to use ESM is also [not straight-forward](https://github.com/microsoft/monaco-editor-webpack-plugin/issues/97)
+
+### Bundler: Webpack and Rollup
 
 For modules with non-JS code, such as `HTML` or `Sass` - similar to `component-B` and `app-C` - the devtool operations require multiple steps. For `build` phase can be broken down into a series of steps, e.g. `build:typescript && build:sass && build:html && ...`. However, for `develop` phase, it implies we either have to:
 
@@ -48,11 +65,11 @@ For modules with non-JS code, such as `HTML` or `Sass` - similar to `component-B
 
 Ideally, the latter is the option we want choose to go with for both `build` and `develop`. We pick `webpack` because it is mature, highly customizable, and because it has a [rich and mature set of plugins](https://webpack.js.org/plugins/) for code processing as well as an out-of-the-box `watcher` with [Hot Module Replacement](https://webpack.js.org/concepts/hot-module-replacement/) support and [`dev-server`](https://webpack.js.org/configuration/dev-server/) which are extremely powerful for development.
 
-> With `webpack`, building standard ES Module library (for tree-shaking) [is currently not supported](https://github.com/webpack/webpack/issues/2933). Also, for `develop` phase, we would prefer `webpack` to not do bundle automatically, we had trouble setup a workflow where `app-C` module can depend on `component-B` that was built in dev mode. As such, we settle with the popular industrial solution - [`rollup`](https://rollupjs.org/guide/en/).
+> With `webpack`, bundling library as ESM [is currently not supported](https://github.com/webpack/webpack/issues/2933). Also, for `develop` phase, we would prefer `webpack` to not do bundle automatically, we had trouble setup a workflow where `app-C` module can depend on `component-B` that was built in dev mode. As such, we settle with the popular industrial solution - [`rollup`](https://rollupjs.org/guide/en/).
 
 In terms of development workflow, for leaf modules like webapp `app-C`, when we rebuild modules that `app-C` depends on, `webpack-dev-server` should be able to pick up this change and either reload the app or `hot-replace` its module without refreshing the web page.
 
-### Typescript and Babel
+### Compiler/Transpiler: Typescript and Babel
 
 There are 2 ways to process Typescript code:
 
@@ -69,7 +86,7 @@ In the `build` phase, `tsc` will be used to create type declaration `*.d.ts`. Si
 
 `babel` will be used `webpack` for both `develop` and `build` for modules similar to `component-B` and `app-C`.
 
-### IDE
+### IDE: Visual Studio Code
 
 We use [Visual Studio Code (vscode)](https://code.visualstudio.com/). `vscode` seems to naturally support monorepo, the only thing we need to do is to ensure running `yarn install` so modules are linked properly, `Go to definition (Ctrl + Click)` should work nicely without any other config.
 
