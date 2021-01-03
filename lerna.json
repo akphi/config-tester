@@ -6,17 +6,16 @@
   "useWorkspaces": true,
   "npmClient": "yarn",
   "changelog": {
-    "repo": "babel/babel",
-    "cacheDir": "build/.changelog",
+    "repo": "akphi/config-tester",
+    "cacheDir": ".changelog",
     "labels": {
-      "PR: Breaking Change :boom:": ":boom: Breaking Change",
-      "PR: New Feature :rocket:": ":rocket: New Feature",
-      "PR: Bug Fix :bug:": ":bug: Bug Fix",
-      "PR: Polish :nail_care:": ":nail_care: Polish",
-      "PR: Docs :memo:": ":memo: Documentation",
-      "PR: Internal :house:": ":house: Internal",
-      "PR: Performance :running_woman:": ":running_woman: Performance",
-      "PR: Revert :leftwards_arrow_with_hook:": ":leftwards_arrow_with_hook: Revert"
+      "tag: new feature": ":rocket: New Feature",
+      "tag: breaking change": ":boom: Breaking Change",
+      "tag: bug fix": ":bug: Bug Fix",
+      "tag: polish": ":nail_care: Polish",
+      "tag: documentation": ":memo: Documentation",
+      "tag: internal": ":house: Internal",
+      "tag: performance": ":running_woman: Performance"
     }
   }
 }
