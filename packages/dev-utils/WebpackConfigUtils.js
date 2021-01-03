@@ -13,6 +13,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ForkTsCheckerWebpackPlugin = require('./ForkTsCheckerWebpackPlugin');
 const ForkTsCheckerWebpackFormatterPlugin = require('./ForkTsCheckerWebpackFormatterPlugin');
+const { resolveFullTsConfig } = require('./TypescriptConfigUtils');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
@@ -23,7 +24,7 @@ const getEnvInfo = (env, arg) => ({
   isEnvDevelopment_Fast: process.env.DEVELOPMENT_MODE === 'fast',
 });
 
-const getBaseWebpackConfig = (env, arg, dirname) => {
+const getBaseWebpackConfig = (env, arg, dirname, { babelConfigPath }) => {
   if (!dirname) {
     throw new Error(`\`dirname\` is required to build Webpack config`);
   }
@@ -85,7 +86,7 @@ const getBaseWebpackConfig = (env, arg, dirname) => {
               loader: require.resolve('babel-loader'),
               options: {
                 cacheDirectory: true,
-                rootMode: 'upward',
+                configFile: babelConfigPath,
               },
             },
           ],
@@ -229,39 +230,41 @@ const getBaseWebpackConfig = (env, arg, dirname) => {
   return config;
 };
 
-const getLibraryModuleBaseWebpackConfig = (
-  env,
-  arg,
-  dirname,
-  { mainEntryPath },
-) => {
-  if (!dirname) {
-    throw new Error(`\`dirname\` is required to build Webpack config`);
-  }
-  const { isEnvDevelopment, isEnvProduction } = getEnvInfo(env, arg);
-  if (isEnvDevelopment || isEnvProduction) {
-    throw new Error(
-      `NOTE: \`webpack\` currently does not support for ESM module. Please use \`rollup\` instead/`,
-    );
-  }
-  const baseConfig = getBaseWebpackConfig(env, arg, dirname);
+// const getLibraryModuleBaseWebpackConfig = (
+//   env,
+//   arg,
+//   dirname,
+//   { mainEntryPath, babelConfigPath },
+// ) => {
+//   if (!dirname) {
+//     throw new Error(`\`dirname\` is required to build Webpack config`);
+//   }
+//   const { isEnvDevelopment, isEnvProduction } = getEnvInfo(env, arg);
+//   if (isEnvDevelopment || isEnvProduction) {
+//     throw new Error(
+//       `NOTE: \`webpack\` currently does not support for ESM module. Please use \`rollup\` instead/`,
+//     );
+//   }
+//   const baseConfig = getBaseWebpackConfig(env, arg, dirname, {
+//     babelConfigPath,
+//   });
 
-  const config = {
-    ...baseConfig,
-    entry: { index: path.resolve(dirname, mainEntryPath) },
-    output: {
-      ...baseConfig.output,
-      // NOTE: currently `webpack` does not support bundle library as ES standard modules (ESM)
-      // so we have to settle with CommonJS for now
-      // See https://webpack.js.org/guides/author-libraries/#final-steps
-      // See https://github.com/webpack/webpack/issues/2933
-      path: path.join(dirname, 'lib'),
-      filename: '[name].js',
-      libraryTarget: 'commonjs2',
-    },
-  };
-  return config;
-};
+//   const config = {
+//     ...baseConfig,
+//     entry: { index: path.resolve(dirname, mainEntryPath) },
+//     output: {
+//       ...baseConfig.output,
+//       // NOTE: currently `webpack` does not support bundle library as ES standard modules (ESM)
+//       // so we have to settle with CommonJS for now
+//       // See https://webpack.js.org/guides/author-libraries/#final-steps
+//       // See https://github.com/webpack/webpack/issues/2933
+//       path: path.join(dirname, 'lib'),
+//       filename: '[name].js',
+//       libraryTarget: 'commonjs2',
+//     },
+//   };
+//   return config;
+// };
 
 const validateAppConfig = (config, dirname) => {
   if (!dirname) {
@@ -291,13 +294,15 @@ const getWebAppBaseWebpackConfig = (
   env,
   arg,
   dirname,
-  { mainEntryPath, indexHtmlPath, appConfig },
+  { mainEntryPath, indexHtmlPath, babelConfigPath, appConfig },
 ) => {
   if (!dirname) {
     throw new Error(`\`dirname\` is required to build Webpack config`);
   }
   const { isEnvDevelopment, isEnvProduction } = getEnvInfo(env, arg);
-  const baseConfig = getBaseWebpackConfig(env, arg, dirname);
+  const baseConfig = getBaseWebpackConfig(env, arg, dirname, {
+    babelConfigPath,
+  });
   validateAppConfig(appConfig, dirname);
 
   // NOTE: due to routes like `/v1.0.0` (with '.'), to refer to static resources, we move all static content to `/static`
@@ -378,7 +383,42 @@ const getWebAppBaseWebpackConfig = (
   return config;
 };
 
+const buildAliasEntriesFromTsConfigPathMapping = ({
+  dirname,
+  tsConfigPath,
+  excludePaths,
+}) => {
+  if (!dirname) {
+    throw new Error(`\`dirname\` is required to build Webpack module aliases`);
+  }
+  const tsConfig = resolveFullTsConfig(tsConfigPath);
+  const paths = tsConfig?.compilerOptions?.paths;
+  const baseUrl = tsConfig?.compilerOptions?.baseUrl;
+  const basePath = baseUrl ? path.resolve(dirname, baseUrl) : dirname;
+  if (paths) {
+    const aliases = {};
+    Object.entries(paths).forEach(([key, value]) => {
+      if (excludePaths.includes(key)) {
+        return;
+      }
+      const alias =
+        key.includes('/*') || key.includes('*')
+          ? key.replace('/*', '').replace('*', '')
+          : // If the path mapping is an exact match, add a trailing `$`
+            // See https://webpack.js.org/configuration/resolve/#resolvealias
+            `${key}$`;
+      const replacement = (Array.isArray(value) ? value : [value]).map((val) =>
+        // webpack does not need do exact replacement so wildcard '*' is not needed
+        val.replace('*', ''),
+      );
+      aliases[alias] = replacement.map((val) => path.resolve(basePath, val));
+    });
+    return aliases;
+  }
+  return {};
+};
+
 module.exports = {
-  getLibraryModuleBaseWebpackConfig,
   getWebAppBaseWebpackConfig,
+  buildAliasEntriesFromTsConfigPathMapping,
 };

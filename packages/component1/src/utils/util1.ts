@@ -5,4 +5,4 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-export const data = 1;
+export const returnTwo = (): number => 2;

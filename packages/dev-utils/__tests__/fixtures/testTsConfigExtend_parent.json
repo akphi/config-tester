@@ -1,5 +1,5 @@
 {
-  "extends": "./testTsConfigGrandParent.json",
+  "extends": "./testTsConfigExtend_grandParent.json",
   "compilerOptions": {
     "emitDeclarationOnly": true,
     "jsx": "react-jsx"

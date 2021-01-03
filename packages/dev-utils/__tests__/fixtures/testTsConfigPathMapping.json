@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@something/*": "./src/*",
+      "somePath": ["./src/somePath", "./src/somePath1"],
+      "toBeExcluded/*": "nothing"
+    }
+  }
+}

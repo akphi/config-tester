@@ -5,8 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+const path = require('path');
+const {
+  buildModuleNameMapperFromTsConfigPathMapping,
+} = require('@akphi/dev-utils/JestConfigUtils');
 const base = require('../../scripts/jest/jest.config.base.js');
 const packageJson = require('./package.json');
+
+const aliases = buildModuleNameMapperFromTsConfigPathMapping({
+  dirname: __dirname,
+  tsConfigPath: path.resolve(__dirname, './tsconfig.json'),
+  excludePaths: [],
+});
 
 module.exports = {
   ...base,
@@ -16,8 +26,5 @@ module.exports = {
   testMatch: [
     `<rootDir>/packages/app1/src/**/__tests__/**/?(*.)+(test).[jt]s?(x)`,
   ],
-  moduleNameMapper: {
-    ...base.moduleNameMapper,
-    '^@akphi/app1(.*)$': '<rootDir>/packages/app1/src$1',
-  },
+  moduleNameMapper: { ...base.moduleNameMapper, ...aliases },
 };

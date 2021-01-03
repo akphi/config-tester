@@ -1,5 +1,5 @@
 {
-  "extends": "./testTsConfigParent.json",
+  "extends": "./testTsConfigExtend_parent.json",
   "compilerOptions": {
     "outDir": "lib",
     "rootDir": "src",

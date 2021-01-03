@@ -5,4 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-export const data = 1;
+export const returnOneAsWell = (): number => 1;
+// export const returnTwoAsWell = (): number => 2;
+// export const returnThreeAsWell = (): number => 3;

@@ -25,9 +25,6 @@
     "useDefineForClassFields": true,
     // Other settings
     "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "paths": {
-      "@akphi/app1/*": ["./src/*"]
-    }
+    "forceConsistentCasingInFileNames": true
   }
 }

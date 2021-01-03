@@ -8,24 +8,32 @@
 const path = require('path');
 const appConfig = require('./app.config');
 const {
-  getWebAppBaseWebpackConfig: getAppBaseWebpackConfig,
+  getWebAppBaseWebpackConfig,
+  buildAliasEntriesFromTsConfigPathMapping,
 } = require('@akphi/dev-utils/WebpackConfigUtils');
 
+const aliases = buildAliasEntriesFromTsConfigPathMapping({
+  dirname: __dirname,
+  tsConfigPath: path.resolve(__dirname, './tsconfig.json'),
+  excludePaths: [],
+});
+
 module.exports = (env, arg) => {
-  const baseConfig = getAppBaseWebpackConfig(env, arg, __dirname, {
+  const baseConfig = getWebAppBaseWebpackConfig(env, arg, __dirname, {
     mainEntryPath: './src/index.tsx',
     indexHtmlPath: './src/index.html',
+    babelConfigPath: path.resolve(__dirname, '../../babel.config.js'),
     appConfig,
   });
   const config = {
     ...baseConfig,
-    // resolve: {
-    //   ...baseConfig.resolve,
-    //   alias: {
-    //     ...baseConfig.resolve.alias,
-    //     '@akphi/app1': path.resolve(__dirname, 'src'),
-    //   },
-    // },
+    resolve: {
+      ...baseConfig.resolve,
+      alias: {
+        ...baseConfig.resolve.alias,
+        ...aliases,
+      },
+    },
     plugins: [
       ...baseConfig.plugins,
       // new MonacoWebpackPlugin({

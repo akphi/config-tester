@@ -5,7 +5,10 @@
     "tsBuildInfoFile": "build/dev.tsbuildinfo",
     "rootDir": "src",
     "jsx": "react-jsxdev",
-    "strictNullChecks": true
+    "paths": {
+      "@akphi/component1/*": ["./src/*"],
+      "U1": ["./src/utils/util1"]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.json"],
   "references": [{ "path": "../lib1" }]

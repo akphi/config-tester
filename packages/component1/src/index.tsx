@@ -6,17 +6,21 @@
  */
 
 // import { useState } from 'react';
-import { helloworld } from '@akphi/lib1';
 // import { Button } from '@material-ui/core';
+import { helloworld } from '@akphi/lib1';
 import data from './data.json';
 import './component1.css';
 import './sassy.scss';
+import { returnOneAsWell } from '@akphi/component1/helpers1';
+import { returnTwo } from 'U1';
 
 export function Component1() {
   // const a = useState(1);
   // helloworld();
   // return <Button variant="outlined">triel</Button>;
   // const a: object = 1;
+  // console.log('asd');
+  // console.log(returnOneAsWell(), returnTwo());
   return data.name;
 }
 

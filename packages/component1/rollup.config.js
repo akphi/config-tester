@@ -7,9 +7,18 @@
 
 import path from 'path';
 import { generateCopyrightComment } from '@akphi/dev-utils/CopyrightUtils';
-import { getLibraryModuleRollupConfig } from '@akphi/dev-utils/RollupConfigUtils';
+import {
+  getLibraryModuleRollupConfig,
+  buildAliasEntriesFromTsConfigPathMapping,
+} from '@akphi/dev-utils/RollupConfigUtils';
 import packageJson from './package.json';
 import { getFileContent } from '@akphi/dev-utils/DevUtils';
+
+const aliasEntries = buildAliasEntriesFromTsConfigPathMapping({
+  dirname: __dirname,
+  tsConfigPath: path.resolve(__dirname, './tsconfig.json'),
+  excludePaths: [],
+});
 
 const baseConfig = getLibraryModuleRollupConfig({
   input: 'src/index.tsx',
@@ -35,7 +44,7 @@ const baseConfig = getLibraryModuleRollupConfig({
     /^monaco-editor.*$/,
   ],
   replaceEntries: [],
-  alias: [],
+  aliasEntries,
 });
 
 export default baseConfig;

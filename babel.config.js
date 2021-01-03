@@ -8,12 +8,17 @@
 const path = require('path');
 
 const isJSXSourceFile = (filename) =>
-  /\.tsx$/.test(filename) && // don't care about `*.jsx` files
+  /\.(?:j|t)sx$/.test(filename) &&
   !filename.includes(`${path.sep}__tests__${path.sep}`) && // exclude tests
   !filename.includes(`${path.sep}__mocks__${path.sep}`); // exclude mocks
 
 module.exports = (api) => {
-  api.cache.using(() => process.env.NODE_ENV); // cache based on the value of NODE_ENV. Anytime the environment changes, the config is recomputed
+  // `cache.invalidate()`: The config is cache based on the value of NODE_ENV.
+  // Any time the using callback returns a value other than the one that was expected,
+  // the overall config function will be called again and all entries in the cache will
+  // be **replaced** with the result.
+  // See https://babeljs.io/docs/en/config-files#apicache
+  api.cache.invalidate(() => process.env.NODE_ENV);
   const isEnvDevelopment = api.env('development');
 
   const config = {

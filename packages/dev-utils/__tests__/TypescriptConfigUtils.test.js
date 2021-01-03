@@ -8,9 +8,11 @@
 const path = require('path');
 const { resolveFullTsConfig } = require('../TypescriptConfigUtils');
 
-test('Full Typescript config resolved properly through inheritance chain', () => {
+test('Resolve full Typescript config through inheritance chain', () => {
   expect(
-    resolveFullTsConfig(path.resolve(__dirname, './testTsConfig.json')),
+    resolveFullTsConfig(
+      path.resolve(__dirname, './fixtures/testTsConfigExtend.json'),
+    ),
   ).toEqual({
     // compiler options is merged and overwritten
     compilerOptions: {

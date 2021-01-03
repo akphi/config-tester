@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import { returnOne } from '@akphi/app1/helpers';
 import { Component2 } from '@akphi/component1';
 import React, { useState } from 'react';
 import './index.scss';
@@ -13,13 +14,15 @@ import './index.scss';
 
 export const App: React.FC = () => {
   const [age, setAge] = useState(10);
+  // console.log(returnOne());
+
   return (
     <div className="wrapper">
       <Component2 />
       <button className="blue" onClick={(): void => setAge(age + 1)}>
         +
       </button>
-      <div>Ages: {age}</div>
+      <div>Age(s): {age}</div>
     </div>
   );
 };

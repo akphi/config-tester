@@ -4,12 +4,7 @@
 - `monaco-editor` ESM
   `import * as monaco from 'monaco-editor/esm/vs/editor/editor.api.js';` -> `import * as monaco from 'monaco-editor';`
   https://github.com/microsoft/monaco-editor-webpack-plugin/issues/97
-
-- Consider tidying up the `paths` of `tsconfig.json` using - `tsconfig-paths` and `tsconfig-paths-webpack-plugin` - https://medium.com/@NiGhTTraX/making-typescript-monorepos-play-nice-with-other-tools-a8d197fdc680
-  https://www.npmjs.com/package/@rollup/plugin-alias
-  Script to add paths module aliases in TSConfig to Jest and Webpack - try `babel-plugin-module-resolver` if not delete
-
-  - webpack/jest/rollup from `tsconfig` path =.='
+  https://www.npmjs.com/package/lodash-es
 
 - Try to publish something to `NPM` and consume it back somewhere else, try a dummy utility function with typings and do CommonJs as well????
 
