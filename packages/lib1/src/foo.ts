@@ -12,3 +12,7 @@ export function helloworld() {
   console.log('helloworld!');
   return 'Hello world';
 }
+
+export function doThis() {
+  console.log('doThis');
+}
