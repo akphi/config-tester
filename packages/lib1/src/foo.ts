@@ -14,5 +14,5 @@ export function helloworld() {
 }
 
 export function doThis2() {
-  console.log('doThis2');
+  console.log('doThis23');
 }
