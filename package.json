@@ -6,7 +6,6 @@
   ],
   "scripts": {
     "build": "yarn clean && lerna run build --stream",
-    "build:packages": "lerna run build --no-private",
     "build:ts": "tsc --build",
     "changelog": "yarn lerna-changelog",
     "check:format": "prettier --check \"scripts/**/*.js\" \"packages/*/src/**/*.{js,ts,tsx,html,scss,css}\"",
@@ -21,7 +20,6 @@
     "dev:ts": "tsc --build --watch",
     "format": "prettier --write \"scripts/**/*.js\" \"packages/*/src/**/*.{js,ts,tsx,html,scss,css}\"",
     "format:package-json": "sort-package-json",
-    "postinstall": "yarn build:packages",
     "lint": "yarn lint:js && yarn lint:style",
     "lint:fix": "yarn lint:js --fix && yarn lint:style --fix",
     "lint:js": "eslint --cache --cache-location ./build/.eslintcache \"scripts/**/*.{js,ts,tsx}\" \"packages/*/src/**/*.{js,ts,tsx}\"",

@@ -12,7 +12,3 @@ export function helloworld() {
   console.log('helloworld!');
   return 'Hello world';
 }
-
-export function doThis2() {
-  console.log('doThis23');
-}
