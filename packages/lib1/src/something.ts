@@ -8,3 +8,4 @@
 export type A = { car: string };
 
 export const Am = 'am';
+export const Dm = 'dm';
