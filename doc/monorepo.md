@@ -37,7 +37,7 @@ With this, we could start shaping our codebase in monorepo structure. The follow
 
 [Lerna](https://lerna.js.org/) is **not essential** for working with a monorepo project; however, it helps optimize the workflow around managing monorepo project, especially with the `setup` and `publish` phase.
 
-> One of the most important feature of `lerna` is the ability to run task in topologically-sorted order (similar to [Maven](https://maven.apache.org/)). One particularly popular lerna command is [`bootstrap`](https://github.com/lerna/lerna/tree/main/commands/bootstrap), which is [made redundant](https://github.com/lerna/lerna/issues/1308#issuecomment-370848535) by `Yarn workspaces`, but the [`run`](https://github.com/lerna/lerna/tree/main/commands/run) command is still very useful for running script in topological order.
+> One of the most important feature of `lerna` is the ability to run task in topologically-sorted order (similar to [Maven](https://maven.apache.org/)). One particularly popular lerna command is [`bootstrap`](https://github.com/lerna/lerna/tree/main/commands/bootstrap), which is [made redundant](https://github.com/lerna/lerna/issues/1308#issuecomment-370848535) by `Yarn workspaces`, but the [`run`](https://github.com/lerna/lerna/tree/main/commands/run) command is still very useful for running script in topological order. **When we upgrade to Yarn 2, most of `lerna` features are already covered can thus, it can be safely removed.**
 
 ### Module System: ECMAScript Module (ESM)
 

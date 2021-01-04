@@ -1,17 +1,13 @@
 # Changelog
 
-- Consider using conventional-commits to generate change-log
-  https://github.com/conventional-changelog/conventional-changelog-config-spec/blob/master/versions/2.1.0/README.md
-  See `fork-ts-checker-webpack-plugin` `changelog.config.json` for example file
-  https://github.com/TypeStrong/fork-ts-checker-webpack-plugin
-  https://www.conventionalcommits.org/en/v1.0.0-beta.2/#summary
-  https://github.com/conventional-changelog/conventional-changelog
-  https://github.com/facebook/docusaurus/blob/master/CONTRIBUTING.md#semantic-commit-messages
+-
 
 # TODO
 
-- try to do a github release
+- Try to use `atlassian/changesets`
+- Try to do a github release
 - Try to publish something to `NPM` and consume it back somewhere else, try a dummy utility function with typings.
+- Migrate to Yarn 2 when we have change -> eliminate `lerna`
 
 # Release process
 
