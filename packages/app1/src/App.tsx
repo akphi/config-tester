@@ -13,7 +13,7 @@ import './index.scss';
 // import Component2 from '@akphi/component1';
 
 export const App: React.FC = () => {
-  const [age, setAge] = useState(10);
+  const [age, setAge] = useState(19);
   // console.log(returnOne());
 
   return (

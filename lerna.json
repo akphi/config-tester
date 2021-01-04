@@ -7,7 +7,7 @@
   "npmClient": "yarn",
   "changelog": {
     "repo": "akphi/config-tester",
-    "cacheDir": ".changelog",
+    "cacheDir": "build/.changelog",
     "labels": {
       "tag: new feature": ":rocket: New Feature",
       "tag: breaking change": ":boom: Breaking Change",
