@@ -6,3 +6,7 @@
 /packages/*/build/
 /packages/*/dist/
 /packages/*/lib/
+
+# Yarn
+.yarn/*
+.pnp.*

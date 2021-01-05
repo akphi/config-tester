@@ -12,9 +12,8 @@
 
 # Further Improvements
 
-- Yarn 2 with `PNP` (See `jest` for example - https://github.com/facebook/jest), or NPM 7
-  This fixes problem with unmet peer dependencies as well - https://github.com/yarnpkg/yarn/issues/5810
-  https://yarnpkg.com/getting-started/migration
+- Try to use Yarn 2 with `PNP` and `Zero-Installs`
+  BLOCKER - ESM not supported - https://github.com/yarnpkg/berry/issues/638
 - Code-splitting and lazy-loading
   https://github.com/dan-kez/lerna-webpack-example
   https://github.com/jamiebuilds/react-loadable

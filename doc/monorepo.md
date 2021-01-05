@@ -33,11 +33,11 @@ At the point of writing, the most prominent package managers like [NPM](https://
 
 With this, we could start shaping our codebase in monorepo structure. The following section details the tooling support and setup.
 
-### Monorepo Manager: Yarn Workspace and Lerna
+### Monorepo Manager and Publisher: Yarn
 
-[Lerna](https://lerna.js.org/) is **not essential** for working with a monorepo project; however, it helps optimize the workflow around managing monorepo project, especially with the `setup` and `publish` phase.
+We use [Yarn](https://yarnpkg.com/) as our monorepo manager. At the time of speaking, `lerna` is a very popular choice, but `Yarn@2` has made a lot of `lerna` features redundant (e.g. [bootstraping](https://github.com/lerna/lerna/tree/main/commands/bootstrap), running scripts in parallel or [topological order](https://yarnpkg.com/cli/workspaces/foreach)).
 
-> One of the most important feature of `lerna` is the ability to run task in topologically-sorted order (similar to [Maven](https://maven.apache.org/)). One particularly popular lerna command is [`bootstrap`](https://github.com/lerna/lerna/tree/main/commands/bootstrap), which is [made redundant](https://github.com/lerna/lerna/issues/1308#issuecomment-370848535) by `Yarn workspaces`, but the [`run`](https://github.com/lerna/lerna/tree/main/commands/run) command is still very useful for running script in topological order. **When we upgrade to Yarn 2, most of `lerna` features are already covered can thus, it can be safely removed.**
+> Yarn 2 has many niche features such as [Plug n Play](https://yarnpkg.com/features/pnp/#gatsby-focus-wrapper), but this currently [does not work well ESM](https://github.com/yarnpkg/berry/issues/638) so we will explore that option later.
 
 ### Module System: ECMAScript Module (ESM)
 
@@ -78,7 +78,7 @@ There are 2 ways to process Typescript code:
 
 As such, the [recommended](https://www.typescriptlang.org/docs/handbook/babel-with-typescript.html) [strategy](https://github.com/microsoft/TypeScript-Babel-Starter) is to use `tsc` only for library module, and for modules targeting the web or modules having non-JS code, we use `babel` for transpiling Typescript code to Javascript and use `tsc` only to type-check and build type declaration file.
 
-Typescript has a niche feature that can be used to facilitate monorepo structure called [Project Reference](https://www.typescriptlang.org/docs/handbook/project-references.html). It manages the dependency graph between modules just like what `lerna` does but with caching specialized for the Typescript compiler [tsc](https://www.typescriptlang.org/docs/handbook/compiler-options.html).
+Typescript has a niche feature that can be used to facilitate monorepo structure called [Project Reference](https://www.typescriptlang.org/docs/handbook/project-references.html). It manages the dependency graph between modules just like what `yarn` does but with caching specialized for the Typescript compiler [tsc](https://www.typescriptlang.org/docs/handbook/compiler-options.html).
 
 > A downside of using `project reference` is [tediousness](https://github.com/microsoft/TypeScript/issues/25376), we need to specify all projects (modules) on top level `tsconfig` and all referenced projects in the module `tsconfig`, hence duplicating declaration of dependencies in `package.json`. See [example](https://github.com/RyanCavanaugh/learn-a).
 

@@ -30,3 +30,12 @@ package-lock.json
 # Development
 /temp
 /packages/*/dev/
+
+# Yarn
+# See https://yarnpkg.com/getting-started/qa#which-files-should-be-gitignored
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*

@@ -1,9 +1,6 @@
 # TODO
 
-- Upgrade to Yarn 2 light mode only (follow Babel and Jest)
 - `DOC` Adopt Jest workflow for publishing (manually insert) - doc for CONTRIBUTING
-- If all good, ditch `lerna` and use `yarn workspace foreach` for scripts
-  https://yarnpkg.com/cli/workspaces/foreach
 
 - `FANCY` Add a bot to check pipeline for when PR is opened to see if it needs a changelog update
   https://github.community/t/how-to-use-the-github-actions-bot/16535/2
@@ -36,10 +33,3 @@
   https://github.com/keystonejs/keystone/blob/master/.github/workflows/release.yml
   https://johno.com/changesets/
   https://medium.com/@jakeginnivan/a-great-typescript-npm-module-mono-repo-setup-e737937210
-- Migrate to Yarn 2 when we have change -> eliminate `lerna`
-  https://next.yarnpkg.com/getting-started/install
-  https://yarnpkg.com/cli/workspaces/foreach
-  https://github.com/yarnpkg/yarn/issues/7121
-  https://github.com/yarnpkg/yarn/issues/4467
-  BLOCKER - ESM not supported - https://github.com/yarnpkg/berry/issues/638
-  -> DO NOT USE PNP yet then - `nodeLinker: node-modules` - https://stackoverflow.com/questions/60012394/how-to-turn-off-yarn2-pnp

@@ -26,3 +26,7 @@ TODO
    https://classic.yarnpkg.com/en/docs/cli/link/
    https://classic.yarnpkg.com/en/docs/cli/publish/
    https://classic.yarnpkg.com/en/docs/publishing-a-package/
+
+## Git Commit Message Convention
+
+> This is adapted from [Angular's commit convention](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular) and [conventional commit](https://www.conventionalcommits.org/en/v1.0.0/)
