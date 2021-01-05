@@ -14,7 +14,7 @@
  * as the prompt for better UX/DX.
  *
  * However, this does not read `commitlint` config, so we don't want make this file too complicated. Otherwise,
- * there's no other way than to use native commitlint prompt.
+ * there's no other way than to use native `commitlint` prompt.
  * See https://github.com/conventional-changelog/commitlint/blob/master/docs/guides-use-prompt.md
  */
 module.exports = {
