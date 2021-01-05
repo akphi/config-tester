@@ -49,7 +49,7 @@ jobs:
       - name: Check code formatting
         run: yarn check:format
       - name: Check copyright headers
-        run: yarn copyright:check
+        run: yarn check:copyright
 
   test:
     name: Build & Test
