@@ -7,10 +7,11 @@
 The commit message must match the following regular expression:
 
 ```js
-/^(revert: )?(feat|fix|polish|docs|style|refactor|perf|test|workflow|ci|chore|types)(\(.+\))?: .{1,50}/;
+/^(revert: )?(feat|fix|polish|docs|style|refactor|perf|test|workflow|ci|chore|types)(\(.+\))?!?: .{1,50}/;
 // <type>(<scope>): <subject>
 // e.g. feat(core): add new option for plugin
 // e.g. fix(core): handle garbage collection
+// e.g. chore(deps): update typescript to v4
 // e.g. chore(deps): update typescript to v4
 ```
 
@@ -33,7 +34,7 @@ close #28
 Appears under "Performance Improvements" header, and under "Breaking Changes" with the breaking change explanation:
 
 ```
-perf(core): improve vdom diffing by removing 'foo' option
+perf(core)!: improve vdom diffing by removing 'foo' option
 
 BREAKING CHANGE: The 'foo' option has been removed.
 ```
@@ -51,9 +52,11 @@ This reverts commit 667ecc1654a317a13331b17617d973392f415f02.
 A commit message consists of a **header**, **body** and **footer**. The header has a **type**, **scope** and **subject**:
 
 ```
-<type>(<scope>): <subject>
-  │       │          │
-  │       │          └──⫸ Subject [required]: A short summary of the changes
+<type>(<scope>)(!): <subject>
+  │       │     │       │
+  │       │     │       └───⫸ Subject [required]: A short summary of the changes
+  │       │     │
+  │       │     └───⫸ Breaking Change Notice [optional]: Further clarify the breaking change in the footer
   │       │
   │       └────⫸ Commit Scope [optional]: core|compiler|...
   │
