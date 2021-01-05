@@ -17,9 +17,9 @@ If you are making a change that should have a docs update: submit another PR at:
 | Major: Breaking Change? |
 | Minor: New Feature?     |
 | Tests Added + Pass?     | Yes                                                                                                        |
-| Documentation PR Link   | <!-- If only readme change, add `[skip ci]` to your commits -->                                            |
-| Any Dependency Changes? |
-| License                 | MIT                                                                                                        |
+| Changelog Updated?      | Yes                                                                                                        |
+| Documentation PR Link   |                                                                                                            |
+| Any Dependency Changes? |                                                                                                            |
 
 <!--
 Describe your changes below in as much detail as possible

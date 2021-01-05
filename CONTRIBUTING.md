@@ -1,14 +1,58 @@
 # Contributing
 
-Contributions are always welcome, no matter how large or small! Before contributing, please read our [code of conduct](./.github/CODE_OF_CONDUCT.md).
+Thank you so much for being interested in contributing to our project! Before submitting your contribution, please make sure to take a moment to read through the following guidelines:
 
-## Working on a plugin
+- [Code of Conduct](./.github/CODE_OF_CONDUCT.md)
+- [Issue Reporting Guidelines](#issue-reporting-guidelines)
+- [Pull Request Guidelines](#pull-request-guidelines)
+- [Development Guidelines](#development-guidelines)
+- [License](#license)
 
-## Developing
+## Issue Reporting Guidelines
 
-TODO look at emotion and jest and babel
+Always file issue via our [Github Issues page](https://github.com/akphi/config-tester/issues). Make sure to fill out the issue template or else we might close it due to lack of information.
 
-## Developer Workflow (TODO)
+## Pull Request Guidelines
+
+- It's absolutely fine to break your change down into multiple small commits as you work on the PR - GitHub will automatically squash it before merging; however, please follow our [commit message convention](#commit-convention).
+- Update the `CHANGELOG.md` file if applicable (see [updating changelog guidelines](#updating-changelog)).
+- Make sure `yarn test` passes (see [development guidelines](#development-guidelines))
+- Fill out the pull request template.
+
+### Commit Convention
+
+Commit messages should follow [Conventional Commits spec](https://www.conventionalcommits.org/en/v1.0.0/). Commit messages will be automatically validated upon commit.
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+Examples:
+
+```
+feat: allow provided config object to extend other configs
+refactor!: drop support for Node 6
+docs: correct spelling of CHANGELOG
+fix: correct minor typos in code
+```
+
+If you are not familiar with the commit message convention, you can use `yarn commit` instead of `git commit`, which provides an interactive CLI for generating proper commit messages.
+
+### Updating Changelog
+
+All changes that add a feature to or fix a bug in any packages require a changelog entry containing the names of the packages affected, a description of the change, and the number of and link to the pull request. Try to match the structure of the existing entries.
+
+For significant changes to the documentation or website and things like cleanup, refactoring, and dependency updates, the "Chore & Maintenance" section of the changelog can be used.
+
+You can add or edit the changelog entry in the GitHub web interface once you have opened the pull request and know the number and link to it.
+
+Make sure to alphabetically order your entry based on package name. If you have changed multiple packages, separate them with a comma.
+
+## Development Guidelines
 
 0. Prerequisite: Node, Yarn, vscode, vscode plugins (ESLint, Prettier, Stylelint)
 1. Setup: Install (bootstrap), Create config files, etc.
@@ -24,10 +68,6 @@ TODO look at emotion and jest and babel
 
 3. Commit
 
-## Git Commit Message Convention
-
-> This is adapted from [Angular's commit convention](https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-angular) and [conventional commit](https://www.conventionalcommits.org/en/v1.0.0/)
-
 4. Pull Request
    TODO
 
@@ -39,6 +79,8 @@ TODO look at emotion and jest and babel
 6. Release
    TODO
 
+### Commonly used NPM scripts
+
 7. Publish: Versioning / Publish
 
    https://medium.com/@jsilvax/a-workflow-guide-for-lerna-with-yarn-workspaces-60f97481149d
@@ -49,3 +91,18 @@ TODO look at emotion and jest and babel
    https://classic.yarnpkg.com/en/docs/cli/link/
    https://classic.yarnpkg.com/en/docs/cli/publish/
    https://classic.yarnpkg.com/en/docs/publishing-a-package/
+
+### Code Conventions
+
+- 2 spaces for indentation (no tabs).
+- 80 character line length strongly preferred.
+- Prefer `'` over `"`.
+- ES6 syntax when possible.
+- Use [TypeScript](https://www.typescriptlang.org/).
+- Use semicolons;
+- Trailing commas,
+- Avd abbr wrds.
+
+## License
+
+By contributing to this project, you agree that your contributions will be licensed under its MIT license.
