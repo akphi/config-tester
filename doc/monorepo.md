@@ -1,6 +1,6 @@
 # Monorepo
 
-This is not a "dissertation" on the concept of monorepo (mono-repo) nor a discussion thread on why we should or should not use monorepo. This is a technical record of how we transform our monolithic codebase into a monorepo project. In the following sections, we will discuss our approach and implementation with regards to tooling and the development workflow in a monorepo project.
+This is not a "dissertation" on the concept of monorepo (mono-repo) nor a discussion thread on why we should or should not use monorepo. This is a technical record of how we transform our monolithic codebase (i.e. the whole codebase is one giant package) into a monorepo project. In the following sections, we will discuss our approach and implementation with regards to tooling and the development workflow in a monorepo project.
 
 ## Approach
 
@@ -33,7 +33,7 @@ At the point of writing, the most prominent package managers like [NPM](https://
 
 With this, we could start shaping our codebase in monorepo structure. The following section details the tooling support and setup.
 
-### Monorepo Manager and Publisher: Yarn
+### Monorepo Workspaces Manager: Yarn
 
 We use [Yarn](https://yarnpkg.com/) as our monorepo manager. At the time of speaking, `lerna` is a very popular choice, but `Yarn@2` has made a lot of `lerna` features redundant (e.g. [bootstraping](https://github.com/lerna/lerna/tree/main/commands/bootstrap), running scripts in parallel or [topological order](https://yarnpkg.com/cli/workspaces/foreach)).
 
@@ -50,7 +50,7 @@ This is why we need to be able to do either the followings for library module bu
 
 The latter is supported by most bundlers like `webpack` or `rollup`. The former, however is not too straight-forward: to [fully support tree-shaking](https://webpack.js.org/guides/tree-shaking/), we need to bundle the library modules (i.e. non-top-level modules) as [ESM](https://hacks.mozilla.org/2018/03/es-modules-a-cartoon-deep-dive/), rather than [CommonJS (CJS)](https://auth0.com/blog/javascript-module-systems-showdown/). Unfortunately, the tooling support for ESM at the moment is not quite fully in place (e.g. at the time of speaking, `webpack@5` and `Jest@26` does not fully support ESM).
 
-> Due to `Jest@26`'s [not usupporting ESM](https://github.com/facebook/jest/issues/9430), we currently we still need to build an extra CJS bundle for each library module just for testing.
+> Due to `Jest@26`'s [incomplete support for ESM](https://github.com/facebook/jest/issues/9430), we currently we still need to build an extra CJS bundle for each library module just for testing.
 
 Then, not all dependencies support ESM (most have support for CJS as it's still the dominant one), and while some of them do, there are particular setup we have to follow to not wrongly pick the CJS bundle.
 
@@ -86,6 +86,12 @@ In the `build` phase, `tsc` will be used to create type declaration `*.d.ts`. Si
 
 `babel` will be used `webpack` for both `develop` and `build` for modules similar to `component-B` and `app-C`.
 
+### Version Manager and Publisher: Yarn
+
+[lerna](https://github.com/lerna/lerna) does a great job at managing version, it also helps with [generating changelogs using conventional commit](https://github.com/lerna/lerna/tree/main/commands/version#--conventional-commits). However, as mentioned, most of its feature set are already covered by Yarn, so we decide to use Yarn instead as our version manager and publisher.
+
+> [changesets](https://github.com/atlassian/changesets) is another tool we are exploring as it encourages us to write meaningful changelog as we go, and has a make-sense approach to versioning in monorepo project. But it's a pretty young project and still needs sometimes to [integrate better](https://github.com/atlassian/changesets/issues/432) with Yarn@2 so we will re-evaluate it later.
+
 ### IDE: Visual Studio Code
 
 We use [Visual Studio Code (vscode)](https://code.visualstudio.com/). `vscode` seems to naturally support monorepo, the only thing we need to do is to ensure running `yarn install` so modules are linked properly, `Go to definition (Ctrl + Click)` should work nicely without any other config.
@@ -94,10 +100,14 @@ We use [Visual Studio Code (vscode)](https://code.visualstudio.com/). `vscode` s
 
 ## References
 
-[Developing in a Large Monorepo - Jai Santhosh - JSConf Korea](https://www.youtube.com/watch?v=pTi0MQbD7No)
+- [Developing in a Large Monorepo - Jai Santhosh - JSConf Korea](https://www.youtube.com/watch?v=pTi0MQbD7No)
+- [Github: Guide to use Jest with Lerna](https://github.com/facebook/jest/issues/3112)
+- [Github: TypeScript Project References Demo](https://github.com/RyanCavanaugh/project-references-demo)
+- [Github: Lerna + Project References](https://github.com/RyanCavanaugh/learn-a)
 
-[Github: Guide to use Jest with Lerna](https://github.com/facebook/jest/issues/3112)
+## Previous Discussions
 
-[Github: TypeScript Project References Demo](https://github.com/RyanCavanaugh/project-references-demo)
-
-[Github: Lerna + Project References](https://github.com/RyanCavanaugh/learn-a)
+- [Dan Luu: Monorepo](http://danluu.com/monorepo/)
+- [Gregory Szorc: On Monolithic Repositories](https://gregoryszorc.com/blog/2014/09/09/on-monolithic-repositories/)
+- [Facebook Engineering: Scaling Mecurial at Facebook](https://engineering.fb.com/2014/01/07/core-data/scaling-mercurial-at-facebook/)
+- [Youtube: F8 2015 - Big Code: Developer Infrastructure at Facebook's Scale](https://www.youtube.com/watch?v=X0VH78ye4yY&ab_channel=FacebookDevelopers)
