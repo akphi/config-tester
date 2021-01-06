@@ -31,9 +31,9 @@ Commit messages should follow [Conventional Commits spec](https://www.convention
 [optional footer(s)]
 ```
 
-Examples:
-
 ```
+# Examples
+
 feat: allow provided config object to extend other configs
 refactor!: drop support for Node 6
 docs: correct spelling of CHANGELOG
@@ -42,15 +42,26 @@ fix: correct minor typos in code
 
 If you are not familiar with the commit message convention, you can use `yarn commit` instead of `git commit`, which provides an interactive CLI for generating proper commit messages.
 
+> The purpose of following this convention is not just to provide more structured and informative commit message, but also to encourage contributors to break their work into smaller chunks, making it easier to review PRs. Also, based on these commit messages, we can potentially help generate changelog entry.
+
 ### Updating Changelog
 
 All changes that add a feature to or fix a bug in any packages require a changelog entry containing the names of the packages affected, a description of the change, and the number of and link to the pull request. Try to match the structure of the existing entries.
 
-For significant changes to the documentation or website and things like cleanup, refactoring, and dependency updates, the "Chore & Maintenance" section of the changelog can be used.
+For significant changes to the documentation or website and things like cleanup, refactoring, and dependency updates, the `Chore & Maintenance` section of the changelog can be used.
+
+Examples:
+
+```md
+- `[component1]` Use new React JSX Transform ([#90](https://github.com/org/repo/pull/90))
+- `[lib1]` [**BREAKING**] Migrate to ESM ([#77](https://github.com/org/repo/pull/77))
+```
 
 You can add or edit the changelog entry in the GitHub web interface once you have opened the pull request and know the number and link to it.
 
 Make sure to alphabetically order your entry based on package name. If you have changed multiple packages, separate them with a comma.
+
+> Some philosophy thing
 
 ## Development Guidelines
 
@@ -67,12 +78,6 @@ Make sure to alphabetically order your entry based on package name. If you have 
 - Code formatter (can be run as part of pre commit hook)
 
 3. Commit
-
-4. Pull Request
-   TODO
-
-5. Changelog
-   TODO
 
 - `DOC` Adopt Jest workflow for publishing (manually insert) - doc for CONTRIBUTING
 
@@ -97,7 +102,7 @@ Make sure to alphabetically order your entry based on package name. If you have 
 - 2 spaces for indentation (no tabs).
 - 80 character line length strongly preferred.
 - Prefer `'` over `"`.
-- ES6 syntax when possible.
+- [Latest ES](https://github.com/tc39/proposals) syntax when possible.
 - Use [TypeScript](https://www.typescriptlang.org/).
 - Use semicolons;
 - Trailing commas,

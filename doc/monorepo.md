@@ -90,7 +90,7 @@ In the `build` phase, `tsc` will be used to create type declaration `*.d.ts`. Si
 
 [lerna](https://github.com/lerna/lerna) does a great job at managing version, it also helps with [generating changelogs using conventional commit](https://github.com/lerna/lerna/tree/main/commands/version#--conventional-commits). However, as mentioned, most of its feature set are already covered by Yarn, so we decide to use Yarn instead as our version manager and publisher.
 
-> [changesets](https://github.com/atlassian/changesets) is another tool we are exploring as it encourages us to write meaningful changelog as we go, and has a make-sense approach to versioning in monorepo project. But it's a pretty young project and still needs sometimes to [integrate better](https://github.com/atlassian/changesets/issues/432) with Yarn@2 so we will re-evaluate it later.
+> [changesets](https://github.com/atlassian/changesets) is another tool we are exploring as it encourages us to write meaningful changelog as we go, and has a sensible approach to managing changelog and versioning in monorepo project. But it's still a pretty _young_ project and requires more work to [integrate better](https://github.com/atlassian/changesets/issues/432) with Yarn@2. What we really like about `changesets` is its [fresh take on monorepo release process](https://github.com/atlassian/changesets/blob/master/docs/detailed-explanation.md), such as how it creates separate `CHANGELOG.md` and release tag for each package.
 
 ### IDE: Visual Studio Code
 
