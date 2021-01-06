@@ -4,12 +4,18 @@ const execa = require('execa');
 
 const ROOT_DIR = path.resolve(__dirname, '../..');
 
-if (!process.env.NPM_TOKEN) {
-  throw new Error(`NPM_TOKEN is not specified`);
+if (!process.env.NPM_TOKEN && !process.env.YARN_NPM_AUTH_TOKEN) {
+  throw new Error(`NPM authentication token is not specified`);
 }
 
 if (execa.sync('git', ['status', '--porcelain'], { cwd: ROOT_DIR }).stdout) {
-  console.log('This command must be executed on a clean repository');
+  console.log(
+    'This command must be executed on a clean repository. Found changes items:',
+  );
+  execa.sync('git', ['status', '--porcelain'], {
+    cwd: ROOT_DIR,
+    stdio: 'inherit',
+  });
   process.exit(1);
 }
 
@@ -77,20 +83,36 @@ packages.forEach((pkg) => {
 // Try to publish all packages
 for (const pkg of packages) {
   try {
-    // Publish using Yarn NPM publish.
-    execa.sync(
-      'yarn',
-      ['npm', 'publish', '--tolerate-republish', ...process.argv.slice(2)],
-      { cwd: pkg.path, stdio: 'inherit' },
+    const npmInfo = JSON.parse(
+      execa.sync('npm', ['view', '--json', pkg.name], {
+        cwd: ROOT_DIR,
+      }).stdout,
     );
-    pkg.published = true;
+    if (npmInfo.versions?.includes(pkg.version)) {
+      pkg.alreadyPublished = true;
+      console.log(
+        `Package '${pkg.name}' is not being published because version '${pkg.version}' is already published on NPM`,
+      );
+    } else {
+      throw new Error(); // dummy error to proceed and publish as package is not found
+    }
   } catch {
-    // do nothing
+    try {
+      // Publish using Yarn NPM publish.
+      execa.sync('yarn', ['npm', 'publish'], { cwd: pkg.path });
+      pkg.published = true;
+    } catch (publishError) {
+      console.log(
+        `Something went wrong. Cannot publish package '${pkg.name}'. Error: ${publishError.message}`,
+      );
+    }
   }
 }
 
 const publishedPkgs = packages.filter((p) => p.published);
-const unPublishedPkgs = packages.filter((p) => !p.published);
+const unPublishedPkgs = packages.filter(
+  (p) => !p.published && !p.alreadyPublished,
+);
 
 // Cleanup temporary LICENSE files added
 packages.forEach((pkg) => {

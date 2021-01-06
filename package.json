@@ -15,6 +15,7 @@
     "check:typings": "yarn workspaces foreach --topological-dev --verbose run type-check",
     "check:update": "yarn upgrade-interactive",
     "ci:release": "yarn build && yarn node ./scripts/release/publish.js",
+    "ci:release2": "yarn build && yarn changeset publish",
     "ci:version": "changeset version && yarn && yarn fix:format",
     "clean": "rimraf \"build\" && yarn workspaces foreach --all --parallel --verbose run clean",
     "commit": "git-cz",
