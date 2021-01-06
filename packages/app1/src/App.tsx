@@ -9,6 +9,7 @@ import { returnOne } from '@akphi/app1/helpers';
 import { Component2 } from '@akphi/component1';
 import { useState } from 'react';
 import './index.scss';
+
 // import '@akphi/component1/lib/index.css';
 // import Component2 from '@akphi/component1';
 
