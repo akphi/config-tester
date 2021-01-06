@@ -9,6 +9,7 @@
     "build:tsc": "tsc --project ./tsconfig.build.json",
     "clean": "rimraf \"build\" \"lib\"",
     "dev": "tsc --watch --preserveWatchOutput",
+    "prepublish": "yarn check:license",
     "test": "jest",
     "test:watch": "jest --watch",
     "type-check": "tsc --noEmit"

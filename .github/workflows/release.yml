@@ -32,14 +32,15 @@ jobs:
           node-version: 14.x
       - name: Install dependencies
         run: yarn
-      - name: Build
-        run: yarn build
-        # TODO: copy over the LICENSE files
       - name: Create Release Pull Request or Publish to NPM
         uses: changesets/action@master
         with:
-          publish: yarn ci:release
+          # publish: yarn ci:release
           version: yarn ci:version
+          commit: 'chore: bump package versions'
+          title: 'chore: bump package versions'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # if 2FA is enabled, `NPM_TOKEN` must be of type `automation` to bypass 2FA
+          # See https://docs.npmjs.com/requiring-2fa-for-package-publishing-and-settings-modification
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
