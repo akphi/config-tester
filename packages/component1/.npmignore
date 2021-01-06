@@ -1,4 +1,7 @@
 **/__mocks__/**
 **/__tests__/**
+rollup.config.js
+jest.config.json
+tsconfig.build.json
 tsconfig.json
 build

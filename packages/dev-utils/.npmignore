@@ -1,6 +1,3 @@
 **/__mocks__/**
 **/__tests__/**
 jest.config.json
-tsconfig.build.json
-tsconfig.json
-build

@@ -1,6 +1,6 @@
 {
   "name": "@akphi/lib1",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -9,6 +9,7 @@
     "build:tsc": "tsc --project ./tsconfig.build.json",
     "clean": "rimraf \"build\" \"lib\"",
     "dev": "tsc --watch --preserveWatchOutput",
+    "prepublish": "yarn build",
     "test": "jest",
     "test:watch": "jest --watch",
     "type-check": "tsc --noEmit"

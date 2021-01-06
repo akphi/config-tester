@@ -2,6 +2,7 @@
   "name": "@akphi/dev-utils",
   "version": "0.0.1",
   "files": [
+    "LICENSE",
     "CopyrightUtils.js",
     "DevUtils.js",
     "ForkTsCheckerWebpackFormatterPlugin.js",
@@ -26,7 +27,7 @@
     "@rollup/plugin-json": "4.1.0",
     "@rollup/plugin-node-resolve": "11.0.1",
     "@rollup/plugin-replace": "2.3.4",
-    "autoprefixer": "10.1.0",
+    "autoprefixer": "10.2.0",
     "babel-loader": "8.2.2",
     "chalk": "4.1.0",
     "circular-dependency-plugin": "5.2.2",

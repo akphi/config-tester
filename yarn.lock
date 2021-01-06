@@ -9,20 +9,21 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@akphi/app1@workspace:packages/app1"
   dependencies:
-    "@akphi/component1": 0.0.1
+    "@akphi/component1": 0.0.2
     "@akphi/dev-utils": 0.0.1
     react: 17.0.1
     react-dom: 17.0.1
   languageName: unknown
   linkType: soft
 
-"@akphi/component1@0.0.1, @akphi/component1@workspace:packages/component1":
+"@akphi/component1@0.0.2, @akphi/component1@workspace:packages/component1":
   version: 0.0.0-use.local
   resolution: "@akphi/component1@workspace:packages/component1"
   dependencies:
     "@akphi/dev-utils": 0.0.1
-    "@akphi/lib1": 0.0.1
+    "@akphi/lib1": 0.0.2
     "@material-ui/core": 4.11.2
+    jest: 26.6.3
     react: 17.0.1
     react-dom: 17.0.1
   peerDependencies:
@@ -45,7 +46,7 @@ __metadata:
     "@rollup/plugin-json": 4.1.0
     "@rollup/plugin-node-resolve": 11.0.1
     "@rollup/plugin-replace": 2.3.4
-    autoprefixer: 10.1.0
+    autoprefixer: 10.2.0
     babel-loader: 8.2.2
     chalk: 4.1.0
     circular-dependency-plugin: 5.2.2
@@ -77,7 +78,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@akphi/lib1@0.0.1, @akphi/lib1@workspace:packages/lib1":
+"@akphi/lib1@0.0.2, @akphi/lib1@workspace:packages/lib1":
   version: 0.0.0-use.local
   resolution: "@akphi/lib1@workspace:packages/lib1"
   languageName: unknown
@@ -3321,21 +3322,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"autoprefixer@npm:10.1.0":
-  version: 10.1.0
-  resolution: "autoprefixer@npm:10.1.0"
+"autoprefixer@npm:10.2.0":
+  version: 10.2.0
+  resolution: "autoprefixer@npm:10.2.0"
   dependencies:
-    browserslist: ^4.15.0
-    caniuse-lite: ^1.0.30001165
+    browserslist: ^4.16.1
+    caniuse-lite: ^1.0.30001173
     colorette: ^1.2.1
-    fraction.js: ^4.0.12
+    fraction.js: ^4.0.13
     normalize-range: ^0.1.2
     postcss-value-parser: ^4.1.0
   peerDependencies:
     postcss: ^8.1.0
   bin:
     autoprefixer: bin/autoprefixer
-  checksum: a0d9ccd6059f024e5fda4334019c5306b4a15a3fa2067bf5aea8eafe00fc1e79e0bc1d563998abdb3de6131a0718de80e8506534c404b21aefec75d2a56f966f
+  checksum: 0b0c855b10b54613714a62684757053c462f1f6c832b4d18ad8eb26f9bf25b942d8b74e3a1dd4837849da0e7b8cbaf72b1a61db48768efdfb8e1815d43887aae
   languageName: node
   linkType: hard
 
@@ -3638,7 +3639,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browserslist@npm:^4.0.0, browserslist@npm:^4.12.0, browserslist@npm:^4.14.5, browserslist@npm:^4.15.0, browserslist@npm:^4.16.0":
+"browserslist@npm:^4.0.0, browserslist@npm:^4.12.0, browserslist@npm:^4.14.5, browserslist@npm:^4.16.0":
   version: 4.16.0
   resolution: "browserslist@npm:4.16.0"
   dependencies:
@@ -3650,6 +3651,21 @@ __metadata:
   bin:
     browserslist: cli.js
   checksum: 5385f3dfb1bd1d321093a88c758a5429b55e5f4c76abd91ce865729cfcaa45dc1a54e934e2a8400aca7200f1b9993b1e147bea9fe0fa6704a968b230abd4f277
+  languageName: node
+  linkType: hard
+
+"browserslist@npm:^4.16.1":
+  version: 4.16.1
+  resolution: "browserslist@npm:4.16.1"
+  dependencies:
+    caniuse-lite: ^1.0.30001173
+    colorette: ^1.2.1
+    electron-to-chromium: ^1.3.634
+    escalade: ^3.1.1
+    node-releases: ^1.1.69
+  bin:
+    browserslist: cli.js
+  checksum: 56f51464c3a3bd9b2aeb75ded1dc3fce5ad91bd6d84187aba812a78ba66b69bc97c2de25a1b7409daac3c0049e979bf0faa6cca4aacce0abcaf3107c250ce3fb
   languageName: node
   linkType: hard
 
@@ -3814,6 +3830,13 @@ __metadata:
   version: 1.0.30001171
   resolution: "caniuse-lite@npm:1.0.30001171"
   checksum: 6c6a0cdf48aa53202207cf68da4ff32fa3cba24d9a85673c60c0d21d4c0c31baca13a977ea885a52418fac03a03c39fe53077e296631c79c9cfe62f772deb5f2
+  languageName: node
+  linkType: hard
+
+"caniuse-lite@npm:^1.0.30001173":
+  version: 1.0.30001173
+  resolution: "caniuse-lite@npm:1.0.30001173"
+  checksum: e90b1f29f437708dcb0cab352cb932a3437ae4826dbae3a0f20eaf112b9151aba490cfd8a0f693b08c254c3075baa69a375c235ec5dd002e345283f98981190a
   languageName: node
   linkType: hard
 
@@ -5258,6 +5281,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"electron-to-chromium@npm:^1.3.634":
+  version: 1.3.634
+  resolution: "electron-to-chromium@npm:1.3.634"
+  checksum: 8bb2b0e053852a6175f86b46b428a95e52cbb24e175bdc7d4ebd5555aabd49baa088aa9aaa80a055bc752581a35cf462843fca3a0f455b5ecd27146fab82d0b9
+  languageName: node
+  linkType: hard
+
 "emittery@npm:^0.7.1":
   version: 0.7.2
   resolution: "emittery@npm:0.7.2"
@@ -6281,7 +6311,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fraction.js@npm:^4.0.12":
+"fraction.js@npm:^4.0.13":
   version: 4.0.13
   resolution: "fraction.js@npm:4.0.13"
   checksum: 1e9ec132b09f17f3e41aa53508197901277f11896f6adc0b51a4b38511e6236813a471488c319221f4fadf7c854be9566a4924215623b460364591d80e1791c3
@@ -9793,6 +9823,13 @@ fsevents@~2.1.2:
   version: 1.1.67
   resolution: "node-releases@npm:1.1.67"
   checksum: 19a76af9498421b28bbc0123effc870a2ebe68a6364a4eb6547c5f871d6c2d8095fb66cc582a2378af8fbb6124ef8360207ef29d7a5a507e27691c53a85e9df4
+  languageName: node
+  linkType: hard
+
+"node-releases@npm:^1.1.69":
+  version: 1.1.69
+  resolution: "node-releases@npm:1.1.69"
+  checksum: 240b2534f32c8bbdfefb1fb052d2b1c198f3a745141ce245c6c5241a6efefae22d356b66965e5250869013c3c4777050cdca78d39f3b46965166b5f3e02b08d7
   languageName: node
   linkType: hard
 

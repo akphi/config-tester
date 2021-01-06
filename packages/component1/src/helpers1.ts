@@ -6,5 +6,5 @@
  */
 
 export const returnOneAsWell = (): number => 1;
-// export const returnTwoAsWell = (): number => 2;
+export const returnTwoAsWell = (): number => 2;
 // export const returnThreeAsWell = (): number => 3;

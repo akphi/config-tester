@@ -9,6 +9,6 @@ import type { A } from './something';
 import { Am } from './something';
 
 export function helloworld() {
-  console.log('helloworld!');
+  // console.log('helloworld!');
   return 'Hello world';
 }
