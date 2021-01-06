@@ -22,7 +22,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@akphi/component1": "0.0.3",
+    "@akphi/component1": "workspace:*",
+    "@akphi/lib1": "workspace:*",
     "react": "17.0.1",
     "react-dom": "17.0.1"
   },
