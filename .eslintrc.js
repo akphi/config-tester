@@ -5,11 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-const path = require('path');
-const fs = require('fs');
-
-const packages = fs.readdirSync(path.resolve(__dirname, 'packages'));
-
 /**
  * We need to detect environment for ESLint CLI because there are rules
  * which are computationally expensive to perform during development: i.e.
@@ -213,7 +208,7 @@ const EXPENSIVE__IMPORT_RULES = {
   //   ERROR,
   //   {
   //     packageDir: [__dirname].concat(
-  //       packages.map((packageName) =>
+  //       packages.map((packageName) => // const packages = fs.readdirSync(path.resolve(__dirname, 'packages'));
   //         path.resolve(__dirname, `packages/${packageName}/`),
   //       ),
   //     ),
