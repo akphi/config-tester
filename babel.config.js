@@ -36,22 +36,13 @@ module.exports = (api) => {
           runtime: 'automatic', // use React@17 JSX transform
         },
       ],
-      function () {
-        return {
-          plugins: [
-            // Support static, private fields. With option `loose=true`, class properties are compiled to use an
-            // assignment expression instead of `Object.defineProperty`
-            // See https://babeljs.io/docs/en/babel-plugin-proposal-class-properties#loose
-            ['@babel/plugin-proposal-class-properties', { loose: true }],
-          ],
-        };
-      },
       [
         '@babel/preset-typescript',
         {
-          // Allow using `declare` in class
-          // NOTE: due to this flag, this plugin has to run before other class modifier plugins like `@babel/plugin-proposal-class-properties`
           onlyRemoveTypeImports: true,
+          // Allow using `declare` keyword for class fields.
+          // NOTE: for this to work, this plugin has to run before other class modifier plugins like
+          // `@babel/plugin-proposal-class-properties`; `babel` should want about this if it happens.
           // `allowDeclareFields` will be `true` by default in babel 8
           // See https://babeljs.io/docs/en/babel-preset-typescript#allowdeclarefields
           allowDeclareFields: true,
