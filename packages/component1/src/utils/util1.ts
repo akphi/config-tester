@@ -6,3 +6,4 @@
  */
 
 export const returnTwo = (): number => 2;
+export const returnTwoTwo = (): number => 22;
