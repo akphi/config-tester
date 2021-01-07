@@ -10,5 +10,5 @@
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
-  "references": [{ "path": "../component1" }]
+  "references": [{ "path": "../component1" }, { "path": "../lib1" }]
 }

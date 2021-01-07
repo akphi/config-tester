@@ -16,7 +16,7 @@ const ROOT_DIR = path.resolve(__dirname, '../..');
 
 console.log(`
 ======================================================================================
- NOTE: This has ot be run inside a CI build. Do not run this script on local machine! 
+ NOTE: This has to be run inside a CI build. Do not run this script on local machine! 
 ======================================================================================
 `);
 
@@ -28,7 +28,7 @@ if (execSync('git status --porcelain', { encoding: 'utf-8', cwd: ROOT_DIR })) {
   console.log(
     'This command must be executed on a clean repository. Found changes items:',
   );
-  execSync('git', ['status', '--porcelain'], {
+  execSync('git status --porcelain', {
     cwd: ROOT_DIR,
     stdio: 'inherit',
   });
@@ -44,6 +44,7 @@ try {
     { encoding: 'utf-8', cwd: ROOT_DIR },
   )
     .split('\n')
+    .filter(Boolean)
     .slice(0, -1)
     .map((str) => str.match(/[\S]+$/))
     .flat();
@@ -52,6 +53,7 @@ try {
     cwd: ROOT_DIR,
   })
     .split('\n')
+    .filter(Boolean)
     .map((text) => JSON.parse(text))
     .map((ws) => ({
       name: ws.name,
@@ -73,17 +75,13 @@ try {
 }
 
 if (packages.length) {
-  console.log(
-    `Found ${packages.length} package(s):\n${packages
-      .map((pkg) => `${pkg.name}@${pkg.version}`)
-      .join('\n')}`,
-  );
+  packages.forEach((pkg) => console.log(`${pkg.name}@${pkg.version}`));
 } else {
   console.log('No packages found for publish.');
   process.exit(0);
 }
 
-console.log('Preparing content to publish...');
+console.log('\nPreparing content to publish...');
 packages.forEach((pkg) => {
   // If the package does not have a LICENSE file, add it as this is required in `prepublish` step
   // `lerna` does this by default and remove it when publishing finishes
@@ -106,17 +104,21 @@ packages.forEach((pkg) => {
    * NOTE: we only need to care about `tsconfig.json` instead of `tsconfig.build.json` or so because IDE automatically
    * uses `tsconfig.json` for handling Typescript files in `src`
    */
-  const tsConfigPath = path.resolve(pkg.path, 'tsconfig.json');
-  if (!fs.existsSync(tsConfigPath)) {
-    const newTsConfigContent = resolveFullTsConfig(tsConfigPath);
-    fs.rm(tsConfigPath);
-    fs.writeFile(tsConfigPath, newTsConfigContent, (err) => {
-      console.log(
-        `Can't write full Typescript config for package '${pkg.name}'`,
-      );
-      process.exit(1);
-    });
-  }
+  // const tsConfigPath = path.resolve(pkg.path, 'tsconfig.json');
+  // if (fs.existsSync(tsConfigPath)) {
+  //   const newTsConfigContent = resolveFullTsConfig(tsConfigPath);
+  //   fs.rm(tsConfigPath);
+  //   fs.writeFileSync(
+  //     tsConfigPath,
+  //     JSON.stringify(newTsConfigContent, null, 2),
+  //     (err) => {
+  //       console.log(
+  //         `Can't write full Typescript config for package '${pkg.name}'`,
+  //       );
+  //       process.exit(1);
+  //     },
+  //   );
+  // }
 });
 
 // Try to publish all packages
@@ -191,3 +193,5 @@ if (unPublishedPkgs.length > 0) {
   );
   process.exit(1);
 }
+
+console.log('Done');
