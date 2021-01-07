@@ -15,13 +15,16 @@ const {
 const ROOT_DIR = path.resolve(__dirname, '../..');
 
 console.log(`
-======================================================================================
- NOTE: This has to be run inside a CI build. Do not run this script on local machine! 
-======================================================================================
+===================================================================================
+  NOTE: This script is meant to be run inside a CI build. If you run it manually,
+  please make sure the script properly cleans up temporary content generated for
+  publishing. Then, run \`git push --follow-tags\` to publish new tags on Github.
+===================================================================================
 `);
 
 if (!process.env.NPM_TOKEN && !process.env.YARN_NPM_AUTH_TOKEN) {
-  throw new Error(`NPM authentication token is not specified`);
+  console.log('NPM authentication token is not specified`');
+  process.exit(1);
 }
 
 if (execSync('git status --porcelain', { encoding: 'utf-8', cwd: ROOT_DIR })) {
@@ -61,6 +64,9 @@ try {
       path: path.resolve(ROOT_DIR, ws.location),
       version: require(path.resolve(ROOT_DIR, ws.location, 'package.json'))
         .version,
+      hasLicenseFile: fs.existsSync(
+        path.resolve(ROOT_DIR, ws.location, 'LICENSE'),
+      ),
     }));
   packages = workspaceDirsInOrder.map((dir) => {
     const pkg = workspaces.find((ws) => ws.path === dir);
@@ -82,11 +88,12 @@ if (packages.length) {
 }
 
 console.log('\nPreparing content to publish...');
+const backupTsConfig = new Map();
 packages.forEach((pkg) => {
   // If the package does not have a LICENSE file, add it as this is required in `prepublish` step
   // `lerna` does this by default and remove it when publishing finishes
   // See https://github.com/lerna/lerna/issues/1213
-  if (!fs.existsSync(path.resolve(pkg.path, 'LICENSE'))) {
+  if (!pkg.hasLicenseFile) {
     fs.copyFileSync(
       path.resolve(ROOT_DIR, 'LICENSE'),
       path.resolve(pkg.path, 'LICENSE'),
@@ -104,21 +111,24 @@ packages.forEach((pkg) => {
    * NOTE: we only need to care about `tsconfig.json` instead of `tsconfig.build.json` or so because IDE automatically
    * uses `tsconfig.json` for handling Typescript files in `src`
    */
-  // const tsConfigPath = path.resolve(pkg.path, 'tsconfig.json');
-  // if (fs.existsSync(tsConfigPath)) {
-  //   const newTsConfigContent = resolveFullTsConfig(tsConfigPath);
-  //   fs.rm(tsConfigPath);
-  //   fs.writeFileSync(
-  //     tsConfigPath,
-  //     JSON.stringify(newTsConfigContent, null, 2),
-  //     (err) => {
-  //       console.log(
-  //         `Can't write full Typescript config for package '${pkg.name}'`,
-  //       );
-  //       process.exit(1);
-  //     },
-  //   );
-  // }
+  const tsConfigPath = path.resolve(pkg.path, 'tsconfig.json');
+  if (fs.existsSync(tsConfigPath)) {
+    const newTsConfigContent = resolveFullTsConfig(tsConfigPath);
+    backupTsConfig.set(
+      tsConfigPath,
+      fs.readFileSync(tsConfigPath, { encoding: 'utf-8' }),
+    );
+    fs.writeFileSync(
+      tsConfigPath,
+      JSON.stringify(newTsConfigContent, null, 2),
+      (err) => {
+        console.log(
+          `Can't write full Typescript config for package '${pkg.name}'`,
+        );
+        process.exit(1);
+      },
+    );
+  }
 });
 
 // Try to publish all packages
@@ -150,6 +160,23 @@ for (const pkg of packages) {
     }
   }
 }
+
+// Remove all temporary publish content
+console.log('\nRemoving generated content prepared for publish...');
+// Remove added LICENSE files
+packages.forEach((pkg) => {
+  if (!pkg.hasLicenseFile) {
+    fs.rmSync(path.resolve(pkg.path, 'LICENSE'));
+  }
+});
+// Remove resolved Typescript config files
+Array.from(backupTsConfig.entries()).forEach(([path, content]) => {
+  fs.writeFileSync(path, content, (err) => {
+    console.log(
+      `Can't recover Typescript config file with path '${path}'. Make sure you manually revert this before committing.`,
+    );
+  });
+});
 
 const publishedPkgs = packages.filter((p) => p.published);
 const unPublishedPkgs = packages.filter(
@@ -193,5 +220,3 @@ if (unPublishedPkgs.length > 0) {
   );
   process.exit(1);
 }
-
-console.log('Done');

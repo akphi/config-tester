@@ -16,8 +16,6 @@ module.exports = {
   excludePatterns: [],
   copyrightText: fs.readFileSync(
     path.resolve(__dirname, './COPYRIGHT_HEADER.txt'),
-    {
-      encoding: 'utf-8',
-    },
+    { encoding: 'utf-8' },
   ),
 };

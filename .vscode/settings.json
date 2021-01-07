@@ -11,6 +11,7 @@
   "search.exclude": {
     "**/node_modules": true,
     "**/yarn.lock": true,
+    ".yarn": true,
     "packages/*/build": true
   },
   "javascript.preferences.importModuleSpecifier": "non-relative",

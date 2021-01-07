@@ -1,22 +1,20 @@
 # TODO
 
-- Revamp Typescript resolve to full in build-ci
-
-# Contribute TODO
-
-- Look at Yarn Contributing.md
-  https://yarnpkg.com/advanced/contributing
-
-- Add github actions to check for changeset indicators
-  `yarn version check` -> if fail, prompt user to run locally to produce the changeset
-  https://yarnpkg.com/features/release-workflow#commit-history
-  -> if passed -> run the next step -> check if there's any bump, if yes, check if changelog is already provided or not
-
 - `FANCY` rewrite `cz-conventional-changelog` to accept `!` in the title and relax all the options
   `use commitizen` with a custom script - https://github.com/commitizen/cz-conventional-changelog/blob/master/index.js
   https://github.com/commitizen/cz-conventional-changelog/blob/master/engine.js
   Use `inquirer` like `cz-conventional-changelog`
   Only care about the one liner really, ask breaking change? first and then limit to 72 chars and do not show breaking cahnges when change is of type `docs` or so
+
+- Look at Yarn Contributing.md
+  https://yarnpkg.com/advanced/contributing
+
+# Contribute TODO
+
+- Add github actions to check for changeset indicators
+  `yarn version check` -> if fail, prompt user to run locally to produce the changeset
+  https://yarnpkg.com/features/release-workflow#commit-history
+  -> if passed -> run the next step -> check if there's any bump, if yes, check if changelog is already provided or not
 
 # Release TODO
 
