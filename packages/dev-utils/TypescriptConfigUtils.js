@@ -6,6 +6,7 @@
  */
 
 const path = require('path');
+const { execSync } = require('child_process');
 const fs = require('fs');
 const { parse } = require('jsonc-parser');
 const { getFileContent } = require('./DevUtils');
@@ -28,7 +29,13 @@ const getTsConfigJSON = (file) => {
   return json;
 };
 
-const resolveFullTsConfig = (fullTsConfigPath) => {
+/**
+ * This method walks up the inheritance chain and assemble the full
+ * config file without doing any validation that `tsc` does
+ * such as to see ifany files match the pattern specified in `files`
+ * and `includes`
+ */
+const resolveFullTsConfigWithoutValidation = (fullTsConfigPath) => {
   let tsConfig = getTsConfigJSON(fullTsConfigPath);
   let tsConfigDir = getDir(fullTsConfigPath);
   let ext = tsConfig.extends;
@@ -79,6 +86,19 @@ const resolveFullTsConfig = (fullTsConfigPath) => {
   return tsConfig;
 };
 
+/**
+ * This method uses `tsc` to resolve the full config
+ * but because it uses `tsc` it will also do validation.
+ */
+const resolveFullTsConfig = (fullTsConfigPath) =>
+  JSON.parse(
+    execSync(`tsc -p ${fullTsConfigPath} --showConfig`, {
+      encoding: 'utf-8',
+      cwd: path.dirname(fullTsConfigPath),
+    }),
+  );
+
 module.exports = {
+  resolveFullTsConfigWithoutValidation,
   resolveFullTsConfig,
 };

@@ -1,7 +1,8 @@
+build
 **/__mocks__/**
 **/__tests__/**
-rollup.config.js
-jest.config.json
-tsconfig.build.json
-tsconfig.json
-build
+# `package.json`, `CHANGELOG`, `LICENSE`, and `README` are never ignore 
+# See https://npm.github.io/publishing-pkgs-docs/publishing/the-npmignore-file.html
+/*.*
+# We need resolve the full `tsconfig.json` so source navigation works properly on distributed package 
+!tsconfg.json

@@ -14,5 +14,6 @@ const parseCommit = async function parse(message) {
   console.log(parsed);
 };
 
-parseCommit('type(miami)!: somehing');
-parseCommit('chore!: drop node 8 support\nBREAKING CHANGE something else');
+module.exports = {
+  parseCommit,
+};

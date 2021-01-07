@@ -1,12 +1,6 @@
 # TODO
 
-- Use `*` for all pacakges missing in sub-modules
-- Try out Jest-circus - NOTE in Jest config to remove it when 27 comes out
-  https://github.com/vercel/next.js/pull/12974
-  https://github.com/facebook/jest/issues/6295
-  https://www.npmjs.com/package/jest-circus
-- Add repository link to each package
-- Use changesets, update create ci:version and ci:release script
+- Revamp Typescript resolve to full in build-ci
 
 # Contribute TODO
 

@@ -7,19 +7,28 @@
 
 const fs = require('fs');
 const path = require('path');
-const execa = require('execa');
+const { execSync } = require('child_process');
+const {
+  resolveFullTsConfig,
+} = require('../../packages/dev-utils/TypescriptConfigUtils');
 
 const ROOT_DIR = path.resolve(__dirname, '../..');
+
+console.log(`
+======================================================================================
+ NOTE: This has ot be run inside a CI build. Do not run this script on local machine! 
+======================================================================================
+`);
 
 if (!process.env.NPM_TOKEN && !process.env.YARN_NPM_AUTH_TOKEN) {
   throw new Error(`NPM authentication token is not specified`);
 }
 
-if (execa.sync('git', ['status', '--porcelain'], { cwd: ROOT_DIR }).stdout) {
+if (execSync('git status --porcelain', { encoding: 'utf-8', cwd: ROOT_DIR })) {
   console.log(
     'This command must be executed on a clean repository. Found changes items:',
   );
-  execa.sync('git', ['status', '--porcelain'], {
+  execSync('git', ['status', '--porcelain'], {
     cwd: ROOT_DIR,
     stdio: 'inherit',
   });
@@ -30,35 +39,23 @@ if (execa.sync('git', ['status', '--porcelain'], { cwd: ROOT_DIR }).stdout) {
 console.log('Resolving packages to publish...');
 let packages = [];
 try {
-  const packagesToReleaseInOrder = execa.sync(
-    'yarn',
-    [
-      'workspaces',
-      'foreach',
-      '--topological-dev',
-      '--no-private',
-      'run',
-      'info:dir',
-    ],
-    { cwd: ROOT_DIR },
-  );
-  const workspaceDirsInOrder = packagesToReleaseInOrder.stdout
+  const workspaceDirsInOrder = execSync(
+    'yarn workspaces foreach --topological-dev --no-private run info:dir',
+    { encoding: 'utf-8', cwd: ROOT_DIR },
+  )
     .split('\n')
     .slice(0, -1)
     .map((str) => str.match(/[\S]+$/))
     .flat();
-  const workspacesInfo = execa.sync('yarn', ['workspaces', 'list', '--json'], {
+  const workspaces = execSync('yarn workspaces list --json', {
+    encoding: 'utf-8',
     cwd: ROOT_DIR,
-  });
-  const workspaces = workspacesInfo.stdout
+  })
     .split('\n')
     .map((text) => JSON.parse(text))
     .map((ws) => ({
       name: ws.name,
       location: ws.location,
-      hasLicenseFile: fs.existsSync(
-        path.resolve(ROOT_DIR, ws.location, 'LICENSE'),
-      ),
       path: path.resolve(ROOT_DIR, ws.location),
       version: require(path.resolve(ROOT_DIR, ws.location, 'package.json'))
         .version,
@@ -75,15 +72,50 @@ try {
   process.exit(1);
 }
 
-// If the package does not have a LICENSE file, add it as this is required in `prepublish` step
-// `lerna` does this by default and remove it when publishing finishes
-// See https://github.com/lerna/lerna/issues/1213
+if (packages.length) {
+  console.log(
+    `Found ${packages.length} package(s):\n${packages
+      .map((pkg) => `${pkg.name}@${pkg.version}`)
+      .join('\n')}`,
+  );
+} else {
+  console.log('No packages found for publish.');
+  process.exit(0);
+}
+
+console.log('Preparing content to publish...');
 packages.forEach((pkg) => {
-  if (!pkg.hasLicenseFile) {
+  // If the package does not have a LICENSE file, add it as this is required in `prepublish` step
+  // `lerna` does this by default and remove it when publishing finishes
+  // See https://github.com/lerna/lerna/issues/1213
+  if (!fs.existsSync(path.resolve(pkg.path, 'LICENSE'))) {
     fs.copyFileSync(
       path.resolve(ROOT_DIR, 'LICENSE'),
       path.resolve(pkg.path, 'LICENSE'),
     );
+  }
+  /**
+   * For Typescript module, we need to fully resolve `tsconfig` file, i.e. we need to make sure the config does not
+   * have `extends` field anymore. This is needed for source code navigation to work properly
+   *
+   * e.g. we use module `libA` in another project, in the IDE, we navigate the source code of `libA` in node_modules
+   * the IDE is smart enough to read source map and redirect our navigation to the actual source code of `libA` in
+   * `libA/src` folder but due to a not fully-resolved `tsconfig.json` the IDE will show errors for Typescript files
+   * shown in `libA/src`
+   *
+   * NOTE: we only need to care about `tsconfig.json` instead of `tsconfig.build.json` or so because IDE automatically
+   * uses `tsconfig.json` for handling Typescript files in `src`
+   */
+  const tsConfigPath = path.resolve(pkg.path, 'tsconfig.json');
+  if (!fs.existsSync(tsConfigPath)) {
+    const newTsConfigContent = resolveFullTsConfig(tsConfigPath);
+    fs.rm(tsConfigPath);
+    fs.writeFile(tsConfigPath, newTsConfigContent, (err) => {
+      console.log(
+        `Can't write full Typescript config for package '${pkg.name}'`,
+      );
+      process.exit(1);
+    });
   }
 });
 
@@ -91,9 +123,10 @@ packages.forEach((pkg) => {
 for (const pkg of packages) {
   try {
     const npmInfo = JSON.parse(
-      execa.sync('npm', ['view', '--json', pkg.name], {
+      execSync(`npm view --json ${pkg.name}`, {
+        encoding: 'utf-8',
         cwd: ROOT_DIR,
-      }).stdout,
+      }),
     );
     if (npmInfo.versions?.includes(pkg.version)) {
       pkg.alreadyPublished = true;
@@ -106,7 +139,7 @@ for (const pkg of packages) {
   } catch {
     try {
       // Publish using Yarn NPM publish.
-      execa.sync('yarn', ['npm', 'publish'], { cwd: pkg.path });
+      execSync('yarn npm publish', { cwd: pkg.path });
       pkg.published = true;
     } catch (publishError) {
       console.log(
@@ -120,13 +153,6 @@ const publishedPkgs = packages.filter((p) => p.published);
 const unPublishedPkgs = packages.filter(
   (p) => !p.published && !p.alreadyPublished,
 );
-
-// Cleanup temporary LICENSE files added
-packages.forEach((pkg) => {
-  if (!pkg.hasLicenseFile) {
-    fs.rmSync(path.resolve(pkg.path, 'LICENSE'));
-  }
-});
 
 if (publishedPkgs.length > 0) {
   console.log(
@@ -143,7 +169,7 @@ if (publishedPkgs.length > 0) {
     // as the tag is not considered annotated
     // See https://git-scm.com/docs/git-push#Documentation/git-push.txt---follow-tags
     try {
-      execa.sync('git', ['tag', '-a', tag, '-m', tag]);
+      execSync(`git tag -a ${tag} -m ${tag}`, { cwd: ROOT_DIR });
       // NOTE: this log message is needed so that `changesets/action` can pick up the published version
       // and create Github release accordingly
       // See https://github.com/changesets/action/blob/master/src/run.ts

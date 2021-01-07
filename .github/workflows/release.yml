@@ -35,10 +35,10 @@ jobs:
       - name: Create Release Pull Request or Publish to NPM
         uses: changesets/action@master
         with:
-          publish: yarn ci:release
-          version: yarn ci:version
+          version: yarn version
           commit: 'chore: bump package versions'
           title: 'chore: bump package versions'
+          publish: yarn release:ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # if 2FA is enabled, `NPM_TOKEN` must be of type `automation` to bypass 2FA

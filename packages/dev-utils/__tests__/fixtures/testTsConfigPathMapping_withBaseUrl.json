@@ -6,5 +6,6 @@
       "somePath": ["./src/somePath", "./src/somePath1"],
       "toBeExcluded/*": "nothing"
     }
-  }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.json"]
 }
