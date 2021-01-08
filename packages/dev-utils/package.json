@@ -1,11 +1,16 @@
 {
   "name": "@akphi/dev-utils",
   "version": "0.0.1",
+  "homepage": "https://github.com/akphi/config-tester/packages/dev-utils",
+  "bugs": {
+    "url": "https://github.com/akphi/config-tester/issues"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/akphi/config-tester",
+    "url": "https://github.com/akphi/config-tester.git",
     "directory": "packages/dev-utils"
   },
+  "license": "MIT",
   "files": [
     "LICENSE",
     "ConventionalCommitUtils.js",

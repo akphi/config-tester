@@ -12,3 +12,6 @@ export function helloworld() {
   // console.log('helloworld!');
   return 'Hello world';
 }
+
+export const o = { a: 1, name: 'o' };
+export const copy = { ...o };

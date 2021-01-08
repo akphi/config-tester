@@ -1,9 +1,13 @@
 {
   "name": "@akphi/lib1",
   "version": "0.0.4",
+  "homepage": "https://github.com/akphi/config-tester/packages/lib1",
+  "bugs": {
+    "url": "https://github.com/akphi/config-tester/issues"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/akphi/config-tester",
+    "url": "https://github.com/akphi/config-tester.git",
     "directory": "packages/lib1"
   },
   "license": "MIT",
