@@ -94,7 +94,7 @@ const ES_RULES = {
   'prefer-const': WARN,
   'prefer-named-capture-group': WARN,
   'prefer-template': WARN,
-  quotes: [WARN, 'single', { allowTemplateLiterals: true }],
+  quotes: [WARN, 'single', { avoidEscape: true, allowTemplateLiterals: true }],
   'require-yield': OFF,
   semi: [WARN, 'always', { omitLastInOneLineBlock: true }],
   'semi-spacing': [WARN, { after: true, before: false }],

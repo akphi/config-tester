@@ -71,6 +71,7 @@ __metadata:
     circular-dependency-plugin: 5.2.2
     clean-webpack-plugin: 3.0.0
     conventional-changelog-conventionalcommits: 4.5.0
+    conventional-commit-types: 3.0.0
     conventional-commits-parser: 3.2.0
     css-loader: 5.0.1
     cssnano: 4.1.10
@@ -4707,7 +4708,6 @@ __metadata:
     chalk: 4.1.0
     commitizen: 4.2.2
     cross-env: 7.0.3
-    cz-conventional-changelog: 3.3.0
     eslint: 7.17.0
     eslint-config-prettier: 7.1.0
     eslint-plugin-import: 2.22.1
@@ -4787,7 +4787,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"conventional-commit-types@npm:^3.0.0":
+"conventional-commit-types@npm:3.0.0, conventional-commit-types@npm:^3.0.0":
   version: 3.0.0
   resolution: "conventional-commit-types@npm:3.0.0"
   checksum: b95c6e01800411fdc030b7b100aad85a9541911fca2febdd45df124cd1edec8dd2e0dcbc3dfcf0eb53e9de338d3c979f3c5033e37f2ab72be4b2dbfb4d4a100b
