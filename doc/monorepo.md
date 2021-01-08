@@ -90,23 +90,7 @@ In the `build` phase, `tsc` will be used to create type declaration `*.d.ts`. Si
 
 [lerna](https://github.com/lerna/lerna) does a great job at managing version, it also helps with [generating changelogs using conventional commit](https://github.com/lerna/lerna/tree/main/commands/version#--conventional-commits). However, as mentioned, most of its feature set are already covered by Yarn, so we decide to use Yarn instead as our version manager and publisher.
 
-> [changesets](https://github.com/atlassian/changesets) is another tool we are exploring as it encourages us to write meaningful changelog as we go, and has a sensible approach to managing changelog and versioning in monorepo project. But it's still a pretty _young_ project and requires more work to [integrate better](https://github.com/atlassian/changesets/issues/432) with Yarn@2. What we really like about `changesets` is its [fresh take on monorepo release process](https://github.com/atlassian/changesets/blob/master/docs/detailed-explanation.md), such as how it creates separate `CHANGELOG.md` and release tag for each package.
-
-# TODO
-
-- Look at Yarn Contributing.md
-  https://yarnpkg.com/advanced/contributing
-
-# Release TODO
-
-- Create script to run `yarn version apply --all` and then create a commit and then add tags and then push to git to release
-- Add tags to the commit
-  Must use annotated tags
-  https://alblue.bandlem.com/2011/04/git-tip-of-week-tags.html#:~:text=If%20the%20tag%20is%20an,see%20only%20the%20commit%20object.&text=If%20the%20current%20commit%20exactly,the%20tag%20name%20is%20printed.
-  Add tags with format `@akphi/lib1@0.0.1` ... and also add a date tag `2020-11-22` like https://github.com/yarnpkg/berry/commit/6b9df772ac785f73e6d08f0fc8c3f1718f296671 - so we can check out using that tag and
-  https://yarnpkg.com/features/release-workflow
-  need this in the end `git push --follow-tags`
-- manually update change log as well to the version we need and cut a header for `Unreleased`
+We use [changesets](https://github.com/atlassian/changesets) for versioning and documenting changes (creating changelogs) and `Yarn` for publishing. `changesets` is still a pretty _young_ project and requires more work to [integrate better](https://github.com/atlassian/changesets/issues/432) with `Yarn@2`. What we really like about `changesets` is its [fresh take on monorepo release process](https://github.com/atlassian/changesets/blob/master/docs/detailed-explanation.md), such as how it creates separate `CHANGELOG.md` files and release tags for each package. `Yarn@2` is also considering to [unify its releasing workflow](https://github.com/yarnpkg/berry/issues/1510) with that of `changesets`, so we might only need `Yarn` in the future.
 
 ### IDE: Visual Studio Code
 
