@@ -21,13 +21,16 @@ For **publishing** there is more work. We can call the script used in CI for rel
 # 1. Build the artifacts for publishing
 yarn build
 
-# 2. Copy the root LICENSE files to the package root.
-# If this is a Typescript package, flat out the
-# `tsconfig.json` file (i.e. resolve all `extends`)
+# 2. Prepare publish content:
+#   i.    Copy the root LICENSE files to the package root.
+#   ii.   If this is a Typescript package, flat out the
+#         `tsconfig.json` file (i.e. resolve all `extends`)
+#   iii.  Update the version in `package.json`
+#         For example: `{ ..., "version": "2.0.0.alpha.0` }`
 yarn tsc build:ts --showConfig # this will show the full config, replace the content of `tsconfig.json` with this
 
-# 3. Update the version in `package.json`
-# For example: `{ ..., "version": "2.0.0.alpha.0` }`
+# 4. Check publish content:
+yarn workspace <your-package-name> check:publish
 
 # 4. Publish using Yarn
 # You might need to set the YARN_NPM_AUTH_TOKEN
@@ -36,15 +39,16 @@ yarn tsc build:ts --showConfig # this will show the full config, replace the con
 #
 # You can also specify the publish tag on NPM. e.g. `next`
 # See https://yarnpkg.com/cli/npm/publish
-yarn npm publish --tag <your tag> --tolerate-republish
+yarn npm publish --tag <publish-tag> --tolerate-republish
 
-# 5. Remove artifacts modified in step (2) and (3).
+# 5. Remove artifacts modified in step (2).
 
 
 
 # ------------ Only if we need to push to Github --------------
 
-# 6. Make changes to `CHANGELOG.md` and update the version like in step (3)
+# 6. Make changes to `CHANGELOG.md` and update the package version
+# like in step (2)
 
 # 7. Create a git annotated tag
 # <!> Need to do this step if we wish to push this version to Github

@@ -26,7 +26,6 @@
     "WebpackConfigUtils.js"
   ],
   "scripts": {
-    "prepublish": "yarn check:publish",
     "test": "jest",
     "test:watch": "jest --watch"
   },

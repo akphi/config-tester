@@ -150,6 +150,11 @@ for (const pkg of packages) {
     }
   } catch {
     try {
+      // Check publish content
+      execSync(`yarn workspace ${pkg.name} check:publish`, {
+        cwd: pkg.path,
+        stdio: ['pipe', 'pipe', 'inherit'], // only print error
+      });
       // Publish using Yarn NPM publish.
       execSync('yarn npm publish', {
         cwd: pkg.path,
