@@ -151,7 +151,7 @@ for (const pkg of packages) {
   } catch {
     try {
       // Publish using Yarn NPM publish.
-      execSync('yarn npm publish', { cwd: pkg.path });
+      execSync('yarn npm publish', { cwd: pkg.path, stdio: 'inherit' });
       pkg.published = true;
     } catch (publishError) {
       console.log(
