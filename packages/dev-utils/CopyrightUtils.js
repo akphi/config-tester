@@ -50,7 +50,9 @@ const generateCopyrightComment = ({
     .map((line) => `${contentPrefix}${line.length ? ` ${line}` : ''}`);
   if (!onlyGenerateCommentContent) {
     lines = [
-      `${headerPrefix}${name && version ? ` @license ${name} ${version}` : ''}`,
+      `${headerPrefix}${
+        name && version ? ` @license ${name} v${version}` : ''
+      }`,
       ...lines,
       footerPrefix,
     ];
