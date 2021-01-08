@@ -25,7 +25,7 @@
     "fix:lint": "yarn lint:js --fix && yarn lint:style --fix",
     "info:dir": "echo $INIT_CWD",
     "lint": "yarn lint:js && yarn lint:style",
-    "lint:ci": "cross-env FAIL_ON_LINT_WARNING=1 yarn lint",
+    "lint:ci": "yarn lint:js --max-warnings=0 && yarn lint:style --max-warnings=0",
     "lint:js": "eslint --cache --cache-location ./build/.eslintcache \"scripts/**/*.{js,ts,tsx}\" \"packages/*/src/**/*.{js,ts,tsx}\"",
     "lint:style": "stylelint --cache --cache-location ./build/.stylelintcache \"packages/*/src/**/*.{scss,css}\"",
     "release": "yarn build && yarn node ./scripts/release/publishAndCreateTag.js",
