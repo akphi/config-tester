@@ -44,7 +44,6 @@ const createCommitizenPrompter = function () {
     Object.keys(types)
       .map((types) => types.length)
       .reduce((a, b) => Math.max(a, b), Number.MIN_SAFE_INTEGER) + 1;
-  console.log(Array.from(Object.entries(types)));
   const choices = Array.from(Object.entries(types)).map(([key, type]) => ({
     name: `${`${key}:`.padEnd(typeOptionLength)} ${type.description}`,
     value: key,
