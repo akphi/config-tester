@@ -151,12 +151,14 @@ for (const pkg of packages) {
   } catch {
     try {
       // Publish using Yarn NPM publish.
-      execSync('yarn npm publish', { cwd: pkg.path, stdio: 'inherit' });
+      execSync('yarn npm publish', {
+        cwd: pkg.path,
+        stdio: ['pipe', 'pipe', 'inherit'], // only print error
+      });
       pkg.published = true;
     } catch (publishError) {
       console.log(
         `Something went wrong. Cannot publish package '${pkg.name}'. Error: ${publishError.message}`,
-        publishError,
       );
     }
   }
@@ -199,7 +201,10 @@ if (publishedPkgs.length > 0) {
     // as the tag is not considered annotated
     // See https://git-scm.com/docs/git-push#Documentation/git-push.txt---follow-tags
     try {
-      execSync(`git tag -a ${tag} -m ${tag}`, { cwd: ROOT_DIR });
+      execSync(`git tag -a ${tag} -m ${tag}`, {
+        cwd: ROOT_DIR,
+        stdio: ['pipe', 'pipe', 'inherit'], // only print error
+      });
       // NOTE: this log message is needed so that `changesets/action` can pick up the published version
       // and create Github release accordingly
       // See https://github.com/changesets/action/blob/master/src/run.ts
@@ -207,7 +212,6 @@ if (publishedPkgs.length > 0) {
     } catch (e) {
       console.log(
         `Failed to create tag: ${tag}. Please manually create this tag and push using \`git push --follow-tags\`. Error:\n${e.message}`,
-        e,
       );
     }
   });

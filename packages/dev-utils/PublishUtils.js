@@ -18,13 +18,14 @@ const checkPublishContent = (dir) => {
 
   const isTypescriptProject = fs.existsSync(path.resolve(dir, 'tsconfig.json'));
 
-  const tsConfigFile = require(path.resolve(dir, 'tsconfig.json'));
-
-  if (isTypescriptProject && tsConfigFile.extends) {
-    console.log(
-      `Typescript project has unresolved \`tsconfig.json\` file! Please flatten it out using '--showConfig' flag.`,
-    );
-    process.exit(1);
+  if (isTypescriptProject) {
+    const tsConfigFile = require(path.resolve(dir, 'tsconfig.json'));
+    if (tsConfigFile.extends) {
+      console.log(
+        `Typescript project has unresolved \`tsconfig.json\` file! Please flatten it out using '--showConfig' flag.`,
+      );
+      process.exit(1);
+    }
   }
 };
 
