@@ -1,5 +1,11 @@
 # @akphi/dev-utils
 
+## 0.0.6
+
+### Patch Changes
+
+- [`a7b5666`](https://github.com/akphi/config-tester/commit/a7b566620ae1016c109c7b37efe2eb467cab17ed) Thanks [@akphi](https://github.com/akphi)! - Add `tsconfig.json` file to publish content
+
 ## 0.0.5
 
 ### Patch Changes
