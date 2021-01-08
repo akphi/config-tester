@@ -1,5 +1,11 @@
 # @akphi/dev-utils
 
+## 0.0.4
+
+### Patch Changes
+
+- [`814d3ac`](https://github.com/akphi/config-tester/commit/814d3accbe400238f7cefdbe3a55bd68360c6226) Thanks [@akphi](https://github.com/akphi)! - Bump test version
+
 ## 0.0.3
 
 ### Patch Changes
