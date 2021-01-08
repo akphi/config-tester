@@ -1,5 +1,11 @@
 # @akphi/dev-utils
 
+## 0.0.7
+
+### Patch Changes
+
+- [`c5b0b8c`](https://github.com/akphi/config-tester/commit/c5b0b8c0e1bea9deba42b57c8c2529f124452ed4) Thanks [@akphi](https://github.com/akphi)! - Remove pre-publish script and trigger it manually
+
 ## 0.0.6
 
 ### Patch Changes
