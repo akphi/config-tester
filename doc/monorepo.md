@@ -35,7 +35,7 @@ With this, we could start shaping our codebase in monorepo structure. The follow
 
 ### Monorepo Workspaces Manager: Yarn
 
-We use [Yarn](https://yarnpkg.com/) as our monorepo manager. At the time of speaking, `lerna` is a very popular choice, but `Yarn@2` has made a lot of `lerna` features redundant (e.g. [bootstraping](https://github.com/lerna/lerna/tree/main/commands/bootstrap), running scripts in parallel or [topological order](https://yarnpkg.com/cli/workspaces/foreach)).
+We use [Yarn](https://yarnpkg.com/) as our monorepo manager. At the time of speaking, `lerna` is still a very popular choice, but `Yarn@2` has made a lot of `lerna` features redundant (e.g. [bootstraping](https://github.com/lerna/lerna/tree/main/commands/bootstrap), running scripts in parallel or [topological order](https://yarnpkg.com/cli/workspaces/foreach)).
 
 > Yarn 2 has many niche features such as [Plug n Play](https://yarnpkg.com/features/pnp/#gatsby-focus-wrapper), but this currently [does not work well ESM](https://github.com/yarnpkg/berry/issues/638) so we will explore that option later.
 

@@ -65,7 +65,7 @@ __metadata:
     "@rollup/plugin-json": 4.1.0
     "@rollup/plugin-node-resolve": 11.0.1
     "@rollup/plugin-replace": 2.3.4
-    autoprefixer: 10.2.0
+    autoprefixer: 10.2.1
     babel-loader: 8.2.2
     chalk: 4.1.0
     circular-dependency-plugin: 5.2.2
@@ -3632,9 +3632,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"autoprefixer@npm:10.2.0":
-  version: 10.2.0
-  resolution: "autoprefixer@npm:10.2.0"
+"autoprefixer@npm:10.2.1":
+  version: 10.2.1
+  resolution: "autoprefixer@npm:10.2.1"
   dependencies:
     browserslist: ^4.16.1
     caniuse-lite: ^1.0.30001173
@@ -3646,7 +3646,7 @@ __metadata:
     postcss: ^8.1.0
   bin:
     autoprefixer: bin/autoprefixer
-  checksum: 0b0c855b10b54613714a62684757053c462f1f6c832b4d18ad8eb26f9bf25b942d8b74e3a1dd4837849da0e7b8cbaf72b1a61db48768efdfb8e1815d43887aae
+  checksum: ede6dec5a51c1eaa2271e93acb238f840d89c26e9a2b88f5149488684487e23a0532c7d080359e70d52d24b252bd85ab3a7fad8c8051afd76f224a6041123f51
   languageName: node
   linkType: hard
 

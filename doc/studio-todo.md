@@ -10,7 +10,7 @@
   - issue template (Modification/New Plugin/ etc.) - https://github.com/rollup/plugins/issues/new/choose
   - `CONTRIBUTING.md` - See introduction section - https://github.com/rollup/plugins/blob/master/.github/CONTRIBUTING.md
 
-# Further Improvements
+# Things to consider
 
 - Try to use Yarn 2 with `PNP` and `Zero-Installs`
   BLOCKER - ESM not supported - https://github.com/yarnpkg/berry/issues/638

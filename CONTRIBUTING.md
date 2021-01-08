@@ -8,101 +8,153 @@ Thank you so much for being interested in contributing to our project! Before su
 - [Development Guidelines](#development-guidelines)
 - [License](#license)
 
+We welcome any type of contribution, not only code. You can help with
+
+- **:test_tube: QA**: file bug reports, (see [issue guidelines](#issue-reporting-guidelines))
+- **:tada: Marketing**: writing blog posts, howto's, ...
+- **:speech_balloon: Community**: presenting the project at meetups, organizing a dedicated meetup for the local community, ...
+- **:pencil2: Code**: take a look at the [open issues](https://github.com/akphi/config-tester/issues). Even if you can't write code, commenting on them, engaging in the conversation, showing that you care about a given issue matters. It helps us triage them.
+
 ## Issue Reporting Guidelines
 
-Always file issue via our [Github Issues page](https://github.com/akphi/config-tester/issues). Make sure to fill out the issue template or else we might close it due to lack of information.
+Please file issue via our [Github Issues page](https://github.com/akphi/config-tester/issues). Make sure to fill out the issue template or else we might close it due to lack of information.
 
 ## Pull Request Guidelines
 
 - It's absolutely fine to break your change down into multiple small commits as you work on the PR - GitHub will automatically squash it before merging; however, please follow our [commit message convention](#commit-convention).
-- Update the `CHANGELOG.md` file if applicable (see [updating changelog guidelines](#updating-changelog)).
+- Adding a `changeset` if applicable (see [changeset](#changeset)).
 - Make sure `yarn test` passes (see [development guidelines](#development-guidelines))
 - Fill out the pull request template.
 
 ### Commit Convention
 
-Commit messages should follow [Conventional Commits spec](https://www.conventionalcommits.org/en/v1.0.0/). Commit messages will be automatically validated upon commit.
+Commit messages should follow [Conventional Commits spec](https://www.conventionalcommits.org/en/v1.0.0/). Commit messages will be automatically validated upon commit. Note that we usually squash commits when merging PR, so the header is likely what we care about, it must follow the format below:
 
-```
-<type>[optional scope]: <description>
+```md
+<type>[optional scope][optional '!']: <description>
 
-[optional body]
-
-[optional footer(s)]
-```
-
-```
-# Examples
-
+<!-- Examples
 feat: allow provided config object to extend other configs
 refactor!: drop support for Node 6
 docs: correct spelling of CHANGELOG
 fix: correct minor typos in code
+-->
 ```
 
-If you are not familiar with the commit message convention, you can use `yarn commit` instead of `git commit`, which provides an interactive CLI for generating proper commit messages.
+If you are not familiar with the commit message convention, you can use `yarn commit` instead of `git commit`, which provides an interactive prompt which helps you build compliant commit messages.
 
-> The purpose of following this convention is not just to provide more structured and informative commit message, but also to encourage contributors to break their work into smaller chunks, making it easier to review PRs. Also, based on these commit messages, we can potentially help generate changelog entry.
+> Structuring commit messages this way has many advantages. It's parsable by changelog generation tools. Also, thanks to `type` and `scope` info, this convention encourages contributors to break their work down into smaller units, making it easier to understand and review PRs.
 
-### Updating Changelog
+### Changeset
 
-All changes that add a feature to or fix a bug in any packages require a changelog entry containing the names of the packages affected, a description of the change, and the number of and link to the pull request. Try to match the structure of the existing entries.
+A `changeset` is an intent to release a set of packages at particular [semver bump types](https://semver.org/) with a summary of the changes made. Therefore, for a PR with significant changes (refactoring, maintenance, bug fixes, adding new features), we expect the author to create a `changeset` file which indicates which packages should be re-released due to this change and a brief summary of the changes to be added to release note/changelog. We use [changesets](https://github.com/atlassian/changesets) to manage this process. The command `yarn changeset` will open an interactive prompt which helps you build the changeset.
 
-For significant changes to the documentation or website and things like cleanup, refactoring, and dependency updates, the `Chore & Maintenance` section of the changelog can be used.
-
-Examples:
+> Changes like adding documentation or testing are also important, but they don't affect the functionalities of the app and thus never requires a release. As such, you might not need to create a changeset for these changes.
 
 ```md
-- `[component1]` Use new React JSX Transform ([#90](https://github.com/org/repo/pull/90))
-- `[lib1]` [**BREAKING**] Migrate to ESM ([#77](https://github.com/org/repo/pull/77))
+---
+'pkg1': minor <!-- this signals us to release a minor version for pkg1 -->
+'pkg2': patch <!-- this signals us to release a patch for pkg2 -->
+---
+
+An example description of the major changes.
+
+<!--
+Please note any breaking changes and potential migration.
+Also try to adhere to the format in existing changelogs.
+You can follow conventional commit rules for writing message body
+See https://www.conventionalcommits.org/en/v1.0.0/
+-->
 ```
-
-You can add or edit the changelog entry in the GitHub web interface once you have opened the pull request and know the number and link to it.
-
-Make sure to alphabetically order your entry based on package name. If you have changed multiple packages, separate them with a comma.
-
-> Some philosophy thing
 
 ## Development Guidelines
 
-0. Prerequisite: Node, Yarn, vscode, vscode plugins (ESLint, Prettier, Stylelint)
-1. Setup: Install (bootstrap), Create config files, etc.
-2. Develop:
+> Don't forget to check out the `scripts` section in the root and each workspace `package.json` to explore various development utilities and workflow support that we have.
 
-- Refer to developer scripts section in `codesandbox` README.md
+#### :zap: Setting up your workstation
 
-3. Build
+Make sure you install [Node.js](https://nodejs.org/en/) and [Yarn](https://yarnpkg.com/). We highly recommend [Visual Studio Code](https://code.visualstudio.com/). For your IDE, install [ESLint](https://eslint.org/) and [Stylelint](https://stylelint.io/) plugins to help you catch problems while writing code; and install [Prettier](https://prettier.io/) plugin to help you auto-format code.
 
-- Test
-- Lint
-- Code formatter (can be run as part of pre commit hook)
+```sh
+# Run the setup script a the root directory of the project to
+# install dependencies, linking and setting up workspaces.
+yarn setup
 
-3. Commit
+# Build all workspaces to make sure your project is in good shape.
+yarn build
+```
 
-- `DOC` Adopt Jest workflow for publishing (manually insert) - doc for CONTRIBUTING
+#### :pencil2: Writing code
 
-6. Release
-   TODO
+```sh
+# Run the main web app in development mode.
+yarn start
+```
 
-### Commonly used NPM scripts
+Each workspace/package in the monorepo should have a `dev` script. Run these (in separate terminal tabs) when you are making changes in these modules to rebuild on change. Otherwise, after making change, you have to manually rebuild the workspace using the `build` script.
 
-7. Publish: Versioning / Publish
+#### :construction: Testing your code
 
-   https://medium.com/@jsilvax/a-workflow-guide-for-lerna-with-yarn-workspaces-60f97481149d
-   https://github.com/lerna/lerna/blob/main/commands/version
-   https://github.com/lerna/lerna/tree/main/commands/publish
-   https://github.com/conventional-changelog/conventional-changelog/tree/master/packages/conventional-changelog-cli
-   https://medium.com/@debshish.pal/publish-a-npm-package-locally-for-testing-9a00015eb9fd
-   https://classic.yarnpkg.com/en/docs/cli/link/
-   https://classic.yarnpkg.com/en/docs/cli/publish/
-   https://classic.yarnpkg.com/en/docs/publishing-a-package/
+Read our [guide on testing](./doc/test-strategy.md) to understand our approach to testing.
+
+```sh
+# Use this on root directory or workspace directory to run unit
+# and integration test suites.
+yarn test
+yarn test:watch # rerun tests on changes
+
+# TODO: e2e tests
+
+# Besides, you should run linting to let static analyzer catch
+# issues with your code.
+yarn lint
+yarn lint:fix # this can help you fix some of the issue
+```
+
+#### :nail_care: Polishing your code
+
+Don't forget to keep your code nice and tidy. We run `prettier` when you commit your changes, so in terms of formatting, there's not much you need to worry about. However, there are several checks we do when you commit code that you need to take care of.
+
+```sh
+# Make sure your code file has proper copyright header.
+yarn check:copyright
+yarn fix:copyright # Auto add copyright headers to file without it
+
+# Check problems with Typescript project reference.
+# See https://www.typescriptlang.org/docs/handbook/project-references.html
+yarn check:project-ref
+
+# Check constraints on packages and dependencies.
+yarn check:pkg-constraints
+
+# You can also run the optimistic auto-fixer for various
+# problems mentioned. Not all problem can be fixed
+# automatically, especially ones involving code logic.
+yarn fix
+```
+
+#### :tada: Checking in your code
+
+Make sure to [create a changeset](#changeset) if you make significant code logic changes. Commit your code with messages following our [convention](#commit-convention). Last but not least, open a PR and follow up on the reviews.
+
+```sh
+# Bring up the interactive tool to build changeset
+yarn changeset
+
+# Bring up the interactive tool to build commit message
+yarn commit
+```
+
+#### :package: Releasing
+
+This section is only for maintainers. See the [release guidelines](./doc/release-guide.md).
 
 ### Code Conventions
 
 - 2 spaces for indentation (no tabs).
 - 80 character line length strongly preferred.
 - Prefer `'` over `"`.
-- [Latest ES](https://github.com/tc39/proposals) syntax when possible.
+- [Latest stable ES](https://github.com/tc39/proposals) syntax when possible.
 - Use [TypeScript](https://www.typescriptlang.org/).
 - Use semicolons;
 - Trailing commas,
