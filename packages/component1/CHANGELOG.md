@@ -1,5 +1,14 @@
 # @akphi/component1
 
+## 0.0.6
+
+### Patch Changes
+
+- [`46b7ccd`](https://github.com/akphi/config-tester/commit/46b7ccd1a44de3fdd9c88475ff171e31ec2ffaf8) Thanks [@akphi](https://github.com/akphi)! - Cleanup publish content and fully resolve Typescript config for Typescript packages
+
+- Updated dependencies [[`46b7ccd`](https://github.com/akphi/config-tester/commit/46b7ccd1a44de3fdd9c88475ff171e31ec2ffaf8)]:
+  - @akphi/lib1@0.0.5
+
 ## 0.0.5
 
 ### Patch Changes
