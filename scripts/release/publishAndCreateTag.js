@@ -156,6 +156,7 @@ for (const pkg of packages) {
     } catch (publishError) {
       console.log(
         `Something went wrong. Cannot publish package '${pkg.name}'. Error: ${publishError.message}`,
+        publishError,
       );
     }
   }
@@ -204,9 +205,9 @@ if (publishedPkgs.length > 0) {
       // See https://github.com/changesets/action/blob/master/src/run.ts
       console.log('New tag: ', tag);
     } catch (e) {
-      console.log(e);
       console.log(
         `Failed to create tag: ${tag}. Please manually create this tag and push using \`git push --follow-tags\`. Error:\n${e.message}`,
+        e,
       );
     }
   });
