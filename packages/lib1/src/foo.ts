@@ -13,5 +13,5 @@ export function helloworld() {
   return 'Hello world';
 }
 
-export const o = { a: 1, name: 'o' };
-export const copy = { ...o };
+export const dummyObj = { a: 1, name: 'o' };
+export const copy = { ...dummyObj };

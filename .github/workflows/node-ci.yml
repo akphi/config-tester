@@ -47,7 +47,7 @@ jobs:
       - name: Check typings
         run: yarn check:typings
       - name: Run lint
-        run: yarn lint
+        run: yarn lint:ci
       - name: Check code formatting
         run: yarn check:format
       - name: Check copyright headers

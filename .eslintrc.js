@@ -21,7 +21,7 @@ const enableFastMode =
   process.env.DEVELOPMENT_MODE !== 'advanced';
 
 const OFF = 0;
-const WARN = 1;
+const WARN = process.env.FAIL_ON_LINT_WARNING ? 2 : 1;
 const ERROR = 2;
 
 /**
