@@ -5,4 +5,4 @@ build
 # See https://npm.github.io/publishing-pkgs-docs/publishing/the-npmignore-file.html
 /*.*
 # We need resolve the full `tsconfig.json` so source navigation works properly on distributed package 
-!tsconfg.json
+!tsconfig.json
