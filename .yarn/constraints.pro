@@ -57,7 +57,7 @@ gen_enforced_field(WorkspaceCwd, 'repository.directory', WorkspaceCwd) :-
     \+ workspace_field_test(WorkspaceCwd, 'private', 'true').
 gen_enforced_field(WorkspaceCwd, 'homepage', HomepageUrl) :-
   workspace(WorkspaceCwd),
-  atom_concat('https://github.com/akphi/config-tester/', WorkspaceCwd, HomepageUrl),
+  atom_concat('https://github.com/akphi/config-tester/tree/master/', WorkspaceCwd, HomepageUrl),
   % Private packages aren't covered
     \+ workspace_field_test(WorkspaceCwd, 'private', 'true').
 

@@ -1,7 +1,7 @@
 {
   "name": "@akphi/component1",
   "version": "0.0.11",
-  "homepage": "https://github.com/akphi/config-tester/packages/component1",
+  "homepage": "https://github.com/akphi/config-tester/tree/master/packages/component1",
   "bugs": {
     "url": "https://github.com/akphi/config-tester/issues"
   },
