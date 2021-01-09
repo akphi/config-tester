@@ -1,5 +1,11 @@
 # @akphi/lib1
 
+## 0.0.12
+
+### Patch Changes
+
+- [`be013e6`](https://github.com/akphi/config-tester/commit/be013e6e216ca6d8c4c7421993a21214ec48bbf8) Thanks [@akphi](https://github.com/akphi)! - Bump version to check tsconfig
+
 ## 0.0.11
 
 ### Patch Changes
