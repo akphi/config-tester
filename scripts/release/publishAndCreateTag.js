@@ -11,6 +11,7 @@ const { execSync } = require('child_process');
 const {
   resolveFullTsConfig,
 } = require('../../packages/dev-utils/TypescriptConfigUtils');
+const { resolveConfig } = require('../loadPackageConfig');
 
 const ROOT_DIR = path.resolve(__dirname, '../..');
 
@@ -90,6 +91,7 @@ if (packages.length) {
 console.log('\nPreparing content to publish...');
 const backupTsConfig = new Map();
 packages.forEach((pkg) => {
+  const packageConfig = resolveConfig(pkg.path);
   // If the package does not have a LICENSE file, add it as this is required in `prepublish` step
   // `lerna` does this by default and remove it when publishing finishes
   // See https://github.com/lerna/lerna/issues/1213
@@ -107,11 +109,11 @@ packages.forEach((pkg) => {
    * the IDE is smart enough to read source map and redirect our navigation to the actual source code of `libA` in
    * `libA/src` folder but due to a not fully-resolved `tsconfig.json` the IDE will show errors for Typescript files
    * shown in `libA/src`
-   *
-   * NOTE: we only need to care about `tsconfig.json` instead of `tsconfig.build.json` or so because IDE automatically
-   * uses `tsconfig.json` for handling Typescript files in `src`
    */
-  const tsConfigPath = path.resolve(pkg.path, 'tsconfig.json');
+  const tsConfigPath = path.resolve(
+    pkg.path,
+    packageConfig?.publish?.tsConfigPath ?? 'tsconfig.json', // default to `./tsconfig.json` if `publish.tsConfigPath` is not specified
+  );
   if (fs.existsSync(tsConfigPath)) {
     const newTsConfigContent = resolveFullTsConfig(tsConfigPath);
     backupTsConfig.set(
@@ -131,11 +133,12 @@ packages.forEach((pkg) => {
   }
 });
 
+console.log('\nPublishing...');
 // Try to publish all packages
 for (const pkg of packages) {
   try {
     const npmInfo = JSON.parse(
-      execSync(`npm view --json ${pkg.name}`, {
+      execSync(`yarn npm info --json ${pkg.name}`, {
         encoding: 'utf-8',
         cwd: ROOT_DIR,
       }),
