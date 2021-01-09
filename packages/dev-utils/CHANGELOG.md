@@ -1,5 +1,13 @@
 # @akphi/dev-utils
 
+## 0.0.8
+
+### Patch Changes
+
+- [`3072c77`](https://github.com/akphi/config-tester/commit/3072c779d2f0f95c8e92a0afb92502c14b6562a0) Thanks [@akphi](https://github.com/akphi)! - Use build tsconfig file for publishing
+
+* [`c7407e9`](https://github.com/akphi/config-tester/commit/c7407e909f96b12df1c54bc8f09fc622e10a03f9) Thanks [@akphi](https://github.com/akphi)! - Fix homepage url
+
 ## 0.0.7
 
 ### Patch Changes
