@@ -1,5 +1,15 @@
 # @akphi/app1
 
+## 0.0.12
+
+### Patch Changes
+
+- [`3072c77`](https://github.com/akphi/config-tester/commit/3072c779d2f0f95c8e92a0afb92502c14b6562a0) Thanks [@akphi](https://github.com/akphi)! - Use build tsconfig file for publishing
+
+- Updated dependencies [[`3072c77`](https://github.com/akphi/config-tester/commit/3072c779d2f0f95c8e92a0afb92502c14b6562a0), [`c7407e9`](https://github.com/akphi/config-tester/commit/c7407e909f96b12df1c54bc8f09fc622e10a03f9)]:
+  - @akphi/component1@0.0.12
+  - @akphi/lib1@0.0.11
+
 ## 0.0.11
 
 ### Patch Changes
