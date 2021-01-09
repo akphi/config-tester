@@ -110,22 +110,23 @@ packages.forEach((pkg) => {
    * `libA/src` folder but due to a not fully-resolved `tsconfig.json` the IDE will show errors for Typescript files
    * shown in `libA/src`
    */
-  const tsConfigPath = path.resolve(
+  const tsConfigForPublishPath = path.resolve(
     pkg.path,
     packageConfig?.publish?.tsConfigPath ?? 'tsconfig.json', // default to `./tsconfig.json` if `publish.tsConfigPath` is not specified
-  );
-  if (fs.existsSync(tsConfigPath)) {
-    const newTsConfigContent = resolveFullTsConfig(tsConfigPath);
+  ); // this is the tsconfig file that we use for build usually
+  const standardTsConfigPath = path.resolve(pkg.path, 'tsconfig.json');
+  if (fs.existsSync(standardTsConfigPath)) {
+    const newTsConfigContent = resolveFullTsConfig(tsConfigForPublishPath);
     backupTsConfig.set(
-      tsConfigPath,
-      fs.readFileSync(tsConfigPath, { encoding: 'utf-8' }),
+      standardTsConfigPath,
+      fs.readFileSync(standardTsConfigPath, { encoding: 'utf-8' }),
     );
     fs.writeFileSync(
-      tsConfigPath,
+      standardTsConfigPath,
       JSON.stringify(newTsConfigContent, null, 2),
       (err) => {
         console.log(
-          `Can't write full Typescript config for package '${pkg.name}'`,
+          `Can't write full Typescript config for package '${pkg.name}'. Error: ${err.message}`,
         );
         process.exit(1);
       },
@@ -154,7 +155,7 @@ for (const pkg of packages) {
   } catch {
     try {
       // Check publish content
-      execSync(`yarn workspace ${pkg.name} check:publish`, {
+      execSync(`yarn workspace ${pkg.name} check:publish --bail`, {
         cwd: pkg.path,
         stdio: ['pipe', 'pipe', 'inherit'], // only print error
       });

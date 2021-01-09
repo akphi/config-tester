@@ -8,12 +8,22 @@
 const fs = require('fs');
 const path = require('path');
 
+const toThrowError = process.argv.includes('--bail');
+
+const reportError = (msg) => {
+  if (toThrowError) {
+    throw new Error(msg);
+  } else {
+    console.log(msg);
+    process.exit(1);
+  }
+};
+
 const checkPublishContent = (dir) => {
   const hasLicenseFile = fs.existsSync(path.resolve(dir, 'LICENSE'));
 
   if (!hasLicenseFile) {
-    console.log(`LICENSE file is required!`);
-    process.exit(1);
+    reportError(`LICENSE file is required!`);
   }
 
   const isTypescriptProject = fs.existsSync(path.resolve(dir, 'tsconfig.json'));
@@ -21,10 +31,9 @@ const checkPublishContent = (dir) => {
   if (isTypescriptProject) {
     const tsConfigFile = require(path.resolve(dir, 'tsconfig.json'));
     if (tsConfigFile.extends) {
-      console.log(
+      reportError(
         `Typescript project has unresolved \`tsconfig.json\` file! Please flatten it out using '--showConfig' flag.`,
       );
-      process.exit(1);
     }
   }
 };
