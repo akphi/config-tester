@@ -49,7 +49,7 @@
     "cosmiconfig": "7.0.0",
     "css-loader": "5.0.1",
     "cssnano": "4.1.10",
-    "fork-ts-checker-webpack-plugin": "6.0.8",
+    "fork-ts-checker-webpack-plugin": "6.1.0",
     "html-webpack-plugin": "5.0.0-beta.4",
     "isbinaryfile": "4.0.6",
     "jsonc-parser": "3.0.0",
