@@ -110,8 +110,8 @@ const getBaseWebpackConfig = (env, arg, dirname, { babelConfigPath }) => {
               options: {
                 postcssOptions: {
                   plugins: [
-                    'autoprefixer', // adding vendor prefixes
-                    'cssnano', // minification
+                    require.resolve('autoprefixer'), // adding vendor prefixes
+                    require.resolve('cssnano'), // minification
                   ].filter(Boolean),
                 },
                 sourceMap: true,
