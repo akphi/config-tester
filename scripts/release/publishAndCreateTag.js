@@ -92,9 +92,7 @@ console.log('\nPreparing content to publish...');
 const backupTsConfig = new Map();
 packages.forEach((pkg) => {
   const packageConfig = resolveConfig(pkg.path);
-  // If the package does not have a LICENSE file, add it as this is required in `prepublish` step
-  // `lerna` does this by default and remove it when publishing finishes
-  // See https://github.com/lerna/lerna/issues/1213
+  // If the package does not have a LICENSE file, copy the LICENSE file from root
   if (!pkg.hasLicenseFile) {
     fs.copyFileSync(
       path.resolve(ROOT_DIR, 'LICENSE'),
