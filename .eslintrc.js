@@ -34,6 +34,6 @@ module.exports = {
   extends: [
     'plugin:@akphi/eslint-plugin/recommended',
     !enableFastMode && 'plugin:@akphi/eslint-plugin/computationally-expensive',
-    'plugin:@akphi/eslint-plugin/scripts-override', // to be called after other pre
+    'plugin:@akphi/eslint-plugin/scripts-override', // must be called last to turn off rules which are not applicable for scripts
   ].filter(Boolean),
 };

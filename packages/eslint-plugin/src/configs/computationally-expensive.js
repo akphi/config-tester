@@ -41,9 +41,7 @@ const TYPESCRIPT_RULES = {
 };
 
 /**
- * The following rules are computationally expensive and should be turned off during development for better DX
- * However, some of them enforces best practices we want to follow so we make them throw error
- * rather than warning during production build, and prompt developers to check before pushing code.
+ * The following rules are computationally expensive and should be turned off during development for better DX.
  *
  * There are a few major sources of performance hit for ESLint:
  * 1. Typescript type-ware check

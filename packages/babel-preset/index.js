@@ -16,7 +16,14 @@ const isJSXSourceFile = (filename) =>
 module.exports = declare((api, opts) => {
   api.assertVersion(7); // assert Babel version
 
-  const { development, useTypescript, useReact, useBabelRuntime } = opts;
+  const {
+    development = false,
+    useTypescript = false,
+    useReact = false,
+    useBabelRuntime = false,
+  } = opts;
+
+  console.log('asd', opts);
 
   const config = {
     presets: [
