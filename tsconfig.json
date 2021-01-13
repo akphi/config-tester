@@ -7,6 +7,6 @@
   "references": [
     { "path": "packages/lib1" },
     { "path": "packages/component1" },
-    { "path": "packages/app1" }
+    { "path": "packages/app1" },
   ]
 }
