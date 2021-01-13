@@ -1,5 +1,11 @@
 # @akphi/dev-utils
 
+## 0.0.11
+
+### Patch Changes
+
+- [`b276670`](https://github.com/akphi/config-tester/commit/b276670b07385ad7e71c6f9cccb55f67e23bcf4e) Thanks [@akphi](https://github.com/akphi)! - Add docs
+
 ## 0.0.10
 
 ### Patch Changes

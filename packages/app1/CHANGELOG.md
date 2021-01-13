@@ -1,5 +1,15 @@
 # @akphi/app1
 
+## 0.0.15
+
+### Patch Changes
+
+- [`b276670`](https://github.com/akphi/config-tester/commit/b276670b07385ad7e71c6f9cccb55f67e23bcf4e) Thanks [@akphi](https://github.com/akphi)! - Add docs
+
+- Updated dependencies [[`b276670`](https://github.com/akphi/config-tester/commit/b276670b07385ad7e71c6f9cccb55f67e23bcf4e)]:
+  - @akphi/component1@0.0.15
+  - @akphi/lib1@0.0.14
+
 ## 0.0.14
 
 ### Patch Changes
