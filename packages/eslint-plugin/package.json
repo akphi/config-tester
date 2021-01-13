@@ -2,14 +2,14 @@
   "name": "@akphi/eslint-plugin",
   "version": "0.1.1",
   "description": "ESLint rules for config-tester",
-  "homepage": "https://github.com/akphi/config-tester/tree/master/packages/eslint-config",
+  "homepage": "https://github.com/akphi/config-tester/tree/master/packages/eslint-plugin",
   "bugs": {
     "url": "https://github.com/akphi/config-tester/issues"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/akphi/config-tester.git",
-    "directory": "packages/eslint-config"
+    "directory": "packages/eslint-plugin"
   },
   "license": "MIT",
   "files": [
