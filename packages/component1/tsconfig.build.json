@@ -5,5 +5,10 @@
     "emitDeclarationOnly": true,
     "jsx": "react-jsx"
   },
-  "exclude": ["src/**/__tests__/**/*.*", "src/**/__mocks__/**/*.*"]
+  "exclude": [
+    "src/**/__tests__/**/*.ts",
+    "src/**/__tests__/**/*.tsx",
+    "src/**/__mocks__/**/*.ts",
+    "src/**/__mocks__/**/*.tsx"
+  ]
 }

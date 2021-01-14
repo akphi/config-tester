@@ -24,7 +24,7 @@ module.exports = {
   name: packageJson.name,
   rootDir: '../..',
   testMatch: [
-    `<rootDir>/packages/app1/src/**/__tests__/**/?(*.)+(test).[jt]s?(x)`,
+    '<rootDir>/packages/app1/src/**/__tests__/**/*(*.)test.[jt]s?(x)',
   ],
   moduleNameMapper: { ...base.moduleNameMapper, ...aliases },
 };

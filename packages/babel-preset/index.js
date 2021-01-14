@@ -23,8 +23,6 @@ module.exports = declare((api, opts) => {
     useBabelRuntime = false,
   } = opts;
 
-  console.log('asd', opts);
-
   const config = {
     presets: [
       [

@@ -31,7 +31,9 @@ module.exports = {
   // NOTE: only works for `jest.spyOn` and not `jest.fn()`
   // See https://jestjs.io/docs/en/configuration#restoremocks-boolean
   restoreMocks: true,
-  testMatch: ['**/__tests__/**/?(*.)+(test).[jt]s?(x)'],
+  // Use this pattern (instead of the one from the official doc) to make this work across different OS's
+  // See https://github.com/facebook/jest/issues/7914#issuecomment-464352069
+  testMatch: ['**/__tests__/**/?*(*.)test.[jt]s?(x)'],
   testEnvironment: 'jsdom',
   verbose: true,
   collectCoverage: false,

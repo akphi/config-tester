@@ -14,6 +14,6 @@ module.exports = {
   name: packageJson.name,
   rootDir: '../..',
   testMatch: [
-    `<rootDir>/packages/dev-utils/**/__tests__/**/?(*.)+(test).[jt]s?(x)`,
+    '<rootDir>/packages/dev-utils/**/__tests__/**/*(*.)test.[jt]s?(x)',
   ],
 };

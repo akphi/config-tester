@@ -2,7 +2,6 @@
   "extends": "../../scripts/typescript/tsconfig.base.json",
   "compilerOptions": {
     "tsBuildInfoFile": "build/dev.tsbuildinfo",
-    "rootDir": "src",
     "noEmit": true,
     "jsx": "react-jsxdev",
     "paths": {
