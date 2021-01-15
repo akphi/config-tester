@@ -95,7 +95,7 @@ Each workspace/package in the monorepo should have a `dev` script. Run these (in
 
 #### :construction: Testing your code
 
-Read our [guide on testing](./doc/test-strategy.md) to understand our approach to testing.
+Read our [guide on testing](./docs/test-strategy.md) to understand our approach to testing.
 
 ```sh
 # Use this on root directory or workspace directory to run unit
@@ -147,7 +147,7 @@ yarn commit
 
 #### :package: Releasing
 
-This section is only for maintainers. See the [release guidelines](./doc/release-guide.md).
+This section is only for maintainers. See the [release guidelines](./docs/release-guide.md).
 
 ### Code Conventions
 
