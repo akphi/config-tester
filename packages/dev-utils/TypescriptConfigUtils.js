@@ -92,8 +92,7 @@ const resolveFullTsConfigWithoutValidation = (fullTsConfigPath) => {
  */
 const resolveFullTsConfig = (fullTsConfigPath) =>
   JSON.parse(
-    // NOTE: we cannot call `tsc` here as it's up to `yarn` to resolve it correctly
-    execSync(`yarn tsc -p ${fullTsConfigPath} --showConfig`, {
+    execSync(`tsc -p ${fullTsConfigPath} --showConfig`, {
       encoding: 'utf-8',
       cwd: path.dirname(fullTsConfigPath),
     }),
