@@ -2,7 +2,7 @@ constraints_min_version(1).
 
 % This file is written in Prolog
 % It contains rules that the project must respect.
-% In order to see them in action, run `yarn constraints source`	
+% In order to see them in action, run `yarn constraints source`
 
 % This rule will enforce that a workspace MUST depend on the same version of a dependency as the one used by the other workspaces
 gen_enforced_dependency(WorkspaceCwd, DependencyIdent, DependencyRange2, DependencyType) :-
@@ -33,6 +33,17 @@ gen_enforced_dependency(WorkspaceCwd, DependencyIdent, WorkspaceRange, Dependenc
       ;
         atom_concat('^', DependencyVersion, WorkspaceRange)
     ).
+
+% This rule enforces that all packages that depend on `webpack` or `rollup` must also depend on `@babel/runtime`
+% because when we use either bundler tools, it means we use `babel` compiler
+gen_enforced_dependency(WorkspaceCwd, '@babel/runtime', 'range', 'dependencies') :-
+    (
+      workspace_has_dependency(WorkspaceCwd, 'webpack', _, 'devDependencies')
+      ;
+      workspace_has_dependency(WorkspaceCwd, 'rollup', _, 'devDependencies')
+    ),
+  % Only proceed if the workspace doesn't already depend on `@babel/runtime`
+    \+ workspace_has_dependency(WorkspaceCwd, '@babel/runtime', _, _).
 
 % Required to display information in NPM properly
 gen_enforced_field(WorkspaceCwd, 'license', 'MIT') :-
