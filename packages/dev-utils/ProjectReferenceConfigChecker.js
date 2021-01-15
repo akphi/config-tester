@@ -6,6 +6,7 @@
  */
 
 const path = require('path');
+const micromatch = require('micromatch');
 const { execSync } = require('child_process');
 const fs = require('fs');
 const chalk = require('chalk');
@@ -56,7 +57,11 @@ const getProjectInfo = (dirname, projectPath) => {
  *
  * See https://github.com/RyanCavanaugh/learn-a
  */
-const checkProjectReferenceConfig = ({ rootDir, excludePatterns }) => {
+const checkProjectReferenceConfig = ({
+  rootDir,
+  /* micromatch glob patterns */
+  excludePatterns = [],
+}) => {
   const errors = [];
 
   try {
@@ -88,7 +93,7 @@ const checkProjectReferenceConfig = ({ rootDir, excludePatterns }) => {
         (file) => PACKAGE_JSON_PATTERN.test(file) && 'package.json' !== file, // omit the root `package.json`
       );
     packageJsonFiles.forEach((file) => {
-      if (excludePatterns.some((pattern) => pattern.test(file))) {
+      if (micromatch.isMatch(file, excludePatterns)) {
         return;
       }
       const packageJsonPath = path.resolve(rootDir, `${file}`);

@@ -10,9 +10,6 @@ const fs = require('fs');
 
 module.exports = {
   extensions: ['js', 'ts', 'tsx', 'css', 'scss'],
-  /**
-   * Regexp patterns for excluded paths
-   */
   excludePatterns: [],
   copyrightText: fs.readFileSync(
     path.resolve(__dirname, './COPYRIGHT_HEADER.txt'),

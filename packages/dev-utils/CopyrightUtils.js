@@ -6,6 +6,7 @@
  */
 
 const fs = require('fs');
+const micromatch = require('micromatch');
 const { execSync } = require('child_process');
 const { isBinaryFileSync } = require('isbinaryfile');
 const { getFileContent, createRegExp } = require('./DevUtils');
@@ -80,8 +81,9 @@ const needsCopyrightHeader = (copyrightText, file) => {
 // Jest has a fairly sophisticated check for copyright license header that we used as reference
 // See https://github.com/facebook/jest/blob/master/scripts/checkCopyrightHeaders.js
 const getInvalidFiles = ({
-  extensions,
-  excludePatterns,
+  extensions = [],
+  /* micromatch glob patterns */
+  excludePatterns = [],
   copyrightText,
   onlyApplyToModifiedFiles,
 }) => {
@@ -99,7 +101,7 @@ const getInvalidFiles = ({
       GENERIC_INCLUDE_PATTERNS.some((pattern) => pattern.test(file)) &&
       includePatterns.some((pattern) => pattern.test(file)) &&
       !GENERIC_EXCLUDE_PATTERNS.some((pattern) => pattern.test(file)) &&
-      !excludePatterns.some((pattern) => pattern.test(file)) &&
+      !micromatch.isMatch(file, excludePatterns) &&
       fs.existsSync(file) &&
       !fs.lstatSync(file).isDirectory() &&
       !isBinaryFileSync(file) &&
@@ -108,8 +110,9 @@ const getInvalidFiles = ({
 };
 
 const checkCopyrightHeaders = ({
-  extensions,
-  excludePatterns,
+  extensions = [],
+  /* micromatch glob patterns */
+  excludePatterns = [],
   copyrightText,
   /**
    * NOTE: this location is just used for the report message.
@@ -138,8 +141,9 @@ const checkCopyrightHeaders = ({
 };
 
 const updateCopyrightHeaders = async ({
-  extensions,
-  excludePatterns,
+  extensions = [],
+  /* micromatch glob patterns */
+  excludePatterns = [],
   copyrightText,
   onlyApplyToModifiedFiles,
 }) => {
