@@ -37,17 +37,18 @@ const getLibraryModuleRollupConfig = ({
    * Dependencies matching these patterns will not be included
    * in the bundle.
    */
-  externalDependencies,
+  externalDependencies = [],
   /**
    * Entries for `@rollup/plugin-replace`
    * See https://github.com/rollup/plugins/tree/master/packages/replace#usage
    */
-  replaceEntries,
+  replaceEntries = [],
   /**
    * Entries for `@rollup/plugin-alias`
    * See https://github.com/rollup/plugins/tree/master/packages/alias#usage
    */
-  aliasEntries,
+  aliasEntries = [],
+  compileStyles = false,
 }) => {
   const isEnvDevelopment = process.env.NODE_ENV === 'development';
   const isEnvProduction = process.env.NODE_ENV === 'production';
@@ -61,6 +62,7 @@ const getLibraryModuleRollupConfig = ({
       {
         // NOTE: we export CommonJS bundle only for testing since `Jest` support for
         // ESM is currently quite limited
+        // TODO: remove this once we upgrade to `Jest@27`
         // See https://github.com/facebook/jest/issues/9430
         file: packageJson.main,
         format: 'cjs',
@@ -107,13 +109,14 @@ const getLibraryModuleRollupConfig = ({
        *    If this is needed, we might need to use `babel-plugin-module-resolver`.
        * 2. It requires a custom resolver to handle extensions
        */
-      alias({
-        entries: aliasEntries,
-        // We need custom resolver so we can omit the extensions
-        // but to use this each replacement we provide need to be absolute path
-        // See https://www.npmjs.com/package/@rollup/plugin-alias#custom-resolvers
-        customResolver: resolver,
-      }),
+      aliasEntries.length > 0 &&
+        alias({
+          entries: aliasEntries,
+          // We need custom resolver so we can omit the extensions
+          // but to use this each replacement we provide need to be absolute path
+          // See https://www.npmjs.com/package/@rollup/plugin-alias#custom-resolvers
+          customResolver: resolver,
+        }),
       /**
        * `@rollup/plugin-node-resolve` locates modules using the Node resolution algorithm,
        * for when third party modules in `node_modules` are referred to in the code
@@ -130,14 +133,15 @@ const getLibraryModuleRollupConfig = ({
         sourceMaps: !isEnvDevelopment,
         inputSourceMap: !isEnvDevelopment,
       }),
-      postcss({
-        extract: path.resolve(outputDir, 'index.css'),
-        plugins: [
-          !isEnvDevelopment && require('autoprefixer'), // adding vendor prefixes
-          !isEnvDevelopment && require('cssnano'), // minification
-        ].filter(Boolean),
-        sourceMap: !isEnvDevelopment,
-      }),
+      compileStyles &&
+        postcss({
+          extract: path.resolve(outputDir, 'index.css'),
+          plugins: [
+            !isEnvDevelopment && require('autoprefixer'), // adding vendor prefixes
+            !isEnvDevelopment && require('cssnano'), // minification
+          ].filter(Boolean),
+          sourceMap: !isEnvDevelopment,
+        }),
       /**
        * `@rollup/plugin-commonjs` converts CommonJS modules/dependencies to ES6,
        * so they can be included in a Rollup bundle.

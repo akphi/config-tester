@@ -13,6 +13,10 @@ module.exports = {
   displayName: packageJson.name,
   name: packageJson.name,
   rootDir: '../..',
+  moduleNameMapper: {
+    ...base.moduleNameMapper,
+    'lodash-es': 'lodash',
+  },
   testMatch: [
     '<rootDir>/packages/lib1/src/**/__tests__/**/*(*.)test.[jt]s?(x)',
   ],

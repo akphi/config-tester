@@ -8,6 +8,7 @@
 import { returnOneAsWell } from '@akphi/component1/helpers1';
 import { returnTwo } from 'U1';
 import { data } from './testData';
+// import { isEqual } from '@akphi/lib1';
 
 test('some dummy test', () => {
   expect(data).toEqual(returnOneAsWell());
@@ -17,3 +18,7 @@ test('some dummy test', () => {
 test('some dummy test 2', () => {
   expect(2).toEqual(returnTwo());
 });
+
+// test('some dummy test', () => {
+//   expect(isEqual({}, {})).toEqual(true);
+// });

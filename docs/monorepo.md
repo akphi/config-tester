@@ -86,6 +86,8 @@ In the `build` phase, `tsc` will be used to create type declaration `*.d.ts`. Si
 
 `babel` will be used `webpack` for both `develop` and `build` for modules similar to `component-B` and `app-C`.
 
+> Note that due to `Jest@26` not supporting ESM, we have to use `rollup` for even `lib-A` to output CJS.
+
 ### Version Manager and Publisher: Yarn
 
 [lerna](https://github.com/lerna/lerna) does a great job at managing version, it also helps with [generating changelogs using conventional commit](https://github.com/lerna/lerna/tree/main/commands/version#--conventional-commits). However, as mentioned, most of its feature set are already covered by Yarn, so we decide to use Yarn instead as our version manager and publisher.

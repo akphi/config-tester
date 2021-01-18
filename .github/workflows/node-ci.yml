@@ -54,7 +54,7 @@ jobs:
         run: yarn check:copyright
 
   test:
-    name: Build & Test
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -76,10 +76,8 @@ jobs:
           node-version: 14.x
       - name: Install dependencies
         run: yarn
-      - name: Build
-        run: yarn build
       - name: Test
-        run: yarn test:coverage
+        run: yarn test:ci
       - name: Upload test coverage report
         uses: codecov/codecov-action@v1
         with:

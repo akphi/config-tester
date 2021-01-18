@@ -14,13 +14,7 @@ import {
 import packageJson from './package.json';
 import { getFileContent } from '@akphi/dev-utils/DevUtils';
 
-const aliasEntries = buildAliasEntriesFromTsConfigPathMapping({
-  dirname: __dirname,
-  tsConfigPath: path.resolve(__dirname, './tsconfig.json'),
-  excludePaths: [],
-});
-
-const baseConfig = getLibraryModuleRollupConfig({
+export default getLibraryModuleRollupConfig({
   input: 'src/index.tsx',
   outputDir: path.resolve(__dirname, 'lib'),
   buildDir: path.resolve(__dirname, 'build'),
@@ -43,8 +37,10 @@ const baseConfig = getLibraryModuleRollupConfig({
     /^@material-ui.*$/,
     /^monaco-editor.*$/,
   ],
-  replaceEntries: [],
-  aliasEntries,
+  compileStyles: true,
+  aliasEntries: buildAliasEntriesFromTsConfigPathMapping({
+    dirname: __dirname,
+    tsConfigPath: path.resolve(__dirname, './tsconfig.json'),
+    excludePaths: [],
+  }),
 });
-
-export default baseConfig;
