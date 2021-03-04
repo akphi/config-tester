@@ -61,7 +61,7 @@ const ES_RULES = {
   // See https://github.com/benmosher/eslint-plugin-import/issues/1644
   // See https://github.com/benmosher/eslint-plugin-import/issues/834
   // See https://github.com/benmosher/eslint-plugin-import/issues/669#issuecomment-316438608
-  'no-restricted-imports': [WARN, { patterns: ['../*'] }],
+  // 'no-restricted-imports': [WARN, { patterns: ['../*'] }],
   'no-trailing-spaces': WARN,
   'no-unused-labels': WARN,
   'no-unsafe-finally': ERROR,

@@ -45,7 +45,7 @@ jobs:
       - name: Build Typescript
         run: yarn build:ts
       - name: Check typings
-        run: yarn check:typings
+        run: yarn check:tsc
       - name: Run lint
         run: yarn lint:ci
       - name: Check code formatting

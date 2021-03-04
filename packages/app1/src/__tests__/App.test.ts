@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { returnOne } from '@akphi/app1/helpers';
+import { returnOne } from '../helpers';
 import { data } from './testData';
 
 test('some other dummy test', () => {

@@ -9,14 +9,7 @@ const path = require('path');
 const appConfig = require('./app.config');
 const {
   getWebAppBaseWebpackConfig,
-  buildAliasEntriesFromTsConfigPathMapping,
 } = require('@akphi/dev-utils/WebpackConfigUtils');
-
-const aliases = buildAliasEntriesFromTsConfigPathMapping({
-  dirname: __dirname,
-  tsConfigPath: path.resolve(__dirname, './tsconfig.json'),
-  excludePaths: [],
-});
 
 module.exports = (env, arg) => {
   const baseConfig = getWebAppBaseWebpackConfig(env, arg, __dirname, {
@@ -31,33 +24,9 @@ module.exports = (env, arg) => {
       ...baseConfig.resolve,
       alias: {
         ...baseConfig.resolve.alias,
-        ...aliases,
       },
     },
-    plugins: [
-      ...baseConfig.plugins,
-      // new MonacoWebpackPlugin({
-      //   // Only include what we need to lessen the bundle loads
-      //   // See https://github.com/microsoft/monaco-editor-webpack-plugin
-      //   languages: ['json', 'java', 'markdown'],
-      //   // Here we can choose to also exclude/include features but this really does not
-      //   // significantly affect the bundle size.
-      //   // See https://github.com/microsoft/monaco-editor-webpack-plugin/issues/97
-      //   // See https://github.com/microsoft/monaco-editor-webpack-plugin/issues/40
-      //   features: [
-      //     'bracketMatching',
-      //     'clipboard',
-      //     'contextmenu',
-      //     'coreCommands',
-      //     'comment',
-      //     'find',
-      //     'folding',
-      //     'gotoLine',
-      //     'hover',
-      //     'multicursor',
-      //   ],
-      // }),
-    ],
+    plugins: [...baseConfig.plugins],
   };
   return config;
 };

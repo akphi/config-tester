@@ -4,11 +4,7 @@
     "outDir": "lib",
     "tsBuildInfoFile": "build/dev.tsbuildinfo",
     "rootDir": "src",
-    "jsx": "react-jsxdev",
-    "paths": {
-      "@akphi/component1/*": ["./src/*"],
-      "U1": ["./src/utils/util1"]
-    }
+    "jsx": "react-jsxdev"
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.json"],
   "references": [{ "path": "../lib1" }]
