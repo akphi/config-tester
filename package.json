@@ -6,7 +6,7 @@
   ],
   "scripts": {
     "build": "yarn clean && yarn workspaces foreach --topological-dev --verbose run build",
-    "build:setup": "yarn clean && yarn workspaces foreach --topological-dev --verbose --exclude=@akphi/app1 run build",
+    "build:setup": "yarn clean && yarn workspaces foreach --topological-dev --verbose --exclude config-tester --exclude @akphi/app1 run build",
     "build:ts": "tsc --build",
     "changeset": "changeset",
     "check:ci": "yarn check:pkg-constraints && yarn check:project-ref && yarn check:typings && yarn check:format && yarn check:copyright",
