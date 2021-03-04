@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { returnOne } from '@akphi/app1/helpers';
+import { returnOne } from './helpers';
 import { Component2 } from '@akphi/component1';
 import { useState } from 'react';
 import './index.scss';

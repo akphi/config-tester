@@ -230,42 +230,6 @@ const getBaseWebpackConfig = (env, arg, dirname, { babelConfigPath }) => {
   return config;
 };
 
-// const getLibraryModuleBaseWebpackConfig = (
-//   env,
-//   arg,
-//   dirname,
-//   { mainEntryPath, babelConfigPath },
-// ) => {
-//   if (!dirname) {
-//     throw new Error(`\`dirname\` is required to build Webpack config`);
-//   }
-//   const { isEnvDevelopment, isEnvProduction } = getEnvInfo(env, arg);
-//   if (isEnvDevelopment || isEnvProduction) {
-//     throw new Error(
-//       `NOTE: \`webpack\` currently does not support for ESM module. Please use \`rollup\` instead/`,
-//     );
-//   }
-//   const baseConfig = getBaseWebpackConfig(env, arg, dirname, {
-//     babelConfigPath,
-//   });
-
-//   const config = {
-//     ...baseConfig,
-//     entry: { index: path.resolve(dirname, mainEntryPath) },
-//     output: {
-//       ...baseConfig.output,
-//       // NOTE: currently `webpack` does not support bundle library as ES standard modules (ESM)
-//       // so we have to settle with CommonJS for now
-//       // See https://webpack.js.org/guides/author-libraries/#final-steps
-//       // See https://github.com/webpack/webpack/issues/2933
-//       path: path.join(dirname, 'lib'),
-//       filename: '[name].js',
-//       libraryTarget: 'commonjs2',
-//     },
-//   };
-//   return config;
-// };
-
 const validateAppConfig = (config, dirname) => {
   if (!dirname) {
     throw new Error(`\`dirname\` is required to validate app config`);

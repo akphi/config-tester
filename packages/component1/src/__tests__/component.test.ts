@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { returnOneAsWell } from '@akphi/component1/helpers1';
-import { returnTwo } from 'U1';
+import { returnOneAsWell } from '../helpers1';
+import { returnTwo } from '../utils/util1';
 import { data } from './testData';
 // import { isEqual } from '@akphi/lib1';
 

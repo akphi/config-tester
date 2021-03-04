@@ -45,3 +45,4 @@ jobs:
           # NOTE: we use `YARN_NPM_AUTH_TOKEN` instead of `NPM_TOKEN` becase we use Yarn to publish
           # See https://docs.npmjs.com/requiring-2fa-for-package-publishing-and-settings-modification
           YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

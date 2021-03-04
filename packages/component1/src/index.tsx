@@ -9,10 +9,10 @@
 // import { Button } from '@material-ui/core';
 import { helloworld } from '@akphi/lib1';
 import data from './data.json';
-import './component1.css';
-import './sassy.scss';
-import { returnOneAsWell } from '@akphi/component1/helpers1';
-import { returnTwo } from 'U1';
+// import './component1.css';
+// import './sassy.scss';
+// import { returnOneAsWell } from './helpers1';
+// import { returnTwo } from './utils/util1';
 
 export function Component1() {
   // const a = useState(1);
