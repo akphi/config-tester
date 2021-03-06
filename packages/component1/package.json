@@ -28,7 +28,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@akphi/lib1": "0.1.0",
+    "@akphi/lib1": "0.2.0",
     "@babel/runtime": "7.13.9",
     "@material-ui/core": "4.11.3",
     "react": "17.0.1",
