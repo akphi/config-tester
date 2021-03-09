@@ -35,5 +35,13 @@ jobs:
           node-version: 14.x
       - name: Install dependencies
         run: yarn
+      - name: "Git inspection (TEST): git pull -f origin master:master"
+        run: git pull -f origin master:master
+      - name: "Git inspection (TEST): git merge-base master HEAD"
+        run: git merge-base master HEAD
+      - name: "Git inspection (TEST): git merge-base origin/master HEAD"
+        run: git merge-base origin/master HEAD
+      - name: "Git inspection (TEST): git branch -r"
+        run: git branch -r
       - name: Check for changesets (TEST)
         run: yarn changeset status --since=master
