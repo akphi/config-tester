@@ -10,7 +10,14 @@ const githubChangelogFunctions = require('@changesets/changelog-github')
 
 console.log(githubChangelogFunctions);
 
+const getReleaseLine = async (changeset, type, options) => {
+  if (!changeset.summary) {
+    return undefined; // do not show change log release line without content
+  }
+  return githubChangelogFunctions.getReleaseLine(changeset, type, options);
+};
+
 module.exports = {
-  getReleaseLine: githubChangelogFunctions.getReleaseLine,
+  getReleaseLine,
   getDependencyReleaseLine: githubChangelogFunctions.getDependencyReleaseLine,
 };
