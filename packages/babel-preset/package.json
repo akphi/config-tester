@@ -16,6 +16,7 @@
     "index.js"
   ],
   "scripts": {
+    "check:tsc": "echo 'Skipped.'",
     "prepare:publish": "echo 'Skipped.'"
   },
   "dependencies": {

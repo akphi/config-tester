@@ -24,6 +24,7 @@
     "WebpackConfigUtils.js"
   ],
   "scripts": {
+    "check:tsc": "echo 'Skipped.'",
     "clean": "rimraf \"build\"",
     "prepare:publish": "node ../../scripts/release/preparePublish.js",
     "test": "jest",
