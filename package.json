@@ -1,10 +1,12 @@
 {
   "name": "config-tester",
+  "version": "0.2.1",
   "private": true,
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
+    "bash-test": "./scripts/bash.sh",
     "build": "yarn clean && yarn workspaces foreach --topological-dev --verbose run build",
     "build:setup": "yarn clean && yarn workspaces foreach --topological-dev --verbose --exclude config-tester --exclude @akphi/app1 run build",
     "build:ts": "tsc --build",
