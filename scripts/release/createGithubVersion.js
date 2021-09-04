@@ -58,12 +58,13 @@ const postChangesetPublishCleanup = async () => {
     try {
       await octokit.rest.repos.createRelease({
         tag_name: `v${releaseVersion}`,
-        name: 'Untitled',
-        draft: true,
+        name: `Version ${releaseVersion}`,
+        body: `👋  _We are crafting a release note for this version..._
+        > Meanwhile, please refer to the latest \`New Release\` pull request for a summary of code changes.`,
         ...github.context.repo,
       });
       console.log(
-        `\u2713 Successfully created release for tag v${releaseVersion}. Note that this is a draft release only, please fill in the details and publish the release on Github.`,
+        `\u2713 Successfully created release for tag v${releaseVersion}. Please add release note for this on Github.`,
       );
     } catch (error) {
       console.log(
