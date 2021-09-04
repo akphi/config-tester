@@ -1,6 +1,6 @@
 {
   "name": "@akphi/eslint-plugin",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "ESLint rules for config-tester",
   "homepage": "https://github.com/akphi/config-tester/tree/master/packages/eslint-plugin",
   "bugs": {
