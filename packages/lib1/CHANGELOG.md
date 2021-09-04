@@ -1,5 +1,11 @@
 # @akphi/lib1
 
+## 0.3.9
+
+### Patch Changes
+
+- [`dcdd516`](https://github.com/akphi/config-tester/commit/dcdd5165ed40decb27224c757b6f9d91a4778324) [#100](https://github.com/akphi/config-tester/pull/100) Thanks [@akphi](https://github.com/akphi)! - dummy
+
 ## 0.3.8
 
 ### Patch Changes
