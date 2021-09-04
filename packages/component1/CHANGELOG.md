@@ -1,5 +1,12 @@
 # @akphi/component1
 
+## 0.2.9
+
+### Patch Changes
+
+- Updated dependencies [[`3e3673d`](https://github.com/akphi/config-tester/commit/3e3673d2e538f68093b5c9ce878e8fc1172f76b6)]:
+  - @akphi/lib1@0.3.8
+
 ## 0.2.8
 
 ### Patch Changes
