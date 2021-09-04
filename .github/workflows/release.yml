@@ -52,4 +52,4 @@ jobs:
         env:
           MAIN_PACKAGE: '@akphi/lib1'
           PUBLISHED_PACKAGES: ${{ steps.changesets.outputs.publishedPackages }}
-        run: yarn
+        run: yarn release:post
