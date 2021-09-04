@@ -46,3 +46,10 @@ jobs:
           # See https://docs.npmjs.com/requiring-2fa-for-package-publishing-and-settings-modification
           YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Cleanup
+        # If publish never happened, there's no point in uploading this content
+        if: steps.changesets.outputs.published == 'true'
+        env:
+          MAIN_PACKAGE: '@akphi/lib1'
+          PUBLISHED_PACKAGES: ${{ steps.changesets.outputs.publishedPackages }}
+        run: yarn
