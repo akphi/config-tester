@@ -1,6 +1,5 @@
 const github = require('@actions/github');
 const { execSync } = require('child_process');
-const chalk = require('chalk');
 
 const postChangesetPublishCleanup = async () => {
   const publishedPackages = JSON.parse(process.env.PUBLISHED_PACKAGES);
@@ -11,7 +10,7 @@ const postChangesetPublishCleanup = async () => {
   const mainPackageName = process.env.MAIN_PACKAGE;
   const releaseVersion = publishedPackages.find(
     (pkg) => pkg.name === mainPackageName,
-  );
+  )?.version;
 
   console.log(
     `Removing Github releases and tags created by changesets/action...`,
@@ -37,16 +36,11 @@ const postChangesetPublishCleanup = async () => {
           cwd: process.cwd(),
           stdio: ['pipe', 'pipe', 'inherit'], // only print error
         });
-        console.log(chalk.green(`\u2713 Removed release and tag ${tag}`));
+        console.log(`\u2713 Removed release and tag ${tag}`);
       } catch (error) {
         tagsNotRemoved.push(tag);
         console.log(
-          chalk.green(
-            `\u2A2F Can't remove release and tag ${tag}. Error:\n${error.message}`,
-          ),
-        );
-        console.log(
-          `Can't remove release and tag ${tag}. Error:\n${error.message}`,
+          `\u2A2F Can't remove release and tag ${tag}. Error:\n${error.message}`,
         );
       }
     }),
@@ -69,15 +63,11 @@ const postChangesetPublishCleanup = async () => {
         ...github.context.repo,
       });
       console.log(
-        chalk.green(
-          `\u2713 Successfully created release for tag v${releaseVersion}. Note that this is a draft release only, please fill in the details and publish the release on Github.`,
-        ),
+        `\u2713 Successfully created release for tag v${releaseVersion}. Note that this is a draft release only, please fill in the details and publish the release on Github.`,
       );
     } catch (error) {
       console.log(
-        chalk.green(
-          `\u2713 Failed to create release with tag v${releaseVersion}. Please manually create this release tag on Github.`,
-        ),
+        `\u2713 Failed to create release with tag v${releaseVersion}. Please manually create this release tag on Github.`,
       );
     }
   }
