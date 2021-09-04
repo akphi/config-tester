@@ -51,6 +51,7 @@ jobs:
         # If publish never happened, there's no point in uploading this content
         if: steps.changesets.outputs.published == 'true'
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MAIN_PACKAGE: '@akphi/lib1'
           PUBLISHED_PACKAGES: ${{ steps.changesets.outputs.publishedPackages }}
         run: yarn release:post
