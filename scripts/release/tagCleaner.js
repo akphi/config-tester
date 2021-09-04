@@ -1,8 +1,9 @@
-const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
 const ROOT_DIR = path.resolve(__dirname, '../..');
+
+console.log('running tag cleaner...');
 
 try {
   const allTags = execSync(`git tag -l`, { encoding: 'utf-8', cwd: ROOT_DIR })
@@ -17,6 +18,11 @@ try {
         cwd: ROOT_DIR,
         stdio: ['pipe', 'pipe', 'inherit'], // only print error
       });
+      console.log(`Removed tag ${tag}.`);
+      // execSync(`git push --delete origin ${tag}`, {
+      //   cwd: ROOT_DIR,
+      //   stdio: ['pipe', 'pipe', 'inherit'], // only print error
+      // });
     } catch (error) {
       console.log(
         `Failed to delete tag: ${tag}. Please manually delete this tag and push using \`git push --follow-tags\`. Error:\n${error.message}`,
