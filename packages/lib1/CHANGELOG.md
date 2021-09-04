@@ -1,5 +1,11 @@
 # @akphi/lib1
 
+## 0.3.6
+
+### Patch Changes
+
+- [`36bbd00`](https://github.com/akphi/config-tester/commit/36bbd0078326d0737e7867da564851fbd1799eec) [#94](https://github.com/akphi/config-tester/pull/94) Thanks [@akphi](https://github.com/akphi)! - dummy
+
 ## 0.3.5
 
 ### Patch Changes
