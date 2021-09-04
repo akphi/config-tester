@@ -14,6 +14,7 @@ const postChangesetPublishCleanup = async () => {
       console.log(`Deleting release ${release}`);
       return octokit.repos.deleteRelease({
         name: release,
+        ...github.context.repo,
       });
     }),
   );
