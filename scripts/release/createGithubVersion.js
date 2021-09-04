@@ -59,8 +59,7 @@ const postChangesetPublishCleanup = async () => {
       await octokit.rest.repos.createRelease({
         tag_name: `v${releaseVersion}`,
         name: `Version ${releaseVersion}`,
-        body: `👋  _We are crafting a release note for this version..._
-        > Meanwhile, please refer to the latest \`New Release\` pull request for a summary of code changes.`,
+        body: `👋  _We are crafting a release note for this version..._\n> Meanwhile, please refer to the latest \`New Release\` pull request for a summary of code changes.`,
         ...github.context.repo,
       });
       console.log(
