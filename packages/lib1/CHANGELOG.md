@@ -1,5 +1,11 @@
 # @akphi/lib1
 
+## 0.3.1
+
+### Patch Changes
+
+- [`a7dddc3`](https://github.com/akphi/config-tester/commit/a7dddc39ebcca3377c61e3cf19a6442707a83bb5) [#84](https://github.com/akphi/config-tester/pull/84) Thanks [@akphi](https://github.com/akphi)! - Dummy version bump
+
 ## 0.3.0
 
 ### Minor Changes
