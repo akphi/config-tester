@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - 'release/**'
 
 jobs:
   release:
@@ -16,7 +17,7 @@ jobs:
           # fetch all Git history so that `changesets` can generate changelogs with the correct commits
           fetch-depth: 0
       - name: Print stuffs
-        run: echo "${{ github.event.push.ref == 'refs/heads/master' && 'New Release' || 'New Patch Release' }}"
+        run: echo "${{ github.ref == 'refs/heads/master' && 'New Release' || 'New Patch Release' }}"
       - name: Print stuffs 2
         run: echo "${{ github.ref }}"
       - name: Print stuffs 3
