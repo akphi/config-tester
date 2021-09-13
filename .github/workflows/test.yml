@@ -18,4 +18,6 @@ jobs:
       - name: Print stuffs
         run: echo "${{ github.event.push.ref == 'refs/heads/master' && 'New Release' || 'New Patch Release' }}"
       - name: Print stuffs 2
-        run: echo "${{ github.event.push.ref }}"
+        run: echo "${{ github.ref }}"
+      - name: Print stuffs 3
+        run: echo "${{ github.base_ref }}"
