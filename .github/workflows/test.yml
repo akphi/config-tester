@@ -9,7 +9,7 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    if: "github.ref != 'refs/heads/master' || !startsWith(github.event.pull_request.title, 'Cherry-picking changes in version ')"
+    if: "github.event.pull_request.base.ref != 'refs/heads/master' || !startsWith(github.event.pull_request.title, 'Cherry-picking changes in version ')"
     steps:
       - name: Print stuffs
-        run: echo "${{ github.ref }}" "${{ startsWith(github.event.pull_request.title, 'Cherry-picking changes in version ') }}" "${{ github.ref != 'refs/heads/master' || !startsWith(github.event.pull_request.title, 'Cherry-picking changes in version ') }}"
+        run: echo "${{ github.event.pull_request.base.ref }}" "${{ startsWith(github.event.pull_request.title, 'Cherry-picking changes in version ') }}" "${{ github.event.pull_request.base.ref != 'refs/heads/master' || !startsWith(github.event.pull_request.title, 'Cherry-picking changes in version ') }}"
