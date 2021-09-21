@@ -1,24 +1,15 @@
 name: Test
 
 on:
-  push:
+  pull_request:
     branches:
-      - master
-      - 'release/**'
+      - '**'
 
 jobs:
-  release:
+  test:
     name: Test
     runs-on: ubuntu-latest
+    if: "github.ref != 'refs/heads/master' || !startsWith(github.event.pull_request.title, 'Cherry-picking changes in version ')"
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          # fetch all Git history so that `changesets` can generate changelogs with the correct commits
-          fetch-depth: 0
       - name: Print stuffs
-        run: echo "${{ github.ref == 'refs/heads/master' && 'New Release' || 'New Patch Release' }}"
-      - name: Print stuffs 2
-        run: echo "${{ github.ref }}"
-      - name: Print stuffs 3
-        run: echo "${{ github.base_ref }}"
+        run: echo "boa"
