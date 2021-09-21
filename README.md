@@ -2,4 +2,4 @@
 
 typescript webpack react eslint jest
 
-README stub - stubd
+README stub - stubds
