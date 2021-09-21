@@ -12,4 +12,4 @@ jobs:
     if: "github.ref != 'refs/heads/master' || !startsWith(github.event.pull_request.title, 'Cherry-picking changes in version ')"
     steps:
       - name: Print stuffs
-        run: echo "${{ startsWith(github.event.pull_request.title, 'Cherry-picking changes in version ') }}"
+        run: echo "${{ github.ref }}" "${{ startsWith(github.event.pull_request.title, 'Cherry-picking changes in version ') }}" "${{ github.ref != 'refs/heads/master' || !startsWith(github.event.pull_request.title, 'Cherry-picking changes in version ') }}"
