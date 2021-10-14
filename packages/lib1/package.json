@@ -20,7 +20,8 @@
     "clean": "rimraf \"build\" \"lib\"",
     "dev": "tsc --watch --preserveWatchOutput",
     "test": "jest",
-    "prepare:publish": "node ../../scripts/release/preparePublish.js",
+    "publish:prepare": "node ../../scripts/release/preparePublish.js",
+    "publish:snapshot": "node ../../scripts/release/publishDevSnapshot.js",
     "test:watch": "jest --watch"
   },
   "dependencies": {

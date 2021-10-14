@@ -23,7 +23,8 @@
     "clean": "rimraf \"build\" \"lib\"",
     "dev:sass": "sass ./style/index.scss ./lib/index.css --watch",
     "dev:tsc": "tsc --watch --preserveWatchOutput",
-    "prepare:publish": "node ../../scripts/release/preparePublish.js",
+    "publish:prepare": "node ../../scripts/release/preparePublish.js",
+    "publish:snapshot": "node ../../scripts/release/publishDevSnapshot.js",
     "test": "jest",
     "test:watch": "jest --watch"
   },

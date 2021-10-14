@@ -17,7 +17,8 @@
   ],
   "scripts": {
     "check:tsc": "echo 'Skipped.'",
-    "prepare:publish": "echo 'Skipped.'"
+    "publish:prepare": "echo 'Skipped.'",
+    "publish:snapshot": "node ../../scripts/release/publishDevSnapshot.js"
   },
   "dependencies": {
     "@babel/core": "7.13.8",
