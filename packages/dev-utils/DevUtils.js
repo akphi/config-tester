@@ -23,8 +23,11 @@ const getConfigLoader = (configName) =>
     ],
   });
 
+const loadJSON = (path) => JSON.parse(getFileContent(path));
+
 module.exports = {
   getConfigLoader,
   getFileContent,
   createRegExp,
+  loadJSON,
 };
