@@ -105,4 +105,5 @@ const prepareNewRelease = async () => {
   }
 };
 
-prepareNewRelease();
+// prepareNewRelease();
+console.log('carl');
