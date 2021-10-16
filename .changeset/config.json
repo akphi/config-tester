@@ -5,7 +5,7 @@
     { "repo": "akphi/config-tester" }
   ],
   "commit": false,
-  "linked": [],
+  "linked": [["@akphi/lib1", "@akphi/dev-utils"]],
   "access": "public",
   "baseBranch": "master",
   "updateInternalDependencies": "patch",
