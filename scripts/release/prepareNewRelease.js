@@ -1,9 +1,7 @@
 const github = require('@actions/github');
 const chalk = require('chalk');
 const semver = require('semver');
-const { execSync } = require('child_process');
 const { resolve } = require('path');
-const { writeFileSync } = require('fs');
 const { loadJSON } = require('@akphi/dev-utils/DevUtils');
 
 // const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -26,116 +24,169 @@ const latestReleaseVersion = packageJson.version;
 if (!latestReleaseVersion || !semver.valid(latestReleaseVersion)) {
   console.log(
     chalk.red(
-      `Could not extract the latest application version properly. Got '${latestReleaseVersion}'.`,
+      `Could not extract the latest application version properly. Got '${latestReleaseVersion}'`,
     ),
   );
   process.exit(1);
 }
 
 const nextReleaseVersion = semver.inc(latestReleaseVersion, bumpType);
-console.log(`Creating release branch for release v${latestReleaseVersion}...`);
-console.log(
-  `Preparing milestone for next release version v${nextReleaseVersion}...`,
-);
-
-/**
- * Create a github action
- * take inputs:
- * 1. Current milestone release version (e.g. 0.8.0)
- * 2. Version bump type `major` or `minor` this will be passed into the `release:bump` script
- * We can compute the next release then using `semver.inc("1.6.0", "patch")`
- * *** only run on default branch ***
- * 1. Create release branch then push
- *    - git checkout -b
- * 2. Prepare for next development iteration
- *    - Run `yarn release:bump`
- *    - git add . && git commit -m "prepare for the next development iteration"
- *    - git push
- */
 
 const prepareNewRelease = async () => {
-  // create release branch
-  // - https://docs.github.com/en/rest/reference/git#get-a-reference
-  // - https://docs.github.com/en/rest/reference/git#create-a-reference
-  // - [ ] Input old version (minor version) only as input and new version as output (e.g. old = 0.6.0, new = 0.7.0). Use metadata syntax
-  // - [ ] This action is manually triggered, and it follows the standard release workflow
-  // - [ ] From the old version tag, create a new release branch git checkout -b release/{new version} {old version}
-  // - [ ] Create a script to automatically move all opened issues in the old version's milestones and move them over to the new milestone. Then close out the old milestone
-  // - [ ] Run the script yarn release:bump and commit those changes to master with commit name prepare for the next version release
-  // get all open milestone
-  // get the milestone to close by name
-  // create the new milestone
-  // move all open issues under old milestone to new milestone - /repos/{owner}/{repo}/issues
-  //   keep calling with pagination to assemble the full list
-  //   update  Update an issue
-  // close the old milestone
-  // const publishedPackages = JSON.parse(process.env.PUBLISHED_PACKAGES);
-  // const tagsToCleanup = publishedPackages.map(
-  //   (pkg) => `${pkg.name}@${pkg.version}`,
-  // );
-  // const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
-  // const mainPackageName = process.env.MAIN_PACKAGE;
-  // const releaseVersion = publishedPackages.find(
-  //   (pkg) => pkg.name === mainPackageName,
-  // )?.version;
-  // console.log(
-  //   `Removing Github releases and tags created by changesets/action...`,
-  // );
-  // const tagsNotRemoved = [];
-  // await Promise.all(
-  //   tagsToCleanup.map(async (tag) => {
-  //     try {
-  //       // Delete the release published on Github by `changesets/action`
-  //       // Check the following links for Github actions API reference
-  //       // See https://octokit.github.io/rest.js/v18/
-  //       // See https://docs.github.com/en/rest/reference/repos#releases
-  //       const release = await octokit.rest.repos.getReleaseByTag({
-  //         tag,
-  //         ...github.context.repo,
-  //       });
-  //       await octokit.rest.repos.deleteRelease({
-  //         release_id: release.data.id,
-  //         ...github.context.repo,
-  //       });
-  //       // Delete the tags published by `changesets/action`
-  //       execSync(`git push --delete origin ${tag}`, {
-  //         cwd: process.cwd(),
-  //         stdio: ['pipe', 'pipe', 'inherit'], // only print error
-  //       });
-  //       console.log(`\u2713 Removed release and tag ${tag}`);
-  //     } catch (error) {
-  //       tagsNotRemoved.push(tag);
-  //       console.log(
-  //         `\u2A2F Can't remove release and tag ${tag}. Error:\n${error.message}`,
-  //       );
-  //     }
-  //   }),
-  // );
-  // if (tagsNotRemoved.length) {
-  //   console.warn(
-  //     `The following tags and their respective releases are not removed from Github. Please manually remove them on Github:\n${tagsNotRemoved
-  //       .map((tag) => `- ${tag}`)
-  //       .join('\n')}`,
-  //   );
-  // }
-  // if (releaseVersion) {
-  //   try {
-  //     await octokit.rest.repos.createRelease({
-  //       tag_name: `v${releaseVersion}`,
-  //       name: `Version ${releaseVersion}`,
-  //       body: `👋  _We are crafting a release note for this version..._\n> Meanwhile, please refer to the latest \`New Release\` pull request for a summary of code changes.`,
-  //       ...github.context.repo,
-  //     });
-  //     console.log(
-  //       `\u2713 Successfully created release for tag v${releaseVersion}. Please add release note for this on Github.`,
-  //     );
-  //   } catch (error) {
-  //     console.log(
-  //       `\u2713 Failed to create release with tag v${releaseVersion}. Please manually create this release tag on Github.`,
-  //     );
-  //   }
-  // }
+  const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+
+  // Create release branch for the latest release from the release tag
+  console.log(
+    `Creating release branch for release v${latestReleaseVersion}...`,
+  );
+  try {
+    const latestVersionTag = await octokit.rest.git.getRef({
+      ref: `tags/v${latestReleaseVersion}`,
+      ...github.context.repo,
+    });
+    try {
+      await octokit.rest.git.createRef({
+        ref: `refs/heads/release/${latestReleaseVersion}`,
+        sha: latestVersionTag.data.object.sha,
+        ...github.context.repo,
+      });
+    } catch {
+      console.log(
+        chalk.yellow(
+          `Release branch 'release/${latestReleaseVersion}' already existed`,
+        ),
+      );
+    }
+    console.log(
+      chalk.green(
+        `\u2713 Created release branch 'release/${latestReleaseVersion}'`,
+      ),
+    );
+  } catch (error) {
+    console.log(
+      chalk.red(
+        `Release tag 'v${latestReleaseVersion}' has not been created. Make sure to do the release before running this workflow`,
+      ),
+    );
+    process.exit(1);
+  }
+
+  console.log(
+    `Preparing milestone for next release version v${nextReleaseVersion}...`,
+  );
+  try {
+    // Search for the milestone of the latest release
+    // NOTE: here we make the assumption that there are not a lot of open milestones at the same time
+    // else we would need to adjust the paging in order to be able to find that milestone
+    // See https://docs.github.com/en/rest/reference/issues#list-milestones
+    const openMilestones = (
+      await octokit.rest.issues.listMilestones({
+        state: 'open',
+        ...github.context.repo,
+      })
+    ).data;
+    const latestReleaseMilestone = openMilestones.find(
+      (milestone) => milestone.title === latestReleaseVersion,
+    );
+    if (latestReleaseMilestone) {
+      // create new release milestone
+      let newReleaseMilestone;
+      try {
+        newReleaseMilestone = (
+          await octokit.rest.issues.createMilestone({
+            title: nextReleaseVersion,
+            ...github.context.repo,
+          })
+        ).data;
+      } catch {
+        newReleaseMilestone = undefined;
+      }
+      if (newReleaseMilestone) {
+        console.log(
+          chalk.green(
+            `\u2713 Created milestone for next release version v${nextReleaseVersion}`,
+          ),
+        );
+
+        // retrieve all open issues from latest release milestone
+        const MILESTONE_ISSUES_PAGE_SIZE = 100;
+        const milestoneOpenIssuesNumber = latestReleaseMilestone.open_issues;
+        const numberOfPages = Math.ceil(
+          milestoneOpenIssuesNumber / MILESTONE_ISSUES_PAGE_SIZE,
+        );
+        const pages = new Array(numberOfPages)
+          .fill(1)
+          .map((num, idx) => num + idx);
+        const openIssues = (
+          await Promise.all(
+            pages.map((page) =>
+              octokit.rest.issues.listForRepo({
+                state: 'open',
+                per_page: MILESTONE_ISSUES_PAGE_SIZE,
+                milestone: latestReleaseMilestone.number,
+                page: page,
+                ...github.context.repo,
+              }),
+            ),
+          )
+        )
+          .map((response) => response.data)
+          .flat();
+        console.log(
+          chalk.green(
+            `\u2713 Retrieved open issues in milestone ${latestReleaseVersion}`,
+          ),
+        );
+
+        // move all open issues to new milestone
+        // NOTE: since this is a PATCH end point, we should not
+        // make concurrent calls using `Promise.all` as the milestone can
+        // end up in a strange state, where issues are moved, but the
+        // `open_issues` statistics is inaccurate
+        for (const issue of openIssues) {
+          await octokit.rest.issues.update({
+            issue_number: issue.number,
+            milestone: newReleaseMilestone.number,
+            ...github.context.repo,
+          });
+        }
+        console.log(
+          chalk.green(
+            `\u2713 Moved ${openIssues.length} open issue(s) to milestone ${newReleaseMilestone.title}`,
+          ),
+        );
+
+        // close the latest release milestone
+        await octokit.rest.issues.updateMilestone({
+          milestone_number: latestReleaseMilestone.number,
+          state: 'closed',
+          ...github.context.repo,
+        });
+        console.log(
+          chalk.green(`\u2713 Closed milestone ${latestReleaseVersion}`),
+        );
+      } else {
+        console.log(
+          chalk.yellow(
+            `New release milestone '${nextReleaseVersion}' already existed. Aborting...`,
+          ),
+        );
+      }
+    } else {
+      console.log(
+        chalk.yellow(
+          `Can't find milestone for the latest release version '${latestReleaseVersion}'. Aborting...`,
+        ),
+      );
+    }
+  } catch (error) {
+    console.log(
+      chalk.red(
+        `Failed to prepare next release milestone. Error:\n${error.message}`,
+      ),
+    );
+    process.exit(1);
+  }
 };
 
-// prepareNewRelease();
-console.log('carl');
+prepareNewRelease();
