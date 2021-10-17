@@ -1,4 +1,3 @@
 # config-tester
-typescript webpack react eslint jest
 
-README stub
+typescript webpack react eslint jest
