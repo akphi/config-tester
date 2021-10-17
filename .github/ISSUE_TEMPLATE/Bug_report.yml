@@ -1,0 +1,103 @@
+name: 🐛 Bug report
+description: Report a bug/issue or regression.
+title: 'Bug: <brief description>'
+labels: ['Type: Bug', 'Status: Unconfirmed']
+body:
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please search to see if an issue already exists for the bug you encountered.
+      options:
+        - label: I have searched the existing issues
+          required: true
+  - type: textarea
+    attributes:
+      label: Current Behavior
+      description: A concise description of what you're experiencing.
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Expected Behavior
+      description: A concise description of what you expected to happen.
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Steps To Reproduce
+      description: Steps to reproduce the behavior.
+      placeholder: |
+        1. In this environment...
+        2. With this config...
+        3. Run '...'
+        4. See error...
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Environment
+      description: |
+        examples:
+          - **OS**: Ubuntu 20.04
+          - **Node**: 13.14.0
+          - **npm**: 7.6.3
+      value: |
+        - OS:
+        - Node:
+        - npm:
+      render: markdown
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Anything else?
+      description: |
+        Links? References? Anything that will give us more context about the issue you are encountering!
+
+        Tip: You can attach images or log files by clicking this area to highlight it and then dragging files in.
+    validations:
+      required: false
+# ---
+# name: 🐛 Bug report
+# about: Report a reproducible bug or regression.
+# title: 'Bug: <brief description>'
+# labels: 'Type: Bug, Status: Unconfirmed'
+# ---
+
+# ## 🐛 Bug Report
+
+# <!-- A clear and concise description of what the bug is. -->
+
+# ### Step to Reproduce
+
+# Steps to reproduce the behavior:
+
+# ### Expected behavior
+
+# <!-- A clear and concise description of what you expected to happen. -->
+
+# ### Reproduction Code or Repo
+
+# <!--
+# This section is optional
+
+# For bug found in the webapp, as a user, please provide your project data
+# For bug found during development, please provide a minimal repository on GitHub.
+# Issues without a reproduction link are likely to stall.
+
+# See https://stackoverflow.com/help/minimal-reproducible-example for information on how to create good reproductions
+# -->
+
+# ### Environment
+
+# - **Browser**: <!-- e.g. Chrome 86 -->
+# - **OS:** <!-- e.g. OSX 10.13.4, Windows 10 -->
+# - **Node/Yarn version:** <!-- development only - e.g. Node 8/Yarn 1.22.10 -->
+
+# ### Possible Solution
+
+# <!-- If you have suggestions on a fix for the bug -->
+
+# ### Additional context
+
+# Add any other context about the problem here. Or a screenshot if applicable
