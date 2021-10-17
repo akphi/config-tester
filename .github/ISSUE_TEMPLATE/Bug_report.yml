@@ -1,103 +1,93 @@
-name: 🐛 Bug report
-description: Report a bug/issue or regression.
-title: 'Bug: <brief description>'
+name: '🐛 Bug report'
+description: "If something isn't working as expected 🤔."
+title: 'Bug: <title>'
 labels: ['Type: Bug', 'Status: Unconfirmed']
 body:
+  # Context
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to file a bug report! Please fill out this form as completely as possible.
   - type: checkboxes
     attributes:
-      label: Is there an existing issue for this?
-      description: Please search to see if an issue already exists for the bug you encountered.
+      label: Similar issues
+      description: |
+        Please search to see if [an issue already exists](https://github.com/finos/legend-studio/issues?q=is%3Aissue+label%3A%22Type%3A+Bug%22+) for the bug you encountered.
       options:
-        - label: I have searched the existing issues
+        - label: I have searched and found no existing similar issues
           required: true
-  - type: textarea
+  - type: dropdown
     attributes:
-      label: Current Behavior
-      description: A concise description of what you're experiencing.
+      label: How are you using Studio?
+      multiple: true
+      options:
+        - Legend Studio
+        - Legend Query
+        - Docker images (e.g. finos/legend-studio)
+        - NPM libraries (e.g. @finos/legend-shared)
     validations:
-      required: false
+      required: true
+
+  # Describe and reproduce the issue
   - type: textarea
     attributes:
-      label: Expected Behavior
-      description: A concise description of what you expected to happen.
+      label: Current and expected behavior
+      description: A clear and concise description of what happened vs. what you expected to happen.
     validations:
-      required: false
+      required: true
   - type: textarea
     attributes:
-      label: Steps To Reproduce
-      description: Steps to reproduce the behavior.
+      label: Steps to reproduce
+      description: |
+        Detailed steps to reproduce the behavior. Or some screenshots and videos if applicable.
+        **Tip:** To attach files, click on this area to highlight it and then drag them in. See [this guide](https://docs.github.com/en/github/writing-on-github/working-with-advanced-formatting/attaching-files).
       placeholder: |
-        1. In this environment...
-        2. With this config...
-        3. Run '...'
-        4. See error...
-    validations:
-      required: false
+        - Open...
+        - Click on...
+        - See error...
+  - type: textarea
+    attributes:
+      label: Model data
+      description: |
+        Please provide the **minimal** `Pure code` or `models' JSON` necessary to reproduce the bug.
+        **Tip:** In Studio, use `text-mode (F8)` to obtain models' Pure code, and `model loader (F2)` to obtain models' JSON.
+        If a single file is not sufficient, providing a `repository link`, or attaching an `archive` will do just fine.
+        **Tip:** To attach files, click on this area to highlight it and then drag them in. See [this guide](https://docs.github.com/en/github/writing-on-github/working-with-advanced-formatting/attaching-files).
+      placeholder: |
+        ```
+        ###Pure
+        Class model::MyModel {
+          property: String[1];
+        }
+        ```
+
+  # Extra context
   - type: textarea
     attributes:
       label: Environment
       description: |
-        examples:
-          - **OS**: Ubuntu 20.04
-          - **Node**: 13.14.0
-          - **npm**: 7.6.3
-      value: |
-        - OS:
-        - Node:
-        - npm:
-      render: markdown
+        **Tip:** you can run `yarn run check:env-info` and paste the result below
+      placeholder: |
+        ```
+          System:
+            OS: macOS 11.6
+          Browsers:
+            Chrome: 94.0.0
+          Binaries: (only relevant for developers)
+            Node: 16.8.0
+            Yarn: 3.0.1
+            npm: 7.21.0
+        ```
     validations:
-      required: false
+      required: true
   - type: textarea
     attributes:
-      label: Anything else?
+      label: Possible solution and workaround
       description: |
-        Links? References? Anything that will give us more context about the issue you are encountering!
-
-        Tip: You can attach images or log files by clicking this area to highlight it and then dragging files in.
-    validations:
-      required: false
-# ---
-# name: 🐛 Bug report
-# about: Report a reproducible bug or regression.
-# title: 'Bug: <brief description>'
-# labels: 'Type: Bug, Status: Unconfirmed'
-# ---
-
-# ## 🐛 Bug Report
-
-# <!-- A clear and concise description of what the bug is. -->
-
-# ### Step to Reproduce
-
-# Steps to reproduce the behavior:
-
-# ### Expected behavior
-
-# <!-- A clear and concise description of what you expected to happen. -->
-
-# ### Reproduction Code or Repo
-
-# <!--
-# This section is optional
-
-# For bug found in the webapp, as a user, please provide your project data
-# For bug found during development, please provide a minimal repository on GitHub.
-# Issues without a reproduction link are likely to stall.
-
-# See https://stackoverflow.com/help/minimal-reproducible-example for information on how to create good reproductions
-# -->
-
-# ### Environment
-
-# - **Browser**: <!-- e.g. Chrome 86 -->
-# - **OS:** <!-- e.g. OSX 10.13.4, Windows 10 -->
-# - **Node/Yarn version:** <!-- development only - e.g. Node 8/Yarn 1.22.10 -->
-
-# ### Possible Solution
-
-# <!-- If you have suggestions on a fix for the bug -->
-
-# ### Additional context
-
-# Add any other context about the problem here. Or a screenshot if applicable
+        If you have investigated and have suggestions on a fix for the bug or a workaround.
+  - type: checkboxes
+    attributes:
+      label: Contribution
+      description: |
+        Check this if you would like to implement a PR, we are more than happy to help you go through [the process](https://github.com/finos/legend-studio/blob/master/CONTRIBUTING.md).
+      options:
+        - label: I would like to work on the fix for this issue
