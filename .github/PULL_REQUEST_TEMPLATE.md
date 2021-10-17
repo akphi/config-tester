@@ -1,29 +1,38 @@
 <!--
-Thanks for submitting a pull request!
-Before making a PR, please read our contributing guidelines
-https://github.com/akphi/config-tester/blob/master/CONTRIBUTING.md
+  Thanks for submitting a pull request!
+  We appreciate you spending the time to work on these changes. Please provide enough information so that others can review your pull request.
 
-Please note that the <...team-name...> team requires two approvals before merging most PRs.
+  Before submitting a pull request, please make sure the following is done:
+  1. Fork [the repository](https://github.com/finos/legend-studio) and create your branch from `master`.
+  2. Run `yarn` in the repository root.
+  3. If you've fixed a bug or added code that should be tested, add tests!
+  4. Add a changeset to summarize your change in the changelogs.
+  5. If you haven't already, complete the CLA.
 
-For issue references: Add a comma-separated list of a [closing word](https://help.github.com/articles/closing-issues-via-commit-messages/) followed by the ticket number fixed by the PR. (it should be underlined in the preview if done correctly)
-
-If you are making a change that should have a docs update: submit another PR at: <...doc-repo-link...>
+  Learn more about contributing: https://github.com/finos/legend-studio/blob/master/CONTRIBUTING.md
 -->
 
-| Q                       | A                                                                                                          |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------- |
-| Fixed Issues?           | `Fixes #1, Fixes #2` <!-- remove the (`) quotes and write "Fixes" before the number to link the issues --> |
-| Patch: Bug Fix?         |
-| Major: Breaking Change? |
-| Minor: New Feature?     |
-| Tests Added + Pass?     | Yes                                                                                                        |
-| Changelog Updated?      | Yes                                                                                                        |
-| Documentation PR Link   |                                                                                                            |
-| Any Dependency Changes? |                                                                                                            |
+## Summary
 
 <!--
-Describe your changes below in as much detail as possible
+  Explain the **motivation** for making this change. What existing problem(s) does this PR solve?
+  Also link the issue(s) to this PR: e.g. Fixes #1, Resolves #2
+  If you also added documentation, link the PR from https://github.com/finos/legend
+-->
 
-If you made dependency changes, please explain why you need it and what are the alternatives you consider
-if applicable
+## How did you test this change?
+
+<!--
+  Demonstrate the code is solid. Screenshots / videos if the pull request changes the user interface.
+  How exactly did you verify that your PR solves the issue you wanted to solve?
+  If you leave this empty, your PR will very likely be closed.
+-->
+
+<!--
+  More in-depth docs below:
+  - Git workflow: https://github.com/finos/legend-studio/blob/master/docs/workflow/working-with-github.md
+  - Test: https://github.com/finos/legend-studio/blob/master/docs/technical/test-strategy.md
+  - Changeset: https://github.com/finos/legend-studio/blob/master/CONTRIBUTING.md#changeset
+  - Dependency: https://github.com/finos/legend-studio/blob/master/docs/workflow/dependencies.md
+  - UX/UI: https://github.com/finos/legend-studio/tree/master/docs/ux
 -->
