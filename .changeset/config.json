@@ -1,6 +1,9 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@1.5.0/schema.json",
-  "changelog": "@akphi/dev-utils/ChangesetChangelogUtils",
+  "changelog": [
+    "@akphi/dev-utils/ChangesetChangelogUtils",
+    { "repo": "finos/legend-studio" }
+  ],
   "commit": false,
   "linked": [["@akphi/lib1", "@akphi/component1"]],
   "access": "public",
