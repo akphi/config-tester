@@ -1,60 +1,86 @@
-/**
- * Copyright (c) An Phi.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-const path = require('path');
-const {
+import { resolve } from 'path';
+import {
+  getTsConfigJSON,
   resolveFullTsConfig,
   resolveFullTsConfigWithoutValidation,
-} = require('../TypescriptConfigUtils');
+} from '../TypescriptConfigUtils.js';
+import { unitTest } from '../JestConfigUtils.js';
 
-test('Resolve full Typescript config through inheritance chain', () => {
+test(
+  unitTest('Resolve full Typescript config through inheritance chain'),
+  () => {
+    expect(
+      resolveFullTsConfig(
+        resolve(__dirname, './fixtures/testTsConfigExtend.json'),
+      ),
+    ).toEqual({
+      // compiler options is merged and overwritten
+      compilerOptions: {
+        emitDeclarationOnly: true,
+        jsx: 'react-jsx',
+        outDir: './lib',
+        paths: { somePath: 'somePath' },
+        rootDir: './src',
+        strictNullChecks: true,
+      },
+      // `files`, `exclude`, `include` are simply overwritten
+      files: ['./src/dummy.ts'], // files are automatically added by `tsc`
+      exclude: ['excludeParent'],
+      include: ['src/**/*.ts', 'src/**/*.tsx', 'src/**/*.json'],
+      // references are not inherited
+    });
+  },
+);
+
+test(
+  unitTest(
+    'Resolve full Typescript config without validation through inheritance chain',
+  ),
+  () => {
+    expect(
+      // This invalid config doesn't have `files` nor `include`
+      // would fail `tsc --showConfig`
+      resolveFullTsConfigWithoutValidation(
+        resolve(__dirname, './fixtures/testTsConfigExtend_invalid.json'),
+      ),
+    ).toEqual({
+      // compiler options is merged and overwritten
+      compilerOptions: {
+        emitDeclarationOnly: true,
+        jsx: 'react-jsx',
+        outDir: 'lib',
+        paths: { somePath: 'somePath' },
+        rootDir: 'src',
+        strictNullChecks: true,
+      },
+      // extends is removed as we have fully resolved the config
+      extends: undefined,
+      // `files`, `exclude`, `include` are simply overwritten
+      exclude: ['excludeParent'],
+      // references are not inherited
+    });
+  },
+);
+
+test(unitTest('Parse Typescript config non-recursively'), () => {
   expect(
-    resolveFullTsConfig(
-      path.resolve(__dirname, './fixtures/testTsConfigExtend.json'),
+    getTsConfigJSON(
+      resolve(__dirname, './fixtures/testTsConfigWithTrailingCommas.json'),
     ),
   ).toEqual({
-    // compiler options is merged and overwritten
     compilerOptions: {
-      emitDeclarationOnly: true,
-      jsx: 'react-jsx',
-      outDir: './lib',
-      paths: { somePath: 'somePath' },
-      rootDir: './src',
-      strictNullChecks: true,
+      paths: {
+        '@something/*': './src/*',
+        somePath: ['./src/somePath', './src/somePath1'],
+        'toBeExcluded/*': 'nothing',
+      },
     },
-    // `files`, `exclude`, `include` are simply overwritten
-    files: ['./src/dummy.ts'], // files are automatically added by `tsc`
-    exclude: ['excludeParent'],
     include: ['src/**/*.ts', 'src/**/*.tsx', 'src/**/*.json'],
-    // references are not inherited
   });
-});
-
-test('Resolve full Typescript config without validation through inheritance chain', () => {
-  expect(
-    // This invalid config doesn't have `files` nor `include`
-    // would fail `tsc --showConfig`
-    resolveFullTsConfigWithoutValidation(
-      path.resolve(__dirname, './fixtures/testTsConfigExtend_invalid.json'),
+  expect(() =>
+    getTsConfigJSON(
+      resolve(__dirname, './fixtures/testTsConfigWithTrailingCommas.json'),
+      true,
     ),
-  ).toEqual({
-    // compiler options is merged and overwritten
-    compilerOptions: {
-      emitDeclarationOnly: true,
-      jsx: 'react-jsx',
-      outDir: 'lib',
-      paths: { somePath: 'somePath' },
-      rootDir: 'src',
-      strictNullChecks: true,
-    },
-    // extends is removed as we have fully resolved the config
-    extends: undefined,
-    // `files`, `exclude`, `include` are simply overwritten
-    exclude: ['excludeParent'],
-    // references are not inherited
-  });
+  ).toThrow();
 });

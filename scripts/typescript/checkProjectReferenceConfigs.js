@@ -1,16 +1,11 @@
-/**
- * Copyright (c) An Phi.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
+import { checkProjectReferenceConfig } from '@akphi/dev-utils/ProjectReferenceConfigChecker';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-const {
-  checkProjectReferenceConfig,
-} = require('@akphi/dev-utils/ProjectReferenceConfigChecker');
-const path = require('path');
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 checkProjectReferenceConfig({
-  rootDir: path.resolve(__dirname, '../../'),
-  excludePatterns: [],
+  rootDir: resolve(__dirname, '../../'),
+  excludePackagePatterns: [],
+  excludeReferencePatterns: ['**/tsconfig.package.json'],
 });

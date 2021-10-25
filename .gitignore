@@ -2,10 +2,13 @@
 .DS_STORE
 *.swp
 *~
+[Dd]esktop.ini
+Thumbs.db
 
 # IDE
 .idea
 **/*.iml
+/target/
 **/jsconfig.json
 .settings
 .project

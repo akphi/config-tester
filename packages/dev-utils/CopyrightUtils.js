@@ -1,16 +1,16 @@
-/**
- * Copyright (c) An Phi.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-const fs = require('fs');
-const micromatch = require('micromatch');
-const { execSync } = require('child_process');
-const { isBinaryFileSync } = require('isbinaryfile');
-const { getFileContent, createRegExp } = require('./DevUtils');
-const chalk = require('chalk');
+import { resolve } from 'path';
+import { existsSync, lstatSync, writeFile, writeFileSync } from 'fs';
+import { EOL, platform } from 'os';
+import micromatch from 'micromatch';
+import { execSync } from 'child_process';
+import { isBinaryFileSync } from 'isbinaryfile';
+import chalk from 'chalk';
+import {
+  getFileContent,
+  createRegExp,
+  exitWithError,
+  exitWithSuccess,
+} from './DevUtils.js';
 
 const GENERIC_INCLUDE_PATTERNS = [
   /\.[^/]+$/, // files with extension
@@ -20,7 +20,7 @@ const GENERIC_EXCLUDE_PATTERNS = [
   // nothing
 ];
 
-const generateCopyrightComment = ({
+export const generateCopyrightComment = ({
   text,
   /**
    * Optional. This text will be added prior to the copyright content.
@@ -47,7 +47,7 @@ const generateCopyrightComment = ({
 
   let lines = text
     .trim()
-    .split('\n')
+    .split(EOL)
     .map((line) => `${contentPrefix}${line.length ? ` ${line}` : ''}`);
   if (!onlyGenerateCommentContent) {
     lines = [
@@ -58,7 +58,7 @@ const generateCopyrightComment = ({
       footerPrefix,
     ];
   }
-  return lines.join('\n');
+  return lines.join(EOL);
 };
 
 const getIncludedPatterns = ({ extensions }) => [
@@ -76,6 +76,19 @@ const needsCopyrightHeader = (copyrightText, file) => {
     onlyGenerateCommentContent: true,
   });
   return fileContent.trim().length > 0 && !fileContent.includes(text);
+};
+
+const hasCopyrightHeader = (copyrightText, file) => {
+  const fileContent = getFileContent(file);
+  // NOTE: while checking for copyright header, we just generate the copyright comment content
+  // not including the full comment (with opening/closing syntax) because potentially the copyright
+  // comment might have been merged with another comment.
+  const text = generateCopyrightComment({
+    text: copyrightText,
+    pkg: {},
+    onlyGenerateCommentContent: true,
+  });
+  return fileContent.trim().length > 0 && fileContent.includes(text);
 };
 
 // Jest has a fairly sophisticated check for copyright license header that we used as reference
@@ -102,22 +115,44 @@ const getInvalidFiles = ({
       includePatterns.some((pattern) => pattern.test(file)) &&
       !GENERIC_EXCLUDE_PATTERNS.some((pattern) => pattern.test(file)) &&
       !micromatch.isMatch(file, excludePatterns) &&
-      fs.existsSync(file) &&
-      !fs.lstatSync(file).isDirectory() &&
+      existsSync(file) &&
+      !lstatSync(file).isDirectory() &&
       !isBinaryFileSync(file) &&
       needsCopyrightHeader(copyrightText, file),
   );
 };
 
-const checkCopyrightHeaders = ({
+export const getFilesWithCopyrightHeader = ({
   extensions = [],
   /* micromatch glob patterns */
   excludePatterns = [],
   copyrightText,
-  /**
-   * NOTE: this location is just used for the report message.
-   */
-  configFileLocation,
+}) => {
+  const files = execSync('git ls-files', { encoding: 'utf-8' })
+    .trim()
+    .split('\n');
+
+  const includePatterns = getIncludedPatterns({ extensions });
+
+  return files.filter(
+    (file) =>
+      GENERIC_INCLUDE_PATTERNS.some((pattern) => pattern.test(file)) &&
+      includePatterns.some((pattern) => pattern.test(file)) &&
+      !GENERIC_EXCLUDE_PATTERNS.some((pattern) => pattern.test(file)) &&
+      !micromatch.isMatch(file, excludePatterns) &&
+      existsSync(file) &&
+      !lstatSync(file).isDirectory() &&
+      !isBinaryFileSync(file) &&
+      hasCopyrightHeader(copyrightText, file),
+  );
+};
+
+export const checkCopyrightHeaders = ({
+  extensions = [],
+  /* micromatch glob patterns */
+  excludePatterns = [],
+  copyrightText,
+  helpMessage,
 }) => {
   const files = getInvalidFiles({
     extensions,
@@ -127,20 +162,17 @@ const checkCopyrightHeaders = ({
   });
 
   if (files.length > 0) {
-    console.log(
+    exitWithError(
       `Found ${files.length} file(s) without copyright header:\n${files
         .map((file) => `${chalk.red('\u2717')} ${file}`)
-        .join(
-          '\n',
-        )}\nPlease include the header or exclude the files in '${configFileLocation}'`,
+        .join('\n')}${helpMessage ? `\n${helpMessage}` : ''}`,
     );
-    process.exit(1);
   } else {
     console.log('No issues found!');
   }
 };
 
-const updateCopyrightHeaders = async ({
+export const updateCopyrightHeaders = async ({
   extensions = [],
   /* micromatch glob patterns */
   excludePatterns = [],
@@ -165,7 +197,7 @@ const updateCopyrightHeaders = async ({
     });
     await Promise.all(
       files.map((file) =>
-        fs.writeFile(
+        writeFile(
           file,
           `${copyrightComment}\n\n${getFileContent(file)}`,
           (err) => {
@@ -181,8 +213,41 @@ const updateCopyrightHeaders = async ({
   }
 };
 
-module.exports = {
-  generateCopyrightComment,
-  checkCopyrightHeaders,
-  updateCopyrightHeaders,
+export const addCopyrightHeaderToBundledOutput = async ({
+  basePath,
+  configPath,
+  file,
+}) => {
+  // NOTE: Windows requires prefix `file://` for absolute path
+  const config = (
+    await import(`${platform() === 'win32' ? 'file://' : ''}${configPath}`)
+  ).default;
+  const copyrightText = config?.build?.copyrightText;
+  if (!copyrightText) {
+    exitWithError(
+      `'build.copyrightText' is not specified in config file: ${configPath}`,
+    );
+  }
+  const bundledOutputFile = resolve(basePath, file);
+  if (!existsSync(bundledOutputFile)) {
+    exitWithError(
+      `Can't find bundled output file '${bundledOutputFile}'. Make sure to build before running this script`,
+    );
+  }
+
+  writeFileSync(
+    bundledOutputFile,
+    `${copyrightText}\n\n${getFileContent(bundledOutputFile)}`,
+    (err) => {
+      exitWithError(
+        `Failed to add copyright header to bundled output file: ${bundledOutputFile}. Error:\n${
+          err.message || err
+        }`,
+      );
+    },
+  );
+
+  exitWithSuccess(
+    `Added copyright header to bundled output file: ${bundledOutputFile}`,
+  );
 };

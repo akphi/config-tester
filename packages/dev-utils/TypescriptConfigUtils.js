@@ -1,29 +1,32 @@
-/**
- * Copyright (c) An Phi.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-const path = require('path');
-const { execSync } = require('child_process');
-const fs = require('fs');
-const { parse } = require('jsonc-parser');
-const { getFileContent } = require('./DevUtils');
+import { sep, resolve, dirname } from 'path';
+import { execSync } from 'child_process';
+import { lstatSync, existsSync } from 'fs';
+import { parse } from 'jsonc-parser';
+import { getFileContent } from './DevUtils.js';
 
 const getDir = (file) =>
-  fs.lstatSync(file).isDirectory()
-    ? file
-    : file.split(path.sep).slice(0, -1).join(path.sep);
+  lstatSync(file).isDirectory() ? file : file.split(sep).slice(0, -1).join(sep);
 
-const getTsConfigJSON = (file) => {
+/**
+ * Get the Typescript config file content non-recursively.
+ *
+ * NOTE: There are conflicting behavior when trailing commas are detected:
+ * 1. Prettier allows trailing commas and there's a chance we use it in Typescript config files.
+ * 2. Typescript allows trailing commas in Typescript config files.
+ * 3. `jsonc-parser` tolerates trailing commas but will count it as a parsing error, and there's no option to
+ *    filter out trailing commas among the violations.
+ *
+ * Therefore, it's best that we don't do a check for parsing error in the config files by default,
+ * that should be taken care of by Typescript anyway.
+ */
+export const getTsConfigJSON = (file, checkForParsingError = false) => {
   const parseErrors = [];
-  if (!fs.existsSync(file)) {
+  if (!existsSync(file)) {
     throw new Error(`Can't find Typescript config file with path '${file}'`);
   }
   const text = getFileContent(file);
   const json = parse(text, parseErrors);
-  if (parseErrors.length > 0) {
+  if (checkForParsingError && parseErrors.length > 0) {
     throw new Error(`Can't parse Typescript config file with path '${file}'`);
   }
   return json;
@@ -35,12 +38,12 @@ const getTsConfigJSON = (file) => {
  * such as to see ifany files match the pattern specified in `files`
  * and `includes`
  */
-const resolveFullTsConfigWithoutValidation = (fullTsConfigPath) => {
+export const resolveFullTsConfigWithoutValidation = (fullTsConfigPath) => {
   let tsConfig = getTsConfigJSON(fullTsConfigPath);
   let tsConfigDir = getDir(fullTsConfigPath);
   let ext = tsConfig.extends;
   while (ext) {
-    const parentTsConfigPath = path.resolve(tsConfigDir, ext);
+    const parentTsConfigPath = resolve(tsConfigDir, ext);
     tsConfigDir = getDir(parentTsConfigPath);
     let parentTsFullConfig;
     try {
@@ -70,7 +73,6 @@ const resolveFullTsConfigWithoutValidation = (fullTsConfigPath) => {
      *
      * Therefore, the only field within `tsconfig` that we needs to destruct is `compilerOptions`.
      */
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { references, ...parentTsConfig } = parentTsFullConfig; // omit `references` from parent config
     tsConfig = {
       ...parentTsConfig,
@@ -90,15 +92,10 @@ const resolveFullTsConfigWithoutValidation = (fullTsConfigPath) => {
  * This method uses `tsc` to resolve the full config
  * but because it uses `tsc` it will also do validation.
  */
-const resolveFullTsConfig = (fullTsConfigPath) =>
+export const resolveFullTsConfig = (fullTsConfigPath) =>
   JSON.parse(
     execSync(`tsc -p ${fullTsConfigPath} --showConfig`, {
       encoding: 'utf-8',
-      cwd: path.dirname(fullTsConfigPath),
+      cwd: dirname(fullTsConfigPath),
     }),
   );
-
-module.exports = {
-  resolveFullTsConfigWithoutValidation,
-  resolveFullTsConfig,
-};

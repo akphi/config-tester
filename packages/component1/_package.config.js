@@ -7,6 +7,8 @@
 
 module.exports = {
   publish: {
-    tsConfigPath: './tsconfig.build.json',
+    typescript: {
+      main: './tsconfig.build.json',
+    },
   },
 };

@@ -1,39 +1,40 @@
-/**
- * Copyright (c) An Phi.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
+import sass from 'sass';
+import { resolve, join } from 'path';
+import { existsSync } from 'fs';
+import { CleanWebpackPlugin } from 'clean-webpack-plugin';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import MonacoWebpackPlugin from 'monaco-editor-webpack-plugin';
+import CircularDependencyPlugin from 'circular-dependency-plugin';
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
+import { resolveFullTsConfig } from './TypescriptConfigUtils.js';
+import ForkTsCheckerWebpackPlugin from './ForkTsCheckerWebpackPlugin.js';
+import ForkTsCheckerWebpackFormatterPlugin from './ForkTsCheckerWebpackFormatterPlugin.js';
+import { createRequire } from 'module';
 
-const sass = require('sass');
-const path = require('path');
-const fs = require('fs');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const ForkTsCheckerWebpackPlugin = require('./ForkTsCheckerWebpackPlugin');
-const ForkTsCheckerWebpackFormatterPlugin = require('./ForkTsCheckerWebpackFormatterPlugin');
-const { resolveFullTsConfig } = require('./TypescriptConfigUtils');
-const CircularDependencyPlugin = require('circular-dependency-plugin');
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const require = createRequire(import.meta.url);
 
-const getEnvInfo = (env, arg) => ({
+export const getEnvInfo = (env, arg) => ({
   isEnvDevelopment: arg.mode === 'development',
   isEnvProduction: arg.mode === 'production',
   isEnvDevelopment_Advanced: process.env.DEVELOPMENT_MODE === 'advanced',
-  isEnvDevelopment_Fast: process.env.DEVELOPMENT_MODE === 'fast',
 });
 
-const getBaseWebpackConfig = (env, arg, dirname, { babelConfigPath }) => {
+/**
+ * This method gets the base Webpack config for bundling either top-level
+ * webapp with HTML entry points or library.
+ */
+const getBaseWebpackConfig = (
+  env,
+  arg,
+  dirname,
+  { babelConfigPath, extraBabelLoaderIncludePatterns },
+) => {
   if (!dirname) {
     throw new Error(`\`dirname\` is required to build Webpack config`);
   }
-  const {
-    isEnvDevelopment,
-    isEnvProduction,
-    isEnvDevelopment_Fast,
-    isEnvDevelopment_Advanced,
-  } = getEnvInfo(env, arg);
+  const { isEnvDevelopment, isEnvProduction, isEnvDevelopment_Advanced } =
+    getEnvInfo(env, arg);
 
   const config = {
     mode: arg.mode,
@@ -65,6 +66,8 @@ const getBaseWebpackConfig = (env, arg, dirname, { babelConfigPath }) => {
       // See https://github.com/webpack-contrib/webpack-stylish
       // See https://github.com/TypeStrong/fork-ts-checker-webpack-plugin/issues/119
       all: false,
+      errors: isEnvProduction,
+      warnings: isEnvProduction,
       logging: 'warn',
       colors: true,
       timings: true,
@@ -79,8 +82,29 @@ const getBaseWebpackConfig = (env, arg, dirname, { babelConfigPath }) => {
       rules: [
         {
           test: /\.(?:mjs|js|ts|tsx)$/,
-          exclude: /node_modules/,
-          include: path.resolve(dirname, './src/'),
+          resolve: {
+            // Since we use ES modules, the import path must be fully specified. But this is not something Typescript
+            // support, so the workaround is to not require extension in import path.
+            // See https://github.com/webpack/webpack/issues/11467
+            // See https://github.com/microsoft/TypeScript/issues/16577
+            fullySpecified: false,
+          },
+          // NOTE: we don't need to specify the `exclude` part for this
+          // loader as we already specify the include list instead.
+          //
+          // Since we don't transpile these modules, when consuming
+          // these in the top-level module (by bundlers like Webpack),
+          // we need to do so here.
+          include: [
+            // The source code of the current workspace
+            resolve(dirname, './src/'),
+            // Packages from the same monorepo
+            // NOTE: need to account for both slashes style for different OS
+            /packages[/\\]legend-/,
+            // Packages coming from NPM published under '@finos' scope
+            /@finos[/\\]legend-/,
+            ...extraBabelLoaderIncludePatterns,
+          ],
           use: [
             {
               loader: require.resolve('babel-loader'),
@@ -153,15 +177,8 @@ const getBaseWebpackConfig = (env, arg, dirname, { babelConfigPath }) => {
           allowAsyncCycles: false, // allow import cycles that include an asynchronous import, e.g. import(/* webpackMode: "weak" */ './file.js')
           cwd: process.cwd(), // set the current working directory for displaying module paths
         }),
-      new MiniCssExtractPlugin({
-        filename: '[name].css',
-        chunkFilename: '[id].css',
-      }),
-      isEnvDevelopment &&
-        !isEnvDevelopment_Fast &&
-        new ForkTsCheckerWebpackFormatterPlugin(),
-      isEnvDevelopment &&
-        !isEnvDevelopment_Fast &&
+      isEnvDevelopment_Advanced && new ForkTsCheckerWebpackFormatterPlugin(),
+      isEnvDevelopment_Advanced &&
         // Webpack plugin that runs TypeScript type checker on a separate process.
         // NOTE: This makes the initial build process slower but allow faster incremental builds
         // See https://www.npmjs.com/package/fork-ts-checker-webpack-plugin#motivation
@@ -209,7 +226,9 @@ const getBaseWebpackConfig = (env, arg, dirname, { babelConfigPath }) => {
                 'src/**/__mocks__/*.tsx',
               ],
               parserOptions: {
-                project: path.resolve(dirname, './tsconfig.json'),
+                // Limit the option like this helps with memory usage
+                // See https://github.com/typescript-eslint/typescript-eslint/issues/1192
+                project: resolve(dirname, './tsconfig.json'),
               },
             },
           },
@@ -236,9 +255,9 @@ const validateAppConfig = (config, dirname) => {
   }
   // faviconPath
   const faviconPath = config.faviconPath;
-  if (faviconPath && !fs.existsSync(path.resolve(dirname, faviconPath))) {
+  if (faviconPath && !existsSync(resolve(dirname, faviconPath))) {
     throw new Error(
-      `Invalid config: Cannot find favicon file with provided path (\`faviconPath\`) '${path}'.\n
+      `Invalid config: Cannot find favicon file with provided path (\`faviconPath\`) '${faviconPath}'.\n
       Make sure the path is relative to the root directory of the module.`,
     );
   }
@@ -254,11 +273,27 @@ const validateAppConfig = (config, dirname) => {
   }
 };
 
-const getWebAppBaseWebpackConfig = (
+export const getWebAppBaseWebpackConfig = (
   env,
   arg,
   dirname,
-  { mainEntryPath, indexHtmlPath, babelConfigPath, appConfig },
+  {
+    mainEntryPath,
+    indexHtmlPath,
+    appConfig,
+    babelConfigPath,
+    /**
+     * Regex patterns for to be added to `loader.include` of `babel-loader`
+     * For untranspiled modules, they need to be transpiled in order to be loaded and bundled
+     * in the app.
+     *
+     * e.g. We don't transpile our code at all in Studio, we publish exactly what `tsc` yields.
+     * As such, when being consumed by Webpack, our code needs to be passed through the `babel-loader`
+     * For that reason, we always default to include `/@finos\/legend-studio/` in the list of include patterns
+     */
+    extraBabelLoaderIncludePatterns = [],
+    enableReactFastRefresh,
+  },
 ) => {
   if (!dirname) {
     throw new Error(`\`dirname\` is required to build Webpack config`);
@@ -266,6 +301,7 @@ const getWebAppBaseWebpackConfig = (
   const { isEnvDevelopment, isEnvProduction } = getEnvInfo(env, arg);
   const baseConfig = getBaseWebpackConfig(env, arg, dirname, {
     babelConfigPath,
+    extraBabelLoaderIncludePatterns,
   });
   validateAppConfig(appConfig, dirname);
 
@@ -274,10 +310,10 @@ const getWebAppBaseWebpackConfig = (
 
   const config = {
     ...baseConfig,
-    entry: { index: path.resolve(dirname, mainEntryPath) },
+    entry: { index: mainEntryPath },
     output: {
       ...baseConfig.output,
-      path: path.join(dirname, `dist${appConfig.baseUrl}`),
+      path: join(dirname, `dist${appConfig.baseUrl}`),
       assetModuleFilename: `${staticPath}/${
         isEnvDevelopment ? '[name].[ext]' : '[name].[contenthash:8].[ext]'
       }`,
@@ -286,24 +322,32 @@ const getWebAppBaseWebpackConfig = (
         isEnvDevelopment ? '[name].js' : '[name].[contenthash:8].js'
       }`,
     },
+    resolve: {
+      ...baseConfig.resolve,
+      fallback: {
+        // Ignore usage of Node module `os` in `zipkin`
+        // See https://github.com/openzipkin/zipkin-js/issues/465
+        os: false,
+      },
+      alias: {
+        ...baseConfig.resolve.alias,
+        // Reduce `monaco-editor` bundle size by using ESM bundle which enables tree-shaking
+        // See https://github.com/microsoft/monaco-editor-webpack-plugin/issues/97
+        'monaco-editor': 'monaco-editor/esm/vs/editor/editor.api.js',
+      },
+    },
     devServer: {
       compress: true, // enable gzip compression for everything served to reduce traffic size
-      dev: {
+      devMiddleware: {
         publicPath: '/',
       },
-      open: true,
-      // start - should remove this in next iteration of webpack-dev-server@4.beta
-      static: {
-        watch: false,
-      },
-      // end - should remove this in next iteration of webpack-dev-server@4.beta
-      port: 3000,
-      host: 'localhost',
-      openPage:
+      open:
         // trim the leading and trailing slash
         appConfig.baseUrl.length === 1
-          ? undefined
-          : appConfig.baseUrl.slice(1, -1),
+          ? false
+          : [appConfig.baseUrl.slice(1, -1)],
+      port: 8080,
+      host: 'localhost',
       // redirect 404s to /index.html
       historyApiFallback: {
         // URL contains dot such as for version (majorV.minV.patchV: 1.0.0) need this rule
@@ -335,22 +379,57 @@ const getWebAppBaseWebpackConfig = (
       : baseConfig.optimization,
     plugins: [
       ...baseConfig.plugins,
-      isEnvDevelopment && new ReactRefreshWebpackPlugin(),
+      isEnvDevelopment &&
+        enableReactFastRefresh &&
+        new ReactRefreshWebpackPlugin(),
+      new MiniCssExtractPlugin({
+        filename: `${staticPath}/${
+          isEnvDevelopment ? '[name].css' : '[name].[contenthash:8].css'
+        }`,
+        chunkFilename: `${staticPath}/${
+          isEnvDevelopment ? '[id].css' : '[id].[contenthash:8].css'
+        }`,
+      }),
       new HtmlWebpackPlugin({
-        template: path.resolve(dirname, indexHtmlPath),
+        template: indexHtmlPath,
         favicon: appConfig.faviconPath
-          ? path.resolve(dirname, appConfig.faviconPath)
+          ? resolve(dirname, appConfig.faviconPath)
           : undefined,
+      }),
+      /**
+       * Since by default we use `monaco-editor` in our app core modules
+       * We specify it here to slim down the `webpack` config in top-level modules
+       */
+      new MonacoWebpackPlugin({
+        // Only include what we need to lessen the bundle loads
+        // See https://github.com/microsoft/monaco-editor-webpack-plugin
+        languages: ['json', 'java', 'markdown', 'sql'],
+        // Here we can choose to also exclude/include features but this really does not
+        // significantly affect the bundle size anyhow, but it's also strange that we
+        // need to turn off features in `monaco-editor` on creation anyway
+        // See https://github.com/microsoft/monaco-editor-webpack-plugin/issues/40
+        features: [
+          'bracketMatching',
+          'clipboard',
+          'contextmenu',
+          'coreCommands',
+          'comment',
+          'find',
+          'folding',
+          'gotoLine',
+          'hover',
+          'multicursor',
+        ],
       }),
     ].filter(Boolean),
   };
   return config;
 };
 
-const buildAliasEntriesFromTsConfigPathMapping = ({
+export const buildAliasEntriesFromTsConfigPathMapping = ({
   dirname,
   tsConfigPath,
-  excludePaths,
+  excludePaths = [],
 }) => {
   if (!dirname) {
     throw new Error(`\`dirname\` is required to build Webpack module aliases`);
@@ -358,7 +437,7 @@ const buildAliasEntriesFromTsConfigPathMapping = ({
   const tsConfig = resolveFullTsConfig(tsConfigPath);
   const paths = tsConfig?.compilerOptions?.paths;
   const baseUrl = tsConfig?.compilerOptions?.baseUrl;
-  const basePath = baseUrl ? path.resolve(dirname, baseUrl) : dirname;
+  const basePath = baseUrl ? resolve(dirname, baseUrl) : dirname;
   if (paths) {
     const aliases = {};
     Object.entries(paths).forEach(([key, value]) => {
@@ -375,14 +454,9 @@ const buildAliasEntriesFromTsConfigPathMapping = ({
         // webpack does not need do exact replacement so wildcard '*' is not needed
         val.replace('*', ''),
       );
-      aliases[alias] = replacement.map((val) => path.resolve(basePath, val));
+      aliases[alias] = replacement.map((val) => resolve(basePath, val));
     });
     return aliases;
   }
   return {};
-};
-
-module.exports = {
-  getWebAppBaseWebpackConfig,
-  buildAliasEntriesFromTsConfigPathMapping,
 };

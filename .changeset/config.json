@@ -1,11 +1,8 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@1.5.0/schema.json",
-  "changelog": [
-    "@akphi/dev-utils/ChangesetUtils",
-    { "repo": "akphi/config-tester" }
-  ],
+  "changelog": "@akphi/dev-utils/ChangesetChangelogUtils",
   "commit": false,
-  "linked": [["@akphi/lib1", "@akphi/dev-utils"]],
+  "linked": [["@akphi/lib1", "@akphi/component1"]],
   "access": "public",
   "baseBranch": "master",
   "updateInternalDependencies": "patch",

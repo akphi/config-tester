@@ -4,9 +4,5 @@
   // (which will fail, but drop a bunch of .js files in random places as an annoying side effect).
   // See https://github.com/RyanCavanaugh/learn-a
   "files": [],
-  "references": [
-    { "path": "packages/lib1" },
-    { "path": "packages/component1" },
-    { "path": "packages/app1" },
-  ]
+  "references": [{ "path": "packages/lib1" }, { "path": "packages/component1" }]
 }

@@ -1,15 +1,8 @@
-/**
- * Copyright (c) An Phi.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-const chalk = require('chalk');
-const { resolve } = require('path');
-const { writeFileSync } = require('fs');
-const { execSync } = require('child_process');
-const { loadJSON } = require('@akphi/dev-utils/DevUtils');
+import chalk from 'chalk';
+import { writeFileSync } from 'fs';
+import { resolve } from 'path';
+import { execSync } from 'child_process';
+import { loadJSON } from '@akphi/dev-utils/DevUtils';
 
 const workspaceDir = process.cwd();
 const packageJson = loadJSON(resolve(workspaceDir, 'package.json'));
@@ -20,10 +13,7 @@ const today = new Date();
 const fullVersionSignature = `0.0.0-dev-${process.env.GITHUB_SHA.substring(
   0,
   8,
-)}-${today.getFullYear()}${today
-  .getMonth()
-  .toString()
-  .padStart(2, '0')}${today
+)}-${today.getFullYear()}${today.getMonth().toString().padStart(2, '0')}${today
   .getDate()
   .toString()
   .padStart(2, '0')}-${today.valueOf()}`;
