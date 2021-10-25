@@ -1,6 +1,12 @@
 name: Prepare New Release (Manual)
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: 'Version Bump Type (major/minor)'
+        required: true
+        default: 'minor'
 
 jobs:
   prepare-new-release:
@@ -30,7 +36,7 @@ jobs:
       - name: Install dependencies
         run: yarn
       - name: Create release version bump
-        run: yarn release:bump major
+        run: yarn release:bump ${{ github.event.inputs.bump_type }}
       - name: Prepare for the next development cycle
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
