@@ -39,6 +39,8 @@ jobs:
         run: yarn
       - name: Generate new release PR title
         id: generate-new-release-pr-title
+        env:
+          MAIN_PACKAGE: '@akphi/lib1'
         run: node ./scripts/release/createNewReleasePRTitle.js
       - name: Create new release pull request or Publish to NPM
         id: changesets
