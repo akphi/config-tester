@@ -34,4 +34,7 @@ jobs:
       - name: Install dependencies
         run: yarn
       - name: Test script
+        id: test-script
         run: node ./scripts/release/createReleasePRTitle.js
+      - name: Test script 2
+        run: echo ${{ steps.test-script.outputs.yob }}
