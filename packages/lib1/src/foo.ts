@@ -9,10 +9,10 @@
 // import { Am } from './something';
 // import { isEqual as _isEqual } from 'lodash-es';
 
-// export function helloworld() {
-//   // console.log('helloworld!');
-//   return 'Hello world';
-// }
+export function helloworld() {
+  // console.log('helloworld!');
+  return 'Hello world';
+}
 
 export const dummyObj = { a: 1, name: 'o' };
 export const copy = { ...dummyObj };
