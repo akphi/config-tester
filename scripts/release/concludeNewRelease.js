@@ -125,7 +125,7 @@ const concludeNewRelease = async () => {
       await octokit.rest.repos.createRelease({
         tag_name: `v${currentReleaseVersion}`,
         name: `Version ${currentReleaseVersion}`,
-        body: `👋  _We are crafting a release note for this version..._\n> Meanwhile, please refer to the latest release pull request for a summary of code changes.`,
+        body: `👋  _We are crafting a release note for this version..._\n> Meanwhile, please refer to the release pull request for a summary of code changes.`,
         ...github.context.repo,
       });
       console.log(
