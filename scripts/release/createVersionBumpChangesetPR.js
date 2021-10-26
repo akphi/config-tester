@@ -3,12 +3,19 @@ import * as githubActionCore from '@actions/core';
 import chalk from 'chalk';
 import { execSync } from 'child_process';
 import { readFileSync } from 'fs';
-import { STANDARD_RELEASE_VERSION_BUMP_CHANGESET_PATH } from './releaseVersionUtils.js';
+import {
+  STANDARD_RELEASE_VERSION_BUMP_CHANGESET_PATH,
+  STANDARD_RELEASE_VERSION_BUMP_CHANGESET_SHORT_PATH,
+  ITERATION_RELEASE_VERSION_BUMP_CHANGESET_PATH,
+  ITERATION_RELEASE_VERSION_BUMP_CHANGESET_SHORT_PATH,
+} from './releaseVersionUtils.js';
 
 const DEFAULT_BRANCH_NAME = 'master';
+const CHANGESET_PR_BRANCH_NAME = 'bot/prepare-release';
 
 const prepareNewStandardRelease = async () => {
   const octokit = github.getOctokit(process.env.GITHUB_TOKEN);
+  const bumpType = process.env.BUMP_TYPE;
 
   // Push release version bump changeset
   console.log(`Creating release version bump changeset PR...`);
@@ -21,11 +28,15 @@ const prepareNewStandardRelease = async () => {
       `(skipped) Next release version bump changeset already existed`,
     );
   } else {
-    const changesetContent = Buffer.from(
-      readFileSync(STANDARD_RELEASE_VERSION_BUMP_CHANGESET_PATH, 'utf-8'),
-    ).toString('base64');
-    const CHANGESET_PR_BRANCH_NAME = 'bot/prepare-release';
     try {
+      const changesetContent = Buffer.from(
+        readFileSync(
+          bumpType === 'major'
+            ? STANDARD_RELEASE_VERSION_BUMP_CHANGESET_PATH
+            : ITERATION_RELEASE_VERSION_BUMP_CHANGESET_PATH,
+          'utf-8',
+        ),
+      ).toString('base64');
       const defaultBranchRef = (
         await octokit.rest.git.getRef({
           ref: `heads/${DEFAULT_BRANCH_NAME}`,
@@ -35,14 +46,15 @@ const prepareNewStandardRelease = async () => {
       // clean the PR branch just in case
       try {
         await octokit.rest.git.deleteRef({
-          ref: `refs/heads/${CHANGESET_PR_BRANCH_NAME}`,
+          ref: `heads/${CHANGESET_PR_BRANCH_NAME}`,
           sha: defaultBranchRef.object.sha,
           ...github.context.repo,
         });
-      } catch {
+      } catch (e) {
         // do nothing
       }
       await octokit.rest.git.createRef({
+        // NOTE: this must be the fully qualified reference (e.g. refs/heads/main)
         ref: `refs/heads/${CHANGESET_PR_BRANCH_NAME}`,
         sha: defaultBranchRef.object.sha,
         ...github.context.repo,
@@ -51,7 +63,10 @@ const prepareNewStandardRelease = async () => {
       // because of the assumptions we make on the timing of this process.
       // See https://docs.github.com/en/rest/reference/repos#create-or-update-file-contents
       await octokit.rest.repos.createOrUpdateFileContents({
-        path: STANDARD_RELEASE_VERSION_BUMP_CHANGESET_PATH,
+        path:
+          bumpType === 'major'
+            ? STANDARD_RELEASE_VERSION_BUMP_CHANGESET_SHORT_PATH
+            : ITERATION_RELEASE_VERSION_BUMP_CHANGESET_SHORT_PATH,
         message: 'prepare for new release',
         branch: CHANGESET_PR_BRANCH_NAME,
         content: changesetContent,
@@ -59,7 +74,9 @@ const prepareNewStandardRelease = async () => {
       });
       const changesetPR = (
         await octokit.rest.pulls.create({
-          title: `Prepare New Release`,
+          title: `Prepare New ${
+            bumpType === 'major' ? 'Release' : 'Iteration Release'
+          }`,
           head: CHANGESET_PR_BRANCH_NAME,
           base: DEFAULT_BRANCH_NAME,
           body: `## ⚠️ Merge this before creating another release!\nAdd changeset to bump version for the next release. Learn more about this process [here](https://github.com/finos/legend-studio/blob/master/docs/workflow/release-process.md#standard-releases).`,

@@ -9,13 +9,17 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const APPLICATION_WORKSPACE_DIR = resolve(__dirname, '../../packages/lib1');
 const CHANGESET_DIR = resolve(__dirname, '../../.changeset');
 export const CHANGESET_CONFIG_PATH = resolve(CHANGESET_DIR, 'config.json');
+export const STANDARD_RELEASE_VERSION_BUMP_CHANGESET_SHORT_PATH =
+  '.changeset/new-version.md';
+export const ITERATION_RELEASE_VERSION_BUMP_CHANGESET_SHORT_PATH =
+  '.changeset/new-iteration.md';
 export const STANDARD_RELEASE_VERSION_BUMP_CHANGESET_PATH = resolve(
-  CHANGESET_DIR,
-  'new-version.md',
+  __dirname,
+  `../../${STANDARD_RELEASE_VERSION_BUMP_CHANGESET_SHORT_PATH}`,
 );
 export const ITERATION_RELEASE_VERSION_BUMP_CHANGESET_PATH = resolve(
-  CHANGESET_DIR,
-  'new-iteration.md',
+  __dirname,
+  `../../${ITERATION_RELEASE_VERSION_BUMP_CHANGESET_SHORT_PATH}`,
 );
 
 export const getPackagesToBumpVersion = () => {
