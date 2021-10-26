@@ -47,7 +47,6 @@ const prepareNewStandardRelease = async () => {
       try {
         await octokit.rest.git.deleteRef({
           ref: `heads/${CHANGESET_PR_BRANCH_NAME}`,
-          sha: defaultBranchRef.object.sha,
           ...github.context.repo,
         });
       } catch (e) {

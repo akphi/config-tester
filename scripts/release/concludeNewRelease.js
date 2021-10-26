@@ -2,7 +2,6 @@ import * as github from '@actions/github';
 import * as githubActionCore from '@actions/core';
 import chalk from 'chalk';
 import semver from 'semver';
-import { execSync } from 'child_process';
 
 /**
  * Changesets generate tags and Github release by default, but this is cluttering the
@@ -45,19 +44,47 @@ const concludeNewRelease = async () => {
         // Check the following links for Github actions API reference
         // See https://octokit.github.io/rest.js/v18/
         // See https://docs.github.com/en/rest/reference/repos#releases
-        const release = await octokit.rest.repos.getReleaseByTag({
-          tag,
-          ...github.context.repo,
-        });
-        await octokit.rest.repos.deleteRelease({
-          release_id: release.data.id,
-          ...github.context.repo,
-        });
+        let release;
+        try {
+          release = (
+            await octokit.rest.repos.getReleaseByTag({
+              tag,
+              ...github.context.repo,
+            })
+          ).data;
+        } catch {
+          release = undefined;
+        }
+        if (release) {
+          await octokit.rest.repos.deleteRelease({
+            release_id: release.id,
+            ...github.context.repo,
+          });
+        }
+
         // Delete the tags published by `changesets/action`
-        execSync(`git push --delete origin ${tag}`, {
-          cwd: process.cwd(),
-          stdio: ['pipe', 'pipe', 'inherit'], // only print error
-        });
+        let tagRef;
+        try {
+          tagRef = (
+            await octokit.rest.git.getRef({
+              ref: `tags/${tag}`,
+              ...github.context.repo,
+            })
+          ).data;
+        } catch {
+          tagRef = undefined;
+        }
+        if (tagRef) {
+          try {
+            await octokit.rest.git.deleteRef({
+              ref: `tags/${tag}`,
+              ...github.context.repo,
+            });
+          } catch (e) {
+            // do nothing
+          }
+        }
+
         console.log(`\u2713 Removed release and tag ${tag}`);
       } catch (error) {
         tagsNotRemoved.push(tag);
@@ -70,7 +97,7 @@ const concludeNewRelease = async () => {
 
   if (tagsNotRemoved.length) {
     githubActionCore.error(
-      `The following tags and their respective releases are not removed from Github. Please manually remove them on Github:\n${tagsNotRemoved
+      `The following tags and/or their respective releases are not removed from Github. Please manually remove them on Github:\n${tagsNotRemoved
         .map((tag) => `- ${tag}`)
         .join('\n')}`,
     );
