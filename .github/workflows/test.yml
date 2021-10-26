@@ -35,6 +35,6 @@ jobs:
         run: yarn
       - name: Test script
         id: test-script
-        run: node ./scripts/release/createReleasePRTitle.js
+        run: node ./scripts/release/createNewReleasePRTitle.js
       - name: Test script 2
         run: echo ${{ steps.test-script.outputs.yob }}

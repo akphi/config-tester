@@ -69,7 +69,7 @@ const concludeNewRelease = async () => {
   );
 
   if (tagsNotRemoved.length) {
-    console.warn(
+    githubActionCore.error(
       `The following tags and their respective releases are not removed from Github. Please manually remove them on Github:\n${tagsNotRemoved
         .map((tag) => `- ${tag}`)
         .join('\n')}`,
@@ -107,7 +107,7 @@ const concludeNewRelease = async () => {
         ),
       );
     } catch (error) {
-      githubActionCore.warning(
+      githubActionCore.error(
         `Failed to create release with tag v${currentReleaseVersion}. Please manually create this release tag on Github.`,
       );
     }
@@ -133,14 +133,12 @@ const concludeNewRelease = async () => {
           ),
         );
       } catch {
-        console.log(
-          chalk.yellow(
-            `(skipped) Release branch 'release/${currentReleaseVersion}' already existed`,
-          ),
+        githubActionCore.warning(
+          `(skipped) Release branch 'release/${currentReleaseVersion}' already existed`,
         );
       }
     } catch (error) {
-      githubActionCore.warning(
+      githubActionCore.error(
         `Release tag 'v${currentReleaseVersion}' has not been created. Please make sure to manually create tag 'v${currentReleaseVersion}' and the release branch 'release/${currentReleaseVersion}' from that tag.`,
       );
     }
@@ -241,21 +239,17 @@ const concludeNewRelease = async () => {
             chalk.green(`\u2713 Closed milestone ${currentReleaseVersion}`),
           );
         } else {
-          console.log(
-            chalk.yellow(
-              `(skipped) New release milestone '${nextReleaseVersion}' already existed`,
-            ),
+          githubActionCore.warning(
+            `(skipped) New release milestone '${nextReleaseVersion}' already existed`,
           );
         }
       } else {
-        console.log(
-          chalk.yellow(
-            `(skipped) Can't find milestone for the latest release version '${currentReleaseVersion}'`,
-          ),
+        githubActionCore.warning(
+          `(skipped) Can't find milestone for the latest release version '${currentReleaseVersion}'`,
         );
       }
     } catch (error) {
-      githubActionCore.warning(
+      githubActionCore.error(
         `Failed to prepare next release milestone. Error:\n${error.message}\nPlease manually prepare next release milestone and close the current release milestone`,
       );
     }

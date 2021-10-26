@@ -1,4 +1,5 @@
 import * as github from '@actions/github';
+import * as githubActionCore from '@actions/core';
 import chalk from 'chalk';
 import { execSync } from 'child_process';
 import { readFileSync } from 'fs';
@@ -16,10 +17,8 @@ const prepareNewStandardRelease = async () => {
   );
 
   if (!isChangesetNew) {
-    console.log(
-      chalk.yellow(
-        `(skipped) Next release version bump changeset already existed`,
-      ),
+    githubActionCore.warning(
+      `(skipped) Next release version bump changeset already existed`,
     );
   } else {
     const changesetContent = Buffer.from(
@@ -73,11 +72,9 @@ const prepareNewStandardRelease = async () => {
         ),
       );
     } catch (error) {
-      console.log(
-        chalk.red(
-          `Failed to create PR for next release version bump changeset. Error:\n${error.message}\n` +
-            `Please run \`yarn release:bump major\` and commit this changeset.`,
-        ),
+      githubActionCore.error(
+        `Failed to create PR for next release version bump changeset. Error:\n${error.message}\n` +
+          `Please run \`yarn release:bump major\` and commit this changeset.`,
       );
       process.exit(1);
     }
