@@ -1,5 +1,7 @@
 # @akphi/component1
 
+## 1.0.0
+
 ## 0.2.13
 
 ### Patch Changes

@@ -1,5 +1,7 @@
 # @akphi/lib1
 
+## 1.0.0
+
 ## 0.3.12
 
 ### Patch Changes
