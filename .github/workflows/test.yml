@@ -34,7 +34,8 @@ jobs:
       - name: Install dependencies
         run: yarn
       - name: Test script
-        id: test-script
-        run: node ./scripts/release/createNewReleasePRTitle.js
-      - name: Test script 2
-        run: echo ${{ steps.test-script.outputs.yob }}
+        # id: test-script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACCESS_TOKEN: ${{ secrets.PAT_AKPHI_READ_ORG }}
+        run: node ./scripts/test.js
