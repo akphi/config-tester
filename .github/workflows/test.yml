@@ -1,18 +1,12 @@
-name: Test
+name: Test Script
 
 on:
-  push:
-    branches:
-      # Default branch is meant for standard releases, i.e. minor version bumps (e.g. 1.6.0, 1.7.0)
-      - master
+  issues:
+    types: [opened]
 
 jobs:
-  test-action:
-    # There is currently no way to limit workflow dispatch to only allow default branch
-    # so we need to restrict it here
-    # See https://github.community/t/limit-branch-for-workflow-dispatch/122099
-    if: github.ref == 'refs/heads/master' && github.repository == 'akphi/config-tester'
-    name: Prepare New Release
+  label-new-issue:
+    name: Label New Issue
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -21,21 +15,23 @@ jobs:
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
       - name: Setup Yarn cache
-        uses: actions/cache@v2
+        uses: actions/cache@v2.1.6
         id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: ${{ runner.os }}-yarn-
       - name: Setup Node
-        uses: actions/setup-node@v2.1.4
+        uses: actions/setup-node@v2.4.1
         with:
           node-version: 14.x
       - name: Install dependencies
         run: yarn
       - name: Test script
-        # id: test-script
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ACCESS_TOKEN: ${{ secrets.PAT_AKPHI_READ_ORG }}
-        run: node ./scripts/test.js
+          ORGANIZATION_READ_TOKEN: ${{ secrets.PAT_AKPHI_READ_ORG }}
+          ORGANIZATION_NAME: finos
+          TEAM_NAME: legend-contributors
+          TEAM_LABEL: 'Studio Core Team'
+        run: node ./scripts/workflow/labelNewIssue.js
