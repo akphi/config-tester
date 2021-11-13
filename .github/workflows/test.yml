@@ -25,13 +25,16 @@ jobs:
         uses: actions/setup-node@v2.4.1
         with:
           node-version: 14.x
+      - name: Install bot 1
+        working-directory: ./scripts/bot
+        run: yarn
       - name: Install dependencies
         run: yarn
-      - name: Test script
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ORGANIZATION_READ_TOKEN: ${{ secrets.PAT_AKPHI_READ_ORG }}
-          ORGANIZATION_NAME: finos
-          TEAM_NAME: legend-contributors
-          TEAM_LABEL: 'Studio Core Team'
-        run: node ./scripts/workflow/labelNewIssue.js
+      # - name: Test script
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     ORGANIZATION_READ_TOKEN: ${{ secrets.PAT_AKPHI_READ_ORG }}
+      #     ORGANIZATION_NAME: finos
+      #     TEAM_NAME: legend-contributors
+      #     TEAM_LABEL: 'Studio Core Team'
+      #   run: node ./scripts/workflow/labelNewIssue.js

@@ -4284,6 +4284,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"config-tester-bot@workspace:scripts/bot":
+  version: 0.0.0-use.local
+  resolution: "config-tester-bot@workspace:scripts/bot"
+  dependencies:
+    "@actions/core": 1.6.0
+    "@actions/github": 5.0.0
+  languageName: unknown
+  linkType: soft
+
 "config-tester@workspace:.":
   version: 0.0.0-use.local
   resolution: "config-tester@workspace:."
