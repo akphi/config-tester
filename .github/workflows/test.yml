@@ -27,7 +27,8 @@ jobs:
           node-version: 14.x
       - name: Install bot 1
         working-directory: ./scripts/bot
-        run: yarn install --immutable=false
+        # See https://github.com/yarnpkg/berry/discussions/3486
+        run: yarn install --no-immutable
       - name: Install dependencies
         run: yarn
       # - name: Test script
