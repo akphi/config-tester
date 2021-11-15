@@ -1,12 +1,16 @@
 name: Test Script
 
 on:
-  issues:
-    types: [opened]
+  pull_request:
+    branches:
+      - '**'
+  push:
+    branches:
+      - master
 
 jobs:
-  label-new-issue:
-    name: Label New Issue
+  test-1:
+    name: Test 1
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -25,17 +29,27 @@ jobs:
         uses: actions/setup-node@v2.4.1
         with:
           node-version: 14.x
-      - name: Install bot 1
-        working-directory: ./scripts/bot
-        # See https://github.com/yarnpkg/berry/discussions/3486
-        run: yarn install --no-immutable
-      - name: Install dependencies
+      - name: Install Bot ONLY
+        run: yarn workspaces focus --production config-tester-bot
+  test-2:
+    name: Test 2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.3.5
+      - name: Get Yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+      - name: Setup Yarn cache
+        uses: actions/cache@v2.1.6
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: ${{ runner.os }}-yarn-
+      - name: Setup Node
+        uses: actions/setup-node@v2.4.1
+        with:
+          node-version: 14.x
+      - name: Install ALL
         run: yarn
-      # - name: Test script
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     ORGANIZATION_READ_TOKEN: ${{ secrets.PAT_AKPHI_READ_ORG }}
-      #     ORGANIZATION_NAME: finos
-      #     TEAM_NAME: legend-contributors
-      #     TEAM_LABEL: 'Studio Core Team'
-      #   run: node ./scripts/workflow/labelNewIssue.js
